@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import Navbar from "./Navbar";
+import Menu from "./Menu";
+import AddTextFile from './AddTextFile';
 import $ from 'jquery';
 window.jQuery = $;
 window.$ = $;
@@ -10,13 +11,13 @@ export default function Home() {
 
   }, []);
   return (
-    <header>
-      <div className="nav-area">
-        <a href="/#" className="logo">
-          Logo
-        </a>
-        <Navbar />
+    <>
+      <div className="container-fluid full-height">
+        <div className="row full-height">
+          <Menu />
+          <AddTextFile />
+        </div>
       </div>
-    </header>
+    </>
   )
 }

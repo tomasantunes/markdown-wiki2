@@ -1,16 +1,17 @@
 import { menuItems } from "../menuItems";
 import MenuItems from "./MenuItems";
-const Navbar = () => {
+
+const Menu = () => {
   return (
-    <nav>
+    <div className="left-sidebar col-md-2 full-min-height">
       <ul className="menus">
         {menuItems.map((menu, index) => {
           const depthLevel = 0;
           return <MenuItems items={menu} key={index} depthLevel={depthLevel} />;
         })}
       </ul>
-    </nav>
+    </div>
   );
 };
 
-export default Navbar;
+export default Menu;
