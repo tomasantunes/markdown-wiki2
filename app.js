@@ -141,7 +141,7 @@ app.post("/api/files/insert", (req, res) => {
             insertNewCategory(category, parentCategoryId, function(result) {
               assignCategoryToFile(file_id, result.data);
             });
-          }
+          });
         }
         var tags_arr = tags.split(",");
         for (var i in tags_arr) {
