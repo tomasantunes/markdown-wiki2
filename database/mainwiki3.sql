@@ -39,6 +39,8 @@ CREATE TABLE tags (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+INSERT INTO categories (name, parent_id) VALUES ('root', 0);
+
 
 
 

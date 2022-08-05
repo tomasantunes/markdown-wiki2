@@ -96,19 +96,30 @@ function insertNewTag(tag_name, cb) {
   });
 }
 
-function insertNewCategory(category_name, cb) {
+function insertNewCategory(category_name, parentCategoryId, cb) {
   var con = connectDB();
-  var sql = "INSERT INTO categories (name) VALUES (?);";
+  var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?);";
 
   con.query(sql, [category_name], function(err, result) {
     cb({status: "OK", data: result.insertId});
   });
 }
 
+app.get("/api/categories/list", (req, res) => {
+  var con = connectDB();
+
+  var sql = "SELECT * FROM categories;";
+
+  con.query(sql, [], function(err, result) {
+    res.json({status: "OK", data: result});
+  });
+});
+
 app.post("/api/files/insert", (req, res) => {
   var title = req.body.title;
   var content = req.body.content;
   var extension = req.body.extension;
+  var parentCategory = req.body.parentCategory;
   var category = req.body.category;
   var tags = req.body.tags;
 
@@ -125,9 +136,12 @@ app.post("/api/files/insert", (req, res) => {
           assignCategoryToFile(file_id, result.data);
         }
         else {
-          insertNewCategory(category, function(result) {
-            assignCategoryToFile(file_id, result.data);
-          });
+          getGategoryId(parentCategory, function(result) {
+            var parentCategoryId = result.data;
+            insertNewCategory(category, parentCategoryId, function(result) {
+              assignCategoryToFile(file_id, result.data);
+            });
+          }
         }
         var tags_arr = tags.split(",");
         for (var i in tags_arr) {

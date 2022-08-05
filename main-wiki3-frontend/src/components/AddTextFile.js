@@ -13,6 +13,7 @@ export default function AddTextFile() {
     "title": "",
     "content": "",
     "extension": "",
+    "parentCategory": "",
     "category": "",
     "tags": ""
   });
@@ -28,6 +29,13 @@ export default function AddTextFile() {
     setNewFile({
       ...newFile,
       "content": e.target.value
+    });
+  }
+
+  function changeNewFileParentCategory(e) {
+    setNewFile({
+      ...newFile,
+      "parentCategory": e.target.value
     });
   }
 
@@ -70,6 +78,12 @@ export default function AddTextFile() {
             <label className="control-label">Content</label>
             <div>
                 <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Parent Category</label>
+            <div>
+                <input type="text" className="form-control input-lg" name="parentCategory" value={newFile.parentCategory} onChange={changeNewFileParentCategory}/>
             </div>
         </div>
         <div className="form-group py-2">
