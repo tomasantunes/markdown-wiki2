@@ -29,10 +29,10 @@ const Menu = () => {
                 }
               }
             }
-            setMenuItems(
-              menuItems => [...menuItems, obj]
-            );
           }
+          setMenuItems(
+            menuItems => [...menuItems, obj]
+          );
         }
       }
     })
