@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import config from '../config.json';
 import MenuItems from "./MenuItems";
 
 const Menu = () => {
