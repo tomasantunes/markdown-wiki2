@@ -5,7 +5,8 @@ import MenuItems from "./MenuItems";
 
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([
-    {title: "Home"}
+    {title: "Home", link: "/"},
+    {title: "Add File", link: "/add-file"}
   ]);
 
   function loadCategories() {

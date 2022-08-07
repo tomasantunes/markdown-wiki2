@@ -1,20 +1,16 @@
-import React, {useState, useEffect} from 'react';
-import Menu from "./Menu";
+import React from 'react';
+import Menu from './Menu';
 import AddTextFile from './AddTextFile';
-import $ from 'jquery';
-window.jQuery = $;
-window.$ = $;
-global.jQuery = $;
+import AddMediaFile from './AddMediaFile'
 
-export default function Home() {
-  useEffect(() => {
-
-  }, []);
+export default function AddFile() {
   return (
     <>
       <div className="container-fluid full-height">
         <div className="row full-height">
           <Menu />
+          <AddTextFile />
+          <AddMediaFile />
         </div>
       </div>
     </>

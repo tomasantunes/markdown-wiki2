@@ -17,6 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+}));
 
 function connectDB() {
   var con = mysql.createConnection({
@@ -160,6 +163,13 @@ app.post("/api/files/insert", (req, res) => {
       });
       
   });
+});
+
+app.post('/api/upload-media-file', function(req, res) {
+  if (!req.files) {
+    console.log("No file has been detected.")
+  }
+  console.log(req.files);
 });
 
 // catch 404 and forward to error handler

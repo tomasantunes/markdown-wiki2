@@ -65,49 +65,51 @@ export default function AddTextFile() {
   }
 
   return (
-    <div className="col-md-8 full-min-height">
-      <h1>Add Text File</h1>
-      <form onSubmit={submitNewFile}>
-        <div className="form-group py-2">
-            <label className="control-label">Title</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
-            </div>
-        </div>
-        <div className="form-group py-2">
-            <label className="control-label">Content</label>
-            <div>
-                <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
-            </div>
-        </div>
-        <div className="form-group py-2">
-            <label className="control-label">Parent Category</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="parentCategory" value={newFile.parentCategory} onChange={changeNewFileParentCategory}/>
-            </div>
-        </div>
-        <div className="form-group py-2">
-            <label className="control-label">Category</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="category" value={newFile.category} onChange={changeNewFileCategory}/>
-            </div>
-        </div>
-        <div className="form-group py-2">
-            <label className="control-label">Tags</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="tags" value={newFile.tags} onChange={changeNewFileTags}/>
-            </div>
-        </div>
-        <div className="form-group py-2">
-          <label className="control-label">Extension</label>
-          <Select options={extensions} />
-        </div>
-        <div className="form-group">
-            <div style={{textAlign: "right"}}>
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </div>
-        </div>
-      </form>
+    <div className="col-md-4 full-min-height p-5">
+      <div className="bg-grey p-5">
+        <h1>Add Text File</h1>
+        <form onSubmit={submitNewFile}>
+          <div className="form-group py-2">
+              <label className="control-label">Title</label>
+              <div>
+                  <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
+              </div>
+          </div>
+          <div className="form-group py-2">
+              <label className="control-label">Content</label>
+              <div>
+                  <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
+              </div>
+          </div>
+          <div className="form-group py-2">
+              <label className="control-label">Parent Category</label>
+              <div>
+                  <input type="text" className="form-control input-lg" name="parentCategory" value={newFile.parentCategory} onChange={changeNewFileParentCategory}/>
+              </div>
+          </div>
+          <div className="form-group py-2">
+              <label className="control-label">Category</label>
+              <div>
+                  <input type="text" className="form-control input-lg" name="category" value={newFile.category} onChange={changeNewFileCategory}/>
+              </div>
+          </div>
+          <div className="form-group py-2">
+              <label className="control-label">Tags</label>
+              <div>
+                  <input type="text" className="form-control input-lg" name="tags" value={newFile.tags} onChange={changeNewFileTags}/>
+              </div>
+          </div>
+          <div className="form-group py-2">
+            <label className="control-label">Extension</label>
+            <Select options={extensions} />
+          </div>
+          <div className="form-group">
+              <div style={{textAlign: "right"}}>
+                  <button type="submit" className="btn btn-primary">Submit</button>
+              </div>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
