@@ -118,6 +118,19 @@ app.get("/api/categories/list", (req, res) => {
   });
 });
 
+app.post("/api/categories/insert", (req, res) => {
+  var category = req.body.category;
+  var parentCategory = req.body.parentCategory;
+  getCategoryId(parentCategory, function(result) {
+    insertNewCategory(category, result.data);
+  });
+});
+
+app.post("/api/tags/insert", (req, res) => {
+  var tag = req.body.tag;
+  insertNewTag(tag);
+});
+
 app.post("/api/files/insert", (req, res) => {
   var title = req.body.title;
   var content = req.body.content;
