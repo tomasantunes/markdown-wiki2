@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var mysql = require('mysql2');
+var fileUpload = require('express-fileupload');
 
 var app = express();
 
@@ -103,7 +105,7 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
   var con = connectDB();
   var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?);";
 
-  con.query(sql, [category_name], function(err, result) {
+  con.query(sql, [category_name, parentCategoryId], function(err, result) {
     cb({status: "OK", data: result.insertId});
   });
 }
@@ -113,8 +115,17 @@ app.get("/api/categories/list", (req, res) => {
 
   var sql = "SELECT * FROM categories;";
 
-  con.query(sql, [], function(err, result) {
-    res.json({status: "OK", data: result});
+  con.query(sql, function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no categories."});
+    }
   });
 });
 
@@ -122,7 +133,9 @@ app.post("/api/categories/insert", (req, res) => {
   var category = req.body.category;
   var parentCategory = req.body.parentCategory;
   getCategoryId(parentCategory, function(result) {
-    insertNewCategory(category, result.data);
+    insertNewCategory(category, result.data, function() {
+      res.json({status: "OK", data: "A new category has been inserted."})
+    });
   });
 });
 

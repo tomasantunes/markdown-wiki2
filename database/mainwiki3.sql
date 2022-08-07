@@ -1,3 +1,6 @@
+CREATE DATABASE mainwiki3;
+USE mainwiki3;
+
 CREATE TABLE files (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(2048) NOT NULL,
