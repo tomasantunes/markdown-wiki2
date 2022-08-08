@@ -9,6 +9,7 @@ import Home from './components/Home';
 import AddFile from './components/AddFile';
 import AddCategory from './components/AddCategory';
 import AddTag from './components/AddTag';
+import CategoryPage from './components/CategoryPage';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/add-file" element={<AddFile />} />
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/add-tag" element={<AddTag />} />
+        <Route path="/categories/:id" element={<CategoryPage />}/>
       </Routes>
     </BrowserRouter>
   );

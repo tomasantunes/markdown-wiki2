@@ -68,7 +68,7 @@ function assignCategoryToFile(file_id, category_id) {
   });
 };
 
-function getTagId(tag_name) {
+function getTagId(tag_name, cb) {
   var con = connectDB();
   var sql = "SELECT id FROM tags WHERE name = ?;";
 
@@ -141,7 +141,14 @@ app.post("/api/categories/insert", (req, res) => {
 
 app.post("/api/tags/insert", (req, res) => {
   var tag = req.body.tag;
-  insertNewTag(tag);
+  insertNewTag(tag, function(result) {
+    if (result.status == "OK") {
+      res.json({status: "OK", data: "A new tag was added successfully."});
+    }
+    else {
+      res.json({status: "NOK", error: "There was an error inserting the tag."});
+    }
+  });
 });
 
 app.post("/api/files/insert", (req, res) => {
@@ -188,6 +195,28 @@ app.post("/api/files/insert", (req, res) => {
         }
       });
       
+  });
+});
+
+app.get("/api/files/get-files-from-category", (req, res) => {
+  var category_id = req.query.id;
+
+  console.log(category_id);
+  var con = connectDB();
+  var sql = "SELECT f.* FROM files AS f INNER JOIN files_categories AS fc ON fc.file_id = f.id WHERE fc.category_id = ?";
+
+  con.query(sql, [category_id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files under this category."});
+    }
   });
 });
 

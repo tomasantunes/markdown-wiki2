@@ -53,6 +53,14 @@ export default function AddTextFile() {
     });
   }
 
+  function changeNewFileExtension(item) {
+    console.log(item.value);
+    setNewFile({
+      ...newFile,
+      "extension": item.value
+    });
+  }
+
   function submitNewFile(e) {
     e.preventDefault();
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
@@ -101,7 +109,7 @@ export default function AddTextFile() {
           </div>
           <div className="form-group py-2">
             <label className="control-label">Extension</label>
-            <Select options={extensions} />
+            <Select options={extensions} onChange={changeNewFileExtension} />
           </div>
           <div className="form-group">
               <div style={{textAlign: "right"}}>

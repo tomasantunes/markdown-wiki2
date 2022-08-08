@@ -15,6 +15,7 @@ const Menu = () => {
 
   function loadCategories() {
     setMenuItems(menuItemsInitialState);
+    console.log("x1");
     axios.get(config.BACKEND_URL + '/api/categories/list')
     .then(function (response) {
       console.log(response['data']);

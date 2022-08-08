@@ -134,3 +134,15 @@ header {
 .bg-grey {
   background-color: #ccc;
 }
+
+.files {
+  list-style-type: none;
+  padding: 0;
+}
+
+.files li {
+  background-color: #ccc;
+  padding: 25px;
+  border-radius: 25px;
+  margin-bottom: 25px;
+}
