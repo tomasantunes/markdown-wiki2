@@ -200,12 +200,36 @@ app.post("/api/files/insert", (req, res) => {
 
 app.get("/api/files/get-files-from-category", (req, res) => {
   var category_id = req.query.id;
+  var text_file_extensions = ["txt", "md", "csv", "json"]
 
   console.log(category_id);
   var con = connectDB();
-  var sql = "SELECT f.* FROM files AS f INNER JOIN files_categories AS fc ON fc.file_id = f.id WHERE fc.category_id = ?";
+  var sql = "SELECT f.* FROM files AS f INNER JOIN files_categories AS fc ON fc.file_id = f.id WHERE fc.category_id = ? AND f.extension IN (?)";
 
-  con.query(sql, [category_id], function(err, result) {
+  con.query(sql, [category_id, text_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files under this category."});
+    }
+  });
+});
+
+app.get("/api/files/get-image-files-from-category", (req, res) => {
+  var category_id = req.query.id;
+  var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png']
+
+  console.log(category_id);
+  var con = connectDB();
+  var sql = "SELECT f.* FROM files AS f INNER JOIN files_categories AS fc ON fc.file_id = f.id WHERE fc.category_id = ? AND f.extension IN (?)";
+
+  con.query(sql, [category_id, image_file_extensions], function(err, result) {
     if (err) {
       console.log(err.message);
       res.json({status: "NOK", error: err.message});
@@ -222,9 +246,66 @@ app.get("/api/files/get-files-from-category", (req, res) => {
 
 app.post('/api/upload-media-file', function(req, res) {
   if (!req.files) {
-    console.log("No file has been detected.")
+    console.log("No file has been detected.");
+    res.json({status: "NOK", error: "No file has been detected."});
+    return;
   }
   console.log(req.files);
+  var parentCategory = req.body.parentCategory;
+  var category = req.body.category;
+  var tags = req.body.tags;
+  const file = req.files.file;
+  const filepath = __dirname + "/media-files/" + file.name;
+
+  file.mv(filepath, (err) => {
+    if (err) {
+      return res.json({status: "NOK", error: err.message});
+    }
+
+    var con = connectDB();
+    var sql = "INSERT INTO files (title, path, extension) VALUES (?, ?, ?)";
+
+    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath, path.extname(file.name).replace(".", "")], function(err, result) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+
+      var file_id = result.insertId;
+      getCategoryId(category, function(result) {
+        if (result.status == "OK") {
+          assignCategoryToFile(file_id, result.data);
+        }
+        else {
+          getGategoryId(parentCategory, function(result) {
+            var parentCategoryId = result.data;
+            insertNewCategory(category, parentCategoryId, function(result) {
+              assignCategoryToFile(file_id, result.data);
+            });
+          });
+        }
+        var tags_arr = tags.split(",");
+        for (var i in tags_arr) {
+          getTagId(tags_arr[i], function(result) {
+            if (result.status == "OK") {
+              assignTagToFile(file_id, result.data);
+            }
+            else {
+              insertNewTag(tags_arr[i], function(result) {
+                assignTagToFile(file_id, result.data);
+              });
+            }
+            res.json({status: "OK", data: "A file has been inserted successfully."});
+          });
+        }
+      });
+    });
+  });
+});
+
+app.get("/api/images/get/:filename", (req, res) => {
+  var filename = req.params.filename;
+  res.sendFile(__dirname + "/media-files/" + filename);
 });
 
 // catch 404 and forward to error handler

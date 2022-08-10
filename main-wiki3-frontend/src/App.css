@@ -146,3 +146,19 @@ header {
   border-radius: 25px;
   margin-bottom: 25px;
 }
+
+.image-files {
+  list-style-type: none;
+  padding: 0;
+}
+
+.image-files li {
+  background-color: #ccc;
+  padding: 25px;
+  border-radius: 25px;
+  margin-bottom: 25px;
+}
+
+.image-files li img {
+  max-width: 100%;
+}

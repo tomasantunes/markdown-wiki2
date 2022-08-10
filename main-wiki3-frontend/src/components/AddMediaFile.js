@@ -32,7 +32,7 @@ export default function AddMediaFile() {
     });
   }
 
-  function changeAddMediaFileFile(file) {
+  function changeAddMediaFileFile({file}) {
     setAddMediaFile({
       ...addMediaFile,
       "file": file
@@ -40,7 +40,8 @@ export default function AddMediaFile() {
   }
 
 
-  const submitNewFile = () => {
+  const submitNewFile = (e) => {
+    e.preventDefault();
     const formData = new FormData();
     formData.append("file", addMediaFile.file);
     formData.append("category", addMediaFile.category);
@@ -49,8 +50,15 @@ export default function AddMediaFile() {
   
     axios
       .post(config.BACKEND_URL + "/api/upload-media-file", formData)
-      .then((res) => {
-        alert("File Upload success");
+      .then((response) => {
+        if (response.data.status == "OK") {
+          console.log(response.data.data);
+          alert("File has been uploaded successfully.");
+        }
+        else {
+          console.log(response.data.error);
+          alert(response.data.error);
+        }
       })
       .catch((err) => alert("File Upload Error"));
   };

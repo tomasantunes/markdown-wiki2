@@ -7,7 +7,8 @@ export default function AddTextFile() {
   const extensions = [
     {value: "md", label: "Markdown - MD"},
     {value: "txt", label: "Text - TXT"},
-    {value: "csv", label: "Comma Separated Values - CSV"}
+    {value: "csv", label: "Comma Separated Values - CSV"},
+    {value: "json", label: "JavaScript Object Notation - JSON"}
   ];
   const [newFile, setNewFile] = useState({
     "title": "",
