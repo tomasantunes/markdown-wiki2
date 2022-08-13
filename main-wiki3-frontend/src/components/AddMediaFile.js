@@ -52,7 +52,6 @@ export default function AddMediaFile() {
       .post(config.BACKEND_URL + "/api/upload-media-file", formData)
       .then((response) => {
         if (response.data.status == "OK") {
-          console.log(response.data.data);
           alert("File has been uploaded successfully.");
         }
         else {

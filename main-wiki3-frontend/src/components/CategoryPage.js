@@ -11,8 +11,6 @@ export default function CategoryPage() {
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
 
-  console.log(id);
-
   function loadFiles() {
     axios.get(config.BACKEND_URL + "/api/files/get-files-from-category", {
       params: {
@@ -22,7 +20,6 @@ export default function CategoryPage() {
     .then(function(response) {
       if (response['data'].status == "OK") {
         setFiles(response['data']['data']);
-        console.log(response['data']);
       }
       else {
         console.log(response['data'].error);
@@ -42,7 +39,6 @@ export default function CategoryPage() {
     .then(function(response) {
       if (response['data'].status == "OK") {
         setImageFiles(response['data']['data']);
-        console.log(response['data']);
       }
       else {
         console.log(response['data'].error);

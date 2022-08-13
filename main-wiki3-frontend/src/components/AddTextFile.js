@@ -20,6 +20,7 @@ export default function AddTextFile() {
   });
 
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
 
   function changeNewFileTitle(e) {
     setNewFile({
@@ -49,15 +50,19 @@ export default function AddTextFile() {
     });
   }
 
-  function changeNewFileTags(e) {
+  function changeNewFileTags(item) {
+    var tags_temp = [];
+    for (var i in item) {
+      var tag = item[i];
+      tags_temp.push(tag.label);
+    }
     setNewFile({
       ...newFile,
-      "tags": e.target.value
+      "tags": tags.join(",")
     });
   }
 
   function changeNewFileExtension(item) {
-    console.log(item.value);
     setNewFile({
       ...newFile,
       "extension": item.value
@@ -68,7 +73,7 @@ export default function AddTextFile() {
     e.preventDefault();
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
-      console.log(response['data']);
+      alert("A new file has been inserted.");
     })
     .catch(function (error) {
       console.log(error);
@@ -93,8 +98,27 @@ export default function AddTextFile() {
     }); 
   }
 
+  function loadTags() {
+    setTags([]);
+    axios.get(config.BACKEND_URL + "/api/tags/list")
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var tags_temp = [];
+        for (var i in response.data.data) {
+          var tag = response.data.data[i];
+          tags_temp.push({value: tag.id, label: tag.name});
+        }
+        setTags(tags_temp);
+      }
+    })
+    .catch(function(err) {
+      alert(err.message);
+    }); 
+  }
+
   useEffect(() => {
     loadCategories();
+    loadTags();
   }, []);
 
   return (
@@ -129,7 +153,7 @@ export default function AddTextFile() {
           <div className="form-group py-2">
               <label className="control-label">Tags</label>
               <div>
-                  <input type="text" className="form-control input-lg" name="tags" value={newFile.tags} onChange={changeNewFileTags}/>
+                <Select isMulti options={tags} onChange={changeNewFileTags} />
               </div>
           </div>
           <div className="form-group py-2">

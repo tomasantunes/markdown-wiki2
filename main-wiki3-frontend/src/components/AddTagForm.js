@@ -18,7 +18,7 @@ export default function AddTagForm() {
       e.preventDefault();
       axios.post(config.BACKEND_URL + '/api/tags/insert', newTag)
       .then(function (response) {
-        console.log(response['data']);
+        alert("A new tag has been inserted successfully.")
       })
       .catch(function (error) {
         console.log(error);

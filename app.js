@@ -151,6 +151,25 @@ app.post("/api/tags/insert", (req, res) => {
   });
 });
 
+app.get("/api/tags/list", (req, res) => {
+  var con = connectDB();
+
+  var sql = "SELECT * FROM tags;";
+
+  con.query(sql, [], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no categories."});
+    }
+  });
+});
+
 app.post("/api/files/insert", (req, res) => {
   var title = req.body.title;
   var content = req.body.content;

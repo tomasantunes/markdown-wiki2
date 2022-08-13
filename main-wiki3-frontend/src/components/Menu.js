@@ -15,14 +15,11 @@ const Menu = () => {
 
   function loadCategories() {
     setMenuItems(menuItemsInitialState);
-    console.log("x1");
     axios.get(config.BACKEND_URL + '/api/categories/list')
     .then(function (response) {
-      console.log(response['data']);
       var categories = response['data']['data'];
       for (var i in categories) {
         var menuItem = categories[i];
-        console.log(menuItem);
         if (menuItem.parent_id == 1) {
           var obj = {title: menuItem.name, link: "/categories/" + menuItem.id, id: menuItem.id};
           for (var j in categories) {
