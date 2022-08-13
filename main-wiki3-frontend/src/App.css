@@ -173,3 +173,8 @@ ul {
   padding: 0;
   border: none;
 }
+
+.brand {
+  padding-top: 15px;
+  padding-left: 15px;
+}
