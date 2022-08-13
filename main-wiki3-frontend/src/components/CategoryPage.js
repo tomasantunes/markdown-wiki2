@@ -12,6 +12,7 @@ export default function CategoryPage() {
   const [imageFiles, setImageFiles] = useState([]);
 
   function loadFiles() {
+    setFiles([]);
     axios.get(config.BACKEND_URL + "/api/files/get-files-from-category", {
       params: {
         id: id
@@ -31,6 +32,7 @@ export default function CategoryPage() {
   }
 
   function loadImageFiles() {
+    setImageFiles([]);
     axios.get(config.BACKEND_URL + "/api/files/get-image-files-from-category", {
       params: {
         id: id
@@ -48,6 +50,11 @@ export default function CategoryPage() {
       console.log(err);
     });
   }
+
+  useEffect(() => {
+    loadImageFiles();
+    loadFiles();
+  }, [id]); 
 
   useEffect(() =>{
     loadImageFiles();

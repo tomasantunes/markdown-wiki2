@@ -18,6 +18,7 @@ const Menu = () => {
     axios.get(config.BACKEND_URL + '/api/categories/list')
     .then(function (response) {
       var categories = response['data']['data'];
+      var categories_to_add = [];
       for (var i in categories) {
         var menuItem = categories[i];
         if (menuItem.parent_id == 1) {
@@ -42,11 +43,12 @@ const Menu = () => {
               }
             }
           }
-          setMenuItems(
-            menuItems => [...menuItems, obj]
-          );
+          categories_to_add.push(obj);
         }
       }
+      setMenuItems(
+        menuItems => [...menuItems, ...categories_to_add]
+      );
     })
     .catch(function (error) {
       console.log(error);
