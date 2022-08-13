@@ -88,8 +88,8 @@ def addImageFile(file, category_id):
     shutil.copy(os.getcwd() + "/" + file, os.getcwd() + "/media-files")
     filename = os.path.basename(file)
     title = os.path.splitext(filename)[0]
-    extension = os.path.splitext(filename)[1]
-    filepath = os.getcwd() + "/media-files/" + file
+    extension = os.path.splitext(filename)[1].replace(".", "")
+    filepath = "media-files/" + filename
     sql = "INSERT INTO files (title, path, extension) VALUES (%s, %s, %s)"
     val = (title, filepath, extension)
     mycursor.execute(sql, val)
@@ -103,8 +103,8 @@ def addPDFFile(file, category_id):
     shutil.copy(os.getcwd() + "/" + file, os.getcwd() + "/media-files")
     filename = os.path.basename(file)
     title = os.path.splitext(filename)[0]
-    extension = os.path.splitext(filename)[1]
-    filepath = os.getcwd() + "/media-files/" + file
+    extension = os.path.splitext(filename)[1].replace(".", "")
+    filepath = "media-files/" + file
     sql = "INSERT INTO files (title, path, extension) VALUES (%s, %s, %s)"
     val = (title, filepath, extension)
     mycursor.execute(sql, val)

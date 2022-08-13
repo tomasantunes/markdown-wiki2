@@ -242,7 +242,7 @@ app.get("/api/files/get-files-from-category", (req, res) => {
 
 app.get("/api/files/get-image-files-from-category", (req, res) => {
   var category_id = req.query.id;
-  var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png']
+  var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png', 'jfif', 'webp']
 
   console.log(category_id);
   var con = connectDB();
@@ -275,6 +275,7 @@ app.post('/api/upload-media-file', function(req, res) {
   var tags = req.body.tags;
   const file = req.files.file;
   const filepath = __dirname + "/media-files/" + file.name;
+  const filepath2 = "media-files/" + file.name;
 
   file.mv(filepath, (err) => {
     if (err) {
@@ -284,7 +285,7 @@ app.post('/api/upload-media-file', function(req, res) {
     var con = connectDB();
     var sql = "INSERT INTO files (title, path, extension) VALUES (?, ?, ?)";
 
-    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath, path.extname(file.name).replace(".", "")], function(err, result) {
+    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath2, path.extname(file.name).replace(".", "")], function(err, result) {
       if (err) {
         console.log(err);
         return;
