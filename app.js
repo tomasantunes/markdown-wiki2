@@ -115,7 +115,7 @@ app.get("/api/categories/list", (req, res) => {
 
   var sql = "SELECT * FROM categories;";
 
-  con.query(sql, function(err, result) {
+  con.query(sql, [], function(err, result) {
     if (err) {
       console.log(err.message);
       res.json({status: "NOK", error: err.message});

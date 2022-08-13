@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import Select from 'react-select'
@@ -18,6 +18,8 @@ export default function AddTextFile() {
     "category": "",
     "tags": ""
   });
+
+  const [categories, setCategories] = useState([]);
 
   function changeNewFileTitle(e) {
     setNewFile({
@@ -40,10 +42,10 @@ export default function AddTextFile() {
     });
   }
 
-  function changeNewFileCategory(e) {
+  function changeNewFileCategory(item) {
     setNewFile({
       ...newFile,
-      "category": e.target.value
+      "category": item.label
     });
   }
 
@@ -73,6 +75,28 @@ export default function AddTextFile() {
     });
   }
 
+  function loadCategories() {
+    setCategories([]);
+    axios.get(config.BACKEND_URL + "/api/categories/list")
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var categories_temp = [];
+        for (var i in response.data.data) {
+          var category = response.data.data[i];
+          categories_temp.push({value: category.id, label: category.name});
+        }
+        setCategories(categories_temp);
+      }
+    })
+    .catch(function(err) {
+      alert(err.message);
+    }); 
+  }
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
   return (
     <div className="col-md-4 full-min-height p-5">
       <div className="bg-grey p-5">
@@ -99,7 +123,7 @@ export default function AddTextFile() {
           <div className="form-group py-2">
               <label className="control-label">Category</label>
               <div>
-                  <input type="text" className="form-control input-lg" name="category" value={newFile.category} onChange={changeNewFileCategory}/>
+                  <Select options={categories} onChange={changeNewFileCategory} />
               </div>
           </div>
           <div className="form-group py-2">
