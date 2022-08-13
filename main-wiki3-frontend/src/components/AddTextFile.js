@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
-import Select from 'react-select'
+import Select from 'react-select';
 
 export default function AddTextFile() {
   const extensions = [
@@ -36,10 +36,10 @@ export default function AddTextFile() {
     });
   }
 
-  function changeNewFileParentCategory(e) {
+  function changeNewFileParentCategory(item) {
     setNewFile({
       ...newFile,
-      "parentCategory": e.target.value
+      "parentCategory": item.label
     });
   }
 
@@ -50,10 +50,10 @@ export default function AddTextFile() {
     });
   }
 
-  function changeNewFileTags(item) {
+  function changeNewFileTags(items) {
     var tags_temp = [];
-    for (var i in item) {
-      var tag = item[i];
+    for (var i in items) {
+      var tag = items[i];
       tags_temp.push(tag.label);
     }
     setNewFile({
@@ -141,7 +141,7 @@ export default function AddTextFile() {
           <div className="form-group py-2">
               <label className="control-label">Parent Category</label>
               <div>
-                  <input type="text" className="form-control input-lg" name="parentCategory" value={newFile.parentCategory} onChange={changeNewFileParentCategory}/>
+              <Select options={categories} onChange={changeNewFileParentCategory} />
               </div>
           </div>
           <div className="form-group py-2">

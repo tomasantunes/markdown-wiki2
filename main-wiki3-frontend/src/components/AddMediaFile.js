@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import FileUploader from './FileUploader';
+import Select from 'react-select';
 
 export default function AddMediaFile() {
   const [addMediaFile, setAddMediaFile] = useState({
@@ -11,24 +12,32 @@ export default function AddMediaFile() {
     tags: ""
   });
 
-  function changeAddMediaFileParentCategory(e) {
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  function changeAddMediaFileParentCategory(item) {
     setAddMediaFile({
       ...addMediaFile,
-      "parentCategory": e.target.value
+      "parentCategory": item.label
     });
   }
 
-  function changeAddMediaFileCategory(e) {
+  function changeAddMediaFileCategory(item) {
     setAddMediaFile({
       ...addMediaFile,
-      "category": e.target.value
+      "category": item.label
     });
   }
 
-  function changeAddMediaFileTags(e) {
+  function changeAddMediaFileTags(items) {
+    var tags_temp = [];
+    for (var i in items) {
+      var tag = items[i];
+      tags_temp.push(tag.label);
+    }
     setAddMediaFile({
       ...addMediaFile,
-      "tags": e.target.value
+      "tags": tags.join(",")
     });
   }
 
@@ -61,6 +70,48 @@ export default function AddMediaFile() {
       })
       .catch((err) => alert("File Upload Error"));
   };
+
+  function loadCategories() {
+    setCategories([]);
+    axios.get(config.BACKEND_URL + "/api/categories/list")
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var categories_temp = [];
+        for (var i in response.data.data) {
+          var category = response.data.data[i];
+          categories_temp.push({value: category.id, label: category.name});
+        }
+        setCategories(categories_temp);
+      }
+    })
+    .catch(function(err) {
+      alert(err.message);
+    }); 
+  }
+
+  function loadTags() {
+    setTags([]);
+    axios.get(config.BACKEND_URL + "/api/tags/list")
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var tags_temp = [];
+        for (var i in response.data.data) {
+          var tag = response.data.data[i];
+          tags_temp.push({value: tag.id, label: tag.name});
+        }
+        setTags(tags_temp);
+      }
+    })
+    .catch(function(err) {
+      alert(err.message);
+    }); 
+  }
+
+  useEffect(() => {
+    loadCategories();
+    loadTags();
+  }, []);
+
   return (
     <div className="col-md-4 full-min-height p-5">
       <div className="bg-grey p-5">
@@ -70,23 +121,23 @@ export default function AddMediaFile() {
               <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => alert(error)} />
           </div>
           <div className="form-group py-2">
-            <label className="control-label">Parent Category</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="parentCategory" value={addMediaFile.parentCategory} onChange={changeAddMediaFileParentCategory}/>
-            </div>
-        </div>
-        <div className="form-group py-2">
-            <label className="control-label">Category</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="category" value={addMediaFile.category} onChange={changeAddMediaFileCategory}/>
-            </div>
-        </div>
-        <div className="form-group py-2">
-            <label className="control-label">Tags</label>
-            <div>
-                <input type="text" className="form-control input-lg" name="tags" value={addMediaFile.tags} onChange={changeAddMediaFileTags}/>
-            </div>
-        </div>
+              <label className="control-label">Parent Category</label>
+              <div>
+              <Select options={categories} onChange={changeAddMediaFileParentCategory} />
+              </div>
+          </div>
+          <div className="form-group py-2">
+              <label className="control-label">Category</label>
+              <div>
+                  <Select options={categories} onChange={changeAddMediaFileCategory} />
+              </div>
+          </div>
+          <div className="form-group py-2">
+              <label className="control-label">Tags</label>
+              <div>
+                <Select isMulti options={tags} onChange={changeAddMediaFileTags} />
+              </div>
+          </div>
           <div className="form-group">
               <div style={{textAlign: "right"}}>
                   <button type="submit" className="btn btn-primary">Submit</button>
