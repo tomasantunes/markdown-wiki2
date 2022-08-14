@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cors = require('cors');
 var mysql = require('mysql2');
 var fileUpload = require('express-fileupload');
+var secretConfig = require('./secret-config.json');
 
 var app = express();
 
@@ -17,7 +18,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('main-wiki3-frontend/build'));
 app.use(cors());
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
@@ -27,7 +28,7 @@ function connectDB() {
   var con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: secretConfig.DB_PASSWORD,
     database: 'mainwiki3',
   });
   con.connect(function(err) {
@@ -378,9 +379,11 @@ app.post("/api/files/edit", (req, res) => {
           });
         }
       });
-    })
+    });
+    console.log("x1");
     var tags_arr = tags.split(",");
-    var len = tags_arr.length;
+    console.log(tags_arr);
+    console.log("x2");
     deleteTagsFromFile(id, function(result) {
       for (var i in tags_arr) {
         getTagId(tags_arr[i], function(result) {
@@ -478,11 +481,9 @@ app.get('/add-tag', (req,res) => {
   res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
 });
 
-app.get('/category/*', (req,res) => {
+app.get('/category/:id', (req,res) => {
   res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
 });
-
-app.use(express.static('main-wiki3-frontend/build'))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
