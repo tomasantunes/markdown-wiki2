@@ -18,7 +18,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static('main-wiki3-frontend/build'));
 app.use(cors());
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
@@ -465,23 +464,9 @@ app.get("/api/images/get/:filename", (req, res) => {
   res.sendFile(__dirname + "/media-files/" + filename);
 });
 
-app.get('/', (req,res) => {
-  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
-});
+app.use(express.static('main-wiki3-frontend/build'));
 
-app.get('/add-file', (req,res) => {
-  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
-});
-
-app.get('/add-category', (req,res) => {
-  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
-});
-
-app.get('/add-tag', (req,res) => {
-  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
-});
-
-app.get('/category/:id', (req,res) => {
+app.get('/*', (req,res) => {
   res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
 });
 
