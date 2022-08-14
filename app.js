@@ -40,10 +40,6 @@ function connectDB() {
   return con;
 }
 
-app.get("/", (req, res) => {
-  res.send("Welcome to MainWiki 3");
-});
-
 function getCategoryId(category_name, cb) {
   var con = connectDB();
   var sql = "SELECT id FROM categories WHERE name = ?;";
@@ -465,6 +461,28 @@ app.get("/api/images/get/:filename", (req, res) => {
   var filename = req.params.filename;
   res.sendFile(__dirname + "/media-files/" + filename);
 });
+
+app.get('/', (req,res) => {
+  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+});
+
+app.get('/add-file', (req,res) => {
+  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+});
+
+app.get('/add-category', (req,res) => {
+  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+});
+
+app.get('/add-tag', (req,res) => {
+  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+});
+
+app.get('/category/*', (req,res) => {
+  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+});
+
+app.use(express.static('main-wiki3-frontend/build'))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
