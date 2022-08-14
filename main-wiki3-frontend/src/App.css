@@ -56,6 +56,7 @@ header {
   min-height: 100%;
   padding: 0;
   color: white;
+  padding-bottom: 100vh;
 }
 
 .menus {

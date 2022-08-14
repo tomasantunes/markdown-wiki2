@@ -14,7 +14,6 @@ export default function AddTextFile() {
     "title": "",
     "content": "",
     "extension": "",
-    "parentCategory": "",
     "category": "",
     "tags": ""
   });
@@ -36,13 +35,6 @@ export default function AddTextFile() {
     });
   }
 
-  function changeNewFileParentCategory(item) {
-    setNewFile({
-      ...newFile,
-      "parentCategory": item.label
-    });
-  }
-
   function changeNewFileCategory(item) {
     setNewFile({
       ...newFile,
@@ -58,7 +50,7 @@ export default function AddTextFile() {
     }
     setNewFile({
       ...newFile,
-      "tags": tags.join(",")
+      "tags": tags_temp.join(",")
     });
   }
 
@@ -71,6 +63,7 @@ export default function AddTextFile() {
 
   function submitNewFile(e) {
     e.preventDefault();
+    console.log(newFile.tags);
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
       alert("A new file has been inserted.");
@@ -136,12 +129,6 @@ export default function AddTextFile() {
               <label className="control-label">Content</label>
               <div>
                   <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Parent Category</label>
-              <div>
-              <Select options={categories} onChange={changeNewFileParentCategory} />
               </div>
           </div>
           <div className="form-group py-2">

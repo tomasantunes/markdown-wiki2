@@ -174,46 +174,43 @@ app.post("/api/files/insert", (req, res) => {
   var title = req.body.title;
   var content = req.body.content;
   var extension = req.body.extension;
-  var parentCategory = req.body.parentCategory;
   var category = req.body.category;
   var tags = req.body.tags;
-
+  console.log(tags);
   var con = connectDB();
   var sql = "INSERT INTO files (title, content, extension) VALUES (?, ?, ?);";
   con.query(sql, [title, content, extension], function(err, result) {
-      if (err) {
-          console.log(err);
-          return;
-      }
-      var file_id = result.insertId;
-      getCategoryId(category, function(result) {
-        if (result.status == "OK") {
-          assignCategoryToFile(file_id, result.data);
-        }
-        else {
-          getGategoryId(parentCategory, function(result) {
-            var parentCategoryId = result.data;
-            insertNewCategory(category, parentCategoryId, function(result) {
-              assignCategoryToFile(file_id, result.data);
-            });
-          });
-        }
-        var tags_arr = tags.split(",");
-        for (var i in tags_arr) {
-          getTagId(tags_arr[i], function(result) {
-            if (result.status == "OK") {
-              assignTagToFile(file_id, result.data);
-            }
-            else {
-              insertNewTag(tags_arr[i], function(result) {
+    if (err) {
+        console.log(err);
+        return;
+    }
+    var file_id = result.insertId;
+    getCategoryId(category, function(result) {
+      if (result.status == "OK") {
+        assignCategoryToFile(file_id, result.data);
+        if (tags != "") {
+          var tags_arr = tags.split(",");
+          var len = tags_arr.length;
+          for (var i in tags_arr) {
+            getTagId(tags_arr[i], function(result) {
+              if (result.status == "OK") {
                 assignTagToFile(file_id, result.data);
-              });
-            }
-            res.json({status: "OK", data: "A file has been inserted successfully."});
-          });
+              }
+              else {
+                console.log("x2");
+                res.json({status: "NOK", error: "Tag not found."});
+                return;
+              }
+            });
+          }
         }
-      });
-      
+        res.json({status: "OK", data: "A file has been inserted successfully."});
+      }
+      else {
+        res.json({status: "NOK", error: "Category not found."});
+        return;
+      }
+    });
   });
 });
 
@@ -260,6 +257,131 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no files under this category."});
     }
+  });
+});
+
+app.get("/api/files/getone", (req, res) => {
+  var file_id = req.query.id;
+
+  var con = connectDB();
+  var sql = "SELECT f.*, fc.category_id, c.parent_id, c.name AS category_name FROM files As f INNER JOIN files_categories AS fc ON fc.file_id = f.id INNER JOIN categories AS c ON c.id = fc.category_id WHERE f.id = ?;";
+
+  con.query(sql, [file_id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      var sql2 = "SELECT t.id, t.name FROM tags AS t INNER JOIN files_tags AS ft ON t.id = ft.tag_id WHERE ft.file_id = ?;";
+      con.query(sql2, [file_id], function(err2, result2) {
+        if (err2) {
+          console.log(err2.message);
+          res.json({status: "NOK", error: err2.message});
+        }
+        var file = result[0];
+        console.log(result2);
+        if (result2.length > 0) {
+          var tags = [];
+          for (var i in result2) {
+            tags.push(result2[i]['name'])
+          }
+          file['tags'] = tags.join(",")
+        }
+        else {
+          console.log("No tags have been found.");
+        }
+        res.json({status: "OK", data: file});
+      }); 
+    }
+    else {
+      res.json({status: "NOK", error: "File not found."});
+    }
+  });
+});
+
+function checkCategory(file_id, category_id, cb) {
+  var con = connectDB();
+  var sql = "SELECT * FROM files_categories WHERE file_id = ? AND category_id = ?;";
+  con.query(sql, [file_id, category_id], function(err, result) {
+    if (result.length > 0) {
+      cb(true);
+    }
+    else {
+      cb(false);
+    }
+  })
+}
+
+function checkTag(file_id, tag_id, cb) {
+  var con = connectDB();
+  var sql = "SELECT * FROM files_tags WHERE file_id = ? AND tag_id = ?;";
+  con.query(sql, [file_id, tag_id], function(err, result) {
+    if (result.length > 0) {
+      cb(true);
+    }
+    else {
+      cb(false);
+    }
+  })
+}
+
+function deleteCategoryFromFile(file_id, cb) {
+  var con = connectDB();
+  var sql = "DELETE FROM files_categories WHERE file_id = ?;";
+  con.query(sql, [file_id], function(err, result) {
+    cb(true);
+  });
+}
+
+function deleteTagsFromFile(file_id, cb) {
+  var con = connectDB();
+  var sql = "DELETE FROM files_tags WHERE file_id = ?;";
+  con.query(sql, [file_id], function(err, result) {
+    cb(true);
+  });
+}
+
+app.post("/api/files/edit", (req, res) => {
+  var id = req.body.id;
+  var title = req.body.title;
+  var content = req.body.content;
+  var category = req.body.category;
+  var tags = req.body.tags;
+  var extension = req.body.extension;
+
+  var con = connectDB();
+  var sql = "UPDATE files SET title = ?, content = ?, extension = ? WHERE id = ?;";
+  con.query(sql, [title, content, extension, id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    getCategoryId(category, function(result) {
+      var category_id = result.data;
+      checkCategory(id, category_id, function(exists) {
+        if (!exists) {
+          deleteCategoryFromFile(id, function(result) {
+            assignCategoryToFile(id, category_id);
+          });
+        }
+      });
+    })
+    var tags_arr = tags.split(",");
+    var len = tags_arr.length;
+    deleteTagsFromFile(id, function(result) {
+      for (var i in tags_arr) {
+        getTagId(tags_arr[i], function(result) {
+          if (result.status == "OK") {
+            assignTagToFile(id, result.data);
+          }
+          else {
+            res.json({status: "NOK", error: "Tag not found."});
+          }
+        });
+      }
+      res.json({status: "OK", data: "File has been edited successfully."});
+    });
   });
 });
 
