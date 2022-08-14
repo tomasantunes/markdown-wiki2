@@ -46,15 +46,17 @@ export default function CategoryPage() {
         return e.value === response.data.data.extension
       });
       setSelectedExtension(extension);
-      var tags_sel = [];
-      var tags_arr = response.data.data.tags.split(",");
-      for (var i in tags_arr) {
-        var tag = tags.filter(t => {
-          return t.label === tags_arr[i];
-        })[0];
-        tags_sel.push(tag);
+      if (response.data.data.hasOwnProperty("tags")) {
+        var tags_sel = [];
+        var tags_arr = response.data.data.tags.split(",");
+        for (var i in tags_arr) {
+          var tag = tags.filter(t => {
+            return t.label === tags_arr[i];
+          })[0];
+          tags_sel.push(tag);
+        }
+        setSelectedTags(tags_sel);
       }
-      setSelectedTags(tags_sel);
       setEditFile({
         id: response.data.data.id,
         title: response.data.data.title,
