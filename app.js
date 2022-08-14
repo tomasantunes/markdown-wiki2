@@ -300,6 +300,22 @@ app.get("/api/files/getone", (req, res) => {
   });
 });
 
+app.post("/api/files/delete", (req, res) => {
+  var id = req.body.id;
+
+  var con = connectDB();
+  var sql = "DELETE FROM files WHERE id = ?;";
+  con.query(sql, [id], function(err, result) {
+    var sql2 = "DELETE FROM files_categories WHERE file_id = ?;";
+    con.query(sql2, [id], function(err2, result2) {
+      var sql3 = "DELETE FROM files_tags WHERE file_id = ?;";
+      con.query(sql3, [id], function(err3, result3) {
+        res.json({status: "OK", data: "File has been deleted successfully."});
+      }) 
+    });
+  });
+});
+
 function checkCategory(file_id, category_id, cb) {
   var con = connectDB();
   var sql = "SELECT * FROM files_categories WHERE file_id = ? AND category_id = ?;";

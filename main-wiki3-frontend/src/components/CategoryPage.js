@@ -69,10 +69,22 @@ export default function CategoryPage() {
     })
   }
 
+  function deleteFile(e) {
+    axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
+    .then(function(response) {
+      loadFiles();
+      alert("File has been deleted.")
+    })
+    .catch(function(err) {
+      alert(err.message);
+    });
+  }
+
   function submitEditFile(e) {
     e.preventDefault();
     axios.post(config.BACKEND_URL + '/api/files/edit', editFile)
     .then(function (response) {
+      loadFiles();
       alert("File has been edited sucessfully.");
     })
     .catch(function (error) {
@@ -229,6 +241,7 @@ export default function CategoryPage() {
                   </div>
                   <div className="col-md-2 text-end">
                     <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile} data-bs-toggle="modal" data-bs-target=".editFileModal">Edit</button>
+                    <button class="btn btn-danger delete-btn" value={file['id']} onClick={deleteFile}>Delete</button>
                   </div>
                 </div>
                 {file['extension'] == "md" &&
