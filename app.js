@@ -379,23 +379,29 @@ app.post("/api/files/edit", (req, res) => {
         }
       });
     });
-    console.log("x1");
-    var tags_arr = tags.split(",");
-    console.log(tags_arr);
-    console.log("x2");
-    deleteTagsFromFile(id, function(result) {
-      for (var i in tags_arr) {
-        getTagId(tags_arr[i], function(result) {
-          if (result.status == "OK") {
-            assignTagToFile(id, result.data);
-          }
-          else {
-            res.json({status: "NOK", error: "Tag not found."});
-          }
-        });
-      }
-      res.json({status: "OK", data: "File has been edited successfully."});
-    });
+    if (tags == undefined || tags == "") {
+      deleteTagsFromFile(id, function(result) {
+        console.log("Tags have been deleted.")
+      });
+    }
+    else {
+      var tags_arr = tags.split(",");
+      console.log(tags_arr);
+      console.log("x2");
+      deleteTagsFromFile(id, function(result) {
+        for (var i in tags_arr) {
+          getTagId(tags_arr[i], function(result) {
+            if (result.status == "OK") {
+              assignTagToFile(id, result.data);
+            }
+            else {
+              res.json({status: "NOK", error: "Tag not found."});
+            }
+          });
+        }
+      });
+    }
+    res.json({status: "OK", data: "File has been edited successfully."});
   });
 });
 
