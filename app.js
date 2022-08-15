@@ -429,8 +429,7 @@ app.post('/api/upload-media-file', function(req, res) {
     return;
   }
   console.log(req.files);
-  var parentCategory = req.body.parentCategory;
-  var category = req.body.category;
+  var category_id = req.body.category;
   var tags = req.body.tags;
   const file = req.files.file;
   const filepath = __dirname + "/media-files/" + file.name;
@@ -451,47 +450,28 @@ app.post('/api/upload-media-file', function(req, res) {
       }
 
       var file_id = result.insertId;
-      getCategoryId(category, function(result) {
+
+      assignCategoryToFile(file_id, category_id, function(result) {
         if (result.status == "OK") {
-          assignCategoryToFile(file_id, result.data, function(result) {
-            if (result.status == "OK") {
-              console.log(result.data);
-            }
-            else {
-              console.log(result.error);
-            }
-          });
+          console.log(result.data);
         }
         else {
-          getGategoryId(parentCategory, function(result) {
-            var parentCategoryId = result.data;
-            insertNewCategory(category, parentCategoryId, function(result) {
-              assignCategoryToFile(file_id, result.data, function(result) {
-                if (result.status == "OK") {
-                  console.log(result.data);
-                }
-                else {
-                  res.json({status: "NOK", error: result.error})
-                }
-              });
-            });
-          });
-        }
-        var tags_arr = tags.split(",");
-        for (var i in tags_arr) {
-          getTagId(tags_arr[i], function(result) {
-            if (result.status == "OK") {
-              assignTagToFile(file_id, result.data);
-            }
-            else {
-              insertNewTag(tags_arr[i], function(result) {
-                assignTagToFile(file_id, result.data);
-              });
-            }
-            res.json({status: "OK", data: "A file has been inserted successfully."});
-          });
+          console.log(result.error);
         }
       });
+
+      var tags_arr = tags.split(",");
+      for (var i in tags_arr) {
+        getTagId(tags_arr[i], function(result) {
+          if (result.status == "OK") {
+            assignTagToFile(file_id, result.data);
+          }
+          else {
+            console.log("Tag not found.");
+          }
+          res.json({status: "OK", data: "A file has been inserted successfully."});
+        });
+      }
     });
   });
 });

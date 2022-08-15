@@ -8,24 +8,16 @@ export default function AddMediaFile() {
   const [addMediaFile, setAddMediaFile] = useState({
     file: "",
     category: "",
-    parentCategory: "",
     tags: ""
   });
 
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
 
-  function changeAddMediaFileParentCategory(item) {
-    setAddMediaFile({
-      ...addMediaFile,
-      "parentCategory": item.label
-    });
-  }
-
   function changeAddMediaFileCategory(item) {
     setAddMediaFile({
       ...addMediaFile,
-      "category": item.label
+      "category": item.value
     });
   }
 
@@ -54,7 +46,6 @@ export default function AddMediaFile() {
     const formData = new FormData();
     formData.append("file", addMediaFile.file);
     formData.append("category", addMediaFile.category);
-    formData.append("parentCategory", addMediaFile.parentCategory);
     formData.append("tags", addMediaFile.tags);
   
     axios
@@ -119,12 +110,6 @@ export default function AddMediaFile() {
         <form onSubmit={submitNewFile}>
           <div className="form-group py-2">
               <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => alert(error)} />
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Parent Category</label>
-              <div>
-              <Select options={categories} onChange={changeAddMediaFileParentCategory} />
-              </div>
           </div>
           <div className="form-group py-2">
               <label className="control-label">Category</label>
