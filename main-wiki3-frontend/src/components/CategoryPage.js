@@ -111,7 +111,7 @@ export default function CategoryPage() {
   function changeEditFileCategory(item) {
     setEditFile({
       ...editFile,
-      "category": item.label
+      "category": item.value
     });
   }
 

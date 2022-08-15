@@ -54,13 +54,18 @@ function getCategoryId(category_name, cb) {
   });
 }
 
-function assignCategoryToFile(file_id, category_id) {
+function assignCategoryToFile(file_id, category_id, cb) {
   var con = connectDB();
 
   var sql = "INSERT INTO files_categories (file_id, category_id) VALUES (?, ?);";
 
   con.query(sql, [file_id, category_id], function(err, result) {
-    console.log(result);
+    if (err) {
+      console.log(err);
+      cb({status: "NOK", error: err});
+      return;
+    }
+    cb({status: "OK", data: "Category has been assigned successfully"});
   });
 };
 
@@ -183,7 +188,14 @@ app.post("/api/files/insert", (req, res) => {
     var file_id = result.insertId;
     getCategoryId(category, function(result) {
       if (result.status == "OK") {
-        assignCategoryToFile(file_id, result.data);
+        assignCategoryToFile(file_id, result.data, function(result) {
+          if (result.status == "OK") {
+            console.log(result.data);
+          }
+          else {
+            console.log(result.error);
+          }
+        });
         if (tags != "") {
           var tags_arr = tags.split(",");
           var len = tags_arr.length;
@@ -358,7 +370,7 @@ app.post("/api/files/edit", (req, res) => {
   var id = req.body.id;
   var title = req.body.title;
   var content = req.body.content;
-  var category = req.body.category;
+  var category_id = req.body.category;
   var tags = req.body.tags;
   var extension = req.body.extension;
 
@@ -369,15 +381,19 @@ app.post("/api/files/edit", (req, res) => {
       console.log(err);
       res.json({status: "NOK", error: err});
     }
-    getCategoryId(category, function(result) {
-      var category_id = result.data;
-      checkCategory(id, category_id, function(exists) {
-        if (!exists) {
-          deleteCategoryFromFile(id, function(result) {
-            assignCategoryToFile(id, category_id);
+    checkCategory(id, category_id, function(exists) {
+      if (!exists) {
+        deleteCategoryFromFile(id, function(result) {
+          assignCategoryToFile(id, category_id, function(result) {
+            if (result.status == "OK") {
+              console.log(result.data);
+            }
+            else {
+              console.log(result.error)
+            }
           });
-        }
-      });
+        });
+      }
     });
     if (tags == undefined || tags == "") {
       deleteTagsFromFile(id, function(result) {
@@ -386,8 +402,6 @@ app.post("/api/files/edit", (req, res) => {
     }
     else {
       var tags_arr = tags.split(",");
-      console.log(tags_arr);
-      console.log("x2");
       deleteTagsFromFile(id, function(result) {
         for (var i in tags_arr) {
           getTagId(tags_arr[i], function(result) {
@@ -436,13 +450,27 @@ app.post('/api/upload-media-file', function(req, res) {
       var file_id = result.insertId;
       getCategoryId(category, function(result) {
         if (result.status == "OK") {
-          assignCategoryToFile(file_id, result.data);
+          assignCategoryToFile(file_id, result.data, function(result) {
+            if (result.status == "OK") {
+              console.log(result.data);
+            }
+            else {
+              console.log(result.error);
+            }
+          });
         }
         else {
           getGategoryId(parentCategory, function(result) {
             var parentCategoryId = result.data;
             insertNewCategory(category, parentCategoryId, function(result) {
-              assignCategoryToFile(file_id, result.data);
+              assignCategoryToFile(file_id, result.data, function(result) {
+                if (result.status == "OK") {
+                  console.log(result.data);
+                }
+                else {
+                  res.json({status: "NOK", error: result.error})
+                }
+              });
             });
           });
         }
