@@ -374,6 +374,8 @@ app.post("/api/files/edit", (req, res) => {
   var tags = req.body.tags;
   var extension = req.body.extension;
 
+  console.log(category_id);
+
   var con = connectDB();
   var sql = "UPDATE files SET title = ?, content = ?, extension = ? WHERE id = ?;";
   con.query(sql, [title, content, extension, id], function(err, result) {
@@ -382,6 +384,7 @@ app.post("/api/files/edit", (req, res) => {
       res.json({status: "NOK", error: err});
     }
     checkCategory(id, category_id, function(exists) {
+      console.log(exists);
       if (!exists) {
         deleteCategoryFromFile(id, function(result) {
           assignCategoryToFile(id, category_id, function(result) {

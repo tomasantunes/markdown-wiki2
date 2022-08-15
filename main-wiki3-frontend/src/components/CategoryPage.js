@@ -61,7 +61,7 @@ export default function CategoryPage() {
         id: response.data.data.id,
         title: response.data.data.title,
         content: response.data.data.content,
-        category: response.data.data.category_name,
+        category: response.data.data.category_id,
         tags: response.data.data.tags,
         extension: response.data.data.extension
       });
