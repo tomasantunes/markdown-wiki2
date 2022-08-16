@@ -179,16 +179,34 @@ export default function CategoryPage() {
     axios.get(config.BACKEND_URL + "/api/categories/list")
     .then(function(response) {
       if (response.data.status == "OK") {
-        var categories_temp = [];
-        for (var i in response.data.data) {
-          var category = response.data.data[i];
-          categories_temp.push({value: category.id, label: category.name});
+        var categories = response['data']['data'];
+        var categories_to_add = [];
+        for (var i in categories) {
+          var menuItem = categories[i];
+          if (menuItem.parent_id == 1) {
+            var obj = {label: menuItem.name, value: menuItem.id};
+            categories_to_add.push(obj);
+            for (var j in categories) {
+              var menuItem2 = categories[j];
+              if (menuItem2.parent_id == obj.value) {
+                var obj2 = {label: ">>> " + menuItem2.name, value: menuItem2.id};
+                categories_to_add.push(obj2);
+                for (var k in categories) {
+                  var menuItem3 = categories[k];
+                  if (menuItem3.parent_id == obj2.value) {
+                    var obj3 = {label: ">>> >>> " + menuItem3.name, value: menuItem3.id};
+                    categories_to_add.push(obj3);
+                  }
+                }
+              }
+            }
+          }
         }
-        setCategories(categories_temp);
+        setCategories(categories_to_add);
       }
     })
     .catch(function(err) {
-      alert(err.message);
+      console.log(err.message);
     }); 
   }
 
