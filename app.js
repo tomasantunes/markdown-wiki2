@@ -46,11 +46,12 @@ function getCategoryId(category_name, cb) {
 
   con.query(sql, [category_name], function(err, result) {
       if (result.length > 0) {
-        cb({status: "OK", data: result[0]['id']})
+        cb({status: "OK", data: result[0]['id']});
       }
       else {
         cb({status: "NOK", error: "This category doesn't exist."});
       }
+      con.end();
   });
 }
 
@@ -66,6 +67,7 @@ function assignCategoryToFile(file_id, category_id, cb) {
       return;
     }
     cb({status: "OK", data: "Category has been assigned successfully"});
+    con.end();
   });
 };
 
@@ -80,6 +82,7 @@ function getTagId(tag_name, cb) {
       else {
         cb({status: "NOK", error: "This tag doesn't exist."});
       }
+      con.end();
   });
 }
 
@@ -90,6 +93,7 @@ function assignTagToFile(file_id, tag_id) {
 
   con.query(sql, [file_id, tag_id], function(err, result) {
     console.log(result);
+    con.end();
   });
 };
 
@@ -99,6 +103,7 @@ function insertNewTag(tag_name, cb) {
 
   con.query(sql, [tag_name], function(err, result) {
     cb({status: "OK", data: result.insertId});
+    con.end();
   });
 }
 
@@ -108,6 +113,7 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
 
   con.query(sql, [category_name, parentCategoryId], function(err, result) {
     cb({status: "OK", data: result.insertId});
+    con.end();
   });
 }
 
@@ -127,6 +133,7 @@ app.get("/api/categories/list", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no categories."});
     }
+    con.end();
   });
 });
 
@@ -168,6 +175,7 @@ app.get("/api/tags/list", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no categories."});
     }
+    con.end();
   });
 });
 
@@ -219,6 +227,7 @@ app.post("/api/files/insert", (req, res) => {
         return;
       }
     });
+    con.end();
   });
 });
 
@@ -242,6 +251,7 @@ app.get("/api/files/get-files-from-category", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no files under this category."});
     }
+    con.end();
   });
 });
 
@@ -265,6 +275,7 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no files under this category."});
     }
+    con.end();
   });
 });
 
@@ -300,6 +311,7 @@ app.get("/api/files/getone", (req, res) => {
           console.log("No tags have been found.");
         }
         res.json({status: "OK", data: file});
+        con.end();
       }); 
     }
     else {
@@ -319,6 +331,7 @@ app.post("/api/files/delete", (req, res) => {
       var sql3 = "DELETE FROM files_tags WHERE file_id = ?;";
       con.query(sql3, [id], function(err3, result3) {
         res.json({status: "OK", data: "File has been deleted successfully."});
+        con.end();
       }) 
     });
   });
@@ -334,6 +347,7 @@ function checkCategory(file_id, category_id, cb) {
     else {
       cb(false);
     }
+    con.end();
   })
 }
 
@@ -347,6 +361,7 @@ function checkTag(file_id, tag_id, cb) {
     else {
       cb(false);
     }
+    con.end();
   })
 }
 
@@ -355,6 +370,7 @@ function deleteCategoryFromFile(file_id, cb) {
   var sql = "DELETE FROM files_categories WHERE file_id = ?;";
   con.query(sql, [file_id], function(err, result) {
     cb(true);
+    con.end();
   });
 }
 
@@ -363,6 +379,7 @@ function deleteTagsFromFile(file_id, cb) {
   var sql = "DELETE FROM files_tags WHERE file_id = ?;";
   con.query(sql, [file_id], function(err, result) {
     cb(true);
+    con.end();
   });
 }
 
@@ -419,6 +436,7 @@ app.post("/api/files/edit", (req, res) => {
       });
     }
     res.json({status: "OK", data: "File has been edited successfully."});
+    con.end();
   });
 });
 
@@ -470,6 +488,7 @@ app.post('/api/upload-media-file', function(req, res) {
             console.log("Tag not found.");
           }
           res.json({status: "OK", data: "A file has been inserted successfully."});
+          con.end();
         });
       }
     });
