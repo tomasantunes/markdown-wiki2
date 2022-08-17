@@ -66,7 +66,12 @@ export default function AddTextFile() {
     console.log(newFile.tags);
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
-      alert("A new file has been inserted.");
+      if (response.data.status == "OK") {
+        alert("A new file has been inserted.");
+      }
+      else {
+        alert(response.data.error);
+      }
     })
     .catch(function (error) {
       console.log(error);

@@ -13,6 +13,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('trust proxy', true)
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -138,6 +139,12 @@ app.get("/api/categories/list", (req, res) => {
 });
 
 app.post("/api/categories/insert", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var category = req.body.category;
   var parentCategory = req.body.parentCategory;
   getCategoryId(parentCategory, function(result) {
@@ -148,6 +155,12 @@ app.post("/api/categories/insert", (req, res) => {
 });
 
 app.post("/api/tags/insert", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var tag = req.body.tag;
   insertNewTag(tag, function(result) {
     if (result.status == "OK") {
@@ -180,6 +193,13 @@ app.get("/api/tags/list", (req, res) => {
 });
 
 app.post("/api/files/insert", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  console.log(ip);
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var title = req.body.title;
   var content = req.body.content;
   var extension = req.body.extension;
@@ -321,6 +341,12 @@ app.get("/api/files/getone", (req, res) => {
 });
 
 app.post("/api/files/delete", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var id = req.body.id;
 
   var con = connectDB();
@@ -384,6 +410,12 @@ function deleteTagsFromFile(file_id, cb) {
 }
 
 app.post("/api/files/edit", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var id = req.body.id;
   var title = req.body.title;
   var content = req.body.content;
@@ -441,6 +473,11 @@ app.post("/api/files/edit", (req, res) => {
 });
 
 app.post('/api/upload-media-file', function(req, res) {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
   if (!req.files) {
     console.log("No file has been detected.");
     res.json({status: "NOK", error: "No file has been detected."});
