@@ -203,9 +203,9 @@ app.post("/api/files/insert", (req, res) => {
   var title = req.body.title;
   var content = req.body.content;
   var extension = req.body.extension;
-  var category = req.body.category;
+  var category_id = req.body.category;
   var tags = req.body.tags;
-  console.log(tags);
+
   var con = connectDB();
   var sql = "INSERT INTO files (title, content, extension) VALUES (?, ?, ?);";
   con.query(sql, [title, content, extension], function(err, result) {
@@ -214,39 +214,29 @@ app.post("/api/files/insert", (req, res) => {
         return;
     }
     var file_id = result.insertId;
-    getCategoryId(category, function(result) {
+    assignCategoryToFile(file_id, category_id, function(result) {
       if (result.status == "OK") {
-        assignCategoryToFile(file_id, result.data, function(result) {
-          if (result.status == "OK") {
-            console.log(result.data);
-          }
-          else {
-            console.log(result.error);
-          }
-        });
-        if (tags != "") {
-          var tags_arr = tags.split(",");
-          var len = tags_arr.length;
-          for (var i in tags_arr) {
-            getTagId(tags_arr[i], function(result) {
-              if (result.status == "OK") {
-                assignTagToFile(file_id, result.data);
-              }
-              else {
-                console.log("x2");
-                res.json({status: "NOK", error: "Tag not found."});
-                return;
-              }
-            });
-          }
-        }
-        res.json({status: "OK", data: "A file has been inserted successfully."});
+        console.log(result.data);
       }
       else {
-        res.json({status: "NOK", error: "Category not found."});
-        return;
+        console.log(result.error);
       }
     });
+    if (tags != "" && tags != undefined) {
+      var tags_arr = tags.split(",");
+      for (var i in tags_arr) {
+        getTagId(tags_arr[i], function(result) {
+          if (result.status == "OK") {
+            assignTagToFile(file_id, result.data);
+          }
+          else {
+            res.json({status: "NOK", error: "Tag not found."});
+            return;
+          }
+        });
+      }
+    }
+    res.json({status: "OK", data: "A file has been inserted successfully."});
     con.end();
   });
 });

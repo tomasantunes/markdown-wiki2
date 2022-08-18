@@ -38,7 +38,7 @@ export default function AddTextFile() {
   function changeNewFileCategory(item) {
     setNewFile({
       ...newFile,
-      "category": item.label
+      "category": item.value
     });
   }
 
