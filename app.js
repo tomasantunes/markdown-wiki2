@@ -56,22 +56,6 @@ function getCategoryId(category_name, cb) {
   });
 }
 
-function assignCategoryToFile(file_id, category_id, cb) {
-  var con = connectDB();
-
-  var sql = "INSERT INTO files_categories (file_id, category_id) VALUES (?, ?);";
-
-  con.query(sql, [file_id, category_id], function(err, result) {
-    if (err) {
-      console.log(err);
-      cb({status: "NOK", error: err});
-      return;
-    }
-    cb({status: "OK", data: "Category has been assigned successfully"});
-    con.end();
-  });
-};
-
 function getTagId(tag_name, cb) {
   var con = connectDB();
   var sql = "SELECT id FROM tags WHERE name = ?;";
@@ -207,21 +191,13 @@ app.post("/api/files/insert", (req, res) => {
   var tags = req.body.tags;
 
   var con = connectDB();
-  var sql = "INSERT INTO files (title, content, extension) VALUES (?, ?, ?);";
-  con.query(sql, [title, content, extension], function(err, result) {
+  var sql = "INSERT INTO files (title, content, extension, category_id) VALUES (?, ?, ?, ?);";
+  con.query(sql, [title, content, extension, category_id], function(err, result) {
     if (err) {
         console.log(err);
         return;
     }
     var file_id = result.insertId;
-    assignCategoryToFile(file_id, category_id, function(result) {
-      if (result.status == "OK") {
-        console.log(result.data);
-      }
-      else {
-        console.log(result.error);
-      }
-    });
     if (tags != "" && tags != undefined) {
       var tags_arr = tags.split(",");
       for (var i in tags_arr) {
@@ -247,7 +223,7 @@ app.get("/api/files/get-files-from-category", (req, res) => {
 
   console.log(category_id);
   var con = connectDB();
-  var sql = "SELECT f.* FROM files AS f INNER JOIN files_categories AS fc ON fc.file_id = f.id WHERE fc.category_id = ? AND f.extension IN (?)";
+  var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
 
   con.query(sql, [category_id, text_file_extensions], function(err, result) {
     if (err) {
@@ -271,7 +247,7 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
 
   console.log(category_id);
   var con = connectDB();
-  var sql = "SELECT f.* FROM files AS f INNER JOIN files_categories AS fc ON fc.file_id = f.id WHERE fc.category_id = ? AND f.extension IN (?)";
+  var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
 
   con.query(sql, [category_id, image_file_extensions], function(err, result) {
     if (err) {
@@ -293,7 +269,7 @@ app.get("/api/files/getone", (req, res) => {
   var file_id = req.query.id;
 
   var con = connectDB();
-  var sql = "SELECT f.*, fc.category_id, c.parent_id, c.name AS category_name FROM files As f INNER JOIN files_categories AS fc ON fc.file_id = f.id INNER JOIN categories AS c ON c.id = fc.category_id WHERE f.id = ?;";
+  var sql = "SELECT f.*, c.parent_id, c.name AS category_name FROM files As f INNER JOIN categories AS c ON c.id = f.category_id WHERE f.id = ?;";
 
   con.query(sql, [file_id], function(err, result) {
     if (err) {
@@ -342,20 +318,17 @@ app.post("/api/files/delete", (req, res) => {
   var con = connectDB();
   var sql = "DELETE FROM files WHERE id = ?;";
   con.query(sql, [id], function(err, result) {
-    var sql2 = "DELETE FROM files_categories WHERE file_id = ?;";
+    var sql2 = "DELETE FROM files_tags WHERE file_id = ?;";
     con.query(sql2, [id], function(err2, result2) {
-      var sql3 = "DELETE FROM files_tags WHERE file_id = ?;";
-      con.query(sql3, [id], function(err3, result3) {
-        res.json({status: "OK", data: "File has been deleted successfully."});
-        con.end();
-      }) 
-    });
+      res.json({status: "OK", data: "File has been deleted successfully."});
+      con.end();
+    }) 
   });
 });
 
 function checkCategory(file_id, category_id, cb) {
   var con = connectDB();
-  var sql = "SELECT * FROM files_categories WHERE file_id = ? AND category_id = ?;";
+  var sql = "SELECT * FROM files WHERE file_id = ? AND category_id = ?;";
   con.query(sql, [file_id, category_id], function(err, result) {
     if (result.length > 0) {
       cb(true);
@@ -379,15 +352,6 @@ function checkTag(file_id, tag_id, cb) {
     }
     con.end();
   })
-}
-
-function deleteCategoryFromFile(file_id, cb) {
-  var con = connectDB();
-  var sql = "DELETE FROM files_categories WHERE file_id = ?;";
-  con.query(sql, [file_id], function(err, result) {
-    cb(true);
-    con.end();
-  });
 }
 
 function deleteTagsFromFile(file_id, cb) {
@@ -416,27 +380,12 @@ app.post("/api/files/edit", (req, res) => {
   console.log(category_id);
 
   var con = connectDB();
-  var sql = "UPDATE files SET title = ?, content = ?, extension = ? WHERE id = ?;";
-  con.query(sql, [title, content, extension, id], function(err, result) {
+  var sql = "UPDATE files SET title = ?, content = ?, extension = ?, category_id = ? WHERE id = ?;";
+  con.query(sql, [title, content, extension, id, category_id], function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err});
     }
-    checkCategory(id, category_id, function(exists) {
-      console.log(exists);
-      if (!exists) {
-        deleteCategoryFromFile(id, function(result) {
-          assignCategoryToFile(id, category_id, function(result) {
-            if (result.status == "OK") {
-              console.log(result.data);
-            }
-            else {
-              console.log(result.error)
-            }
-          });
-        });
-      }
-    });
     if (tags == undefined || tags == "") {
       deleteTagsFromFile(id, function(result) {
         console.log("Tags have been deleted.")
@@ -486,24 +435,15 @@ app.post('/api/upload-media-file', function(req, res) {
     }
 
     var con = connectDB();
-    var sql = "INSERT INTO files (title, path, extension) VALUES (?, ?, ?)";
+    var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
 
-    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath2, path.extname(file.name).replace(".", "")], function(err, result) {
+    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath2, path.extname(file.name).replace(".", ""), category_id], function(err, result) {
       if (err) {
         console.log(err);
         return;
       }
 
       var file_id = result.insertId;
-
-      assignCategoryToFile(file_id, category_id, function(result) {
-        if (result.status == "OK") {
-          console.log(result.data);
-        }
-        else {
-          console.log(result.error);
-        }
-      });
 
       var tags_arr = tags.split(",");
       for (var i in tags_arr) {

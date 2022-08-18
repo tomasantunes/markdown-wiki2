@@ -43,6 +43,9 @@ CREATE TABLE tags (
 );
 
 INSERT INTO categories (name, parent_id) VALUES ('root', 0);
+ALTER TABLE files ADD category_id INT(11) DEFAULT NULL;
+UPDATE files f JOIN files_categories fc ON f.id = fc.file_id SET f.category_id = fc.category_id;
+DROP TABLE files_categories;
 
 
 
