@@ -86,8 +86,13 @@ export default function CategoryPage() {
     e.preventDefault();
     axios.post(config.BACKEND_URL + '/api/files/edit', editFile)
     .then(function (response) {
-      loadFiles();
-      alert("File has been edited sucessfully.");
+      if (response.data.status == "OK") {
+        alert("File has been edited sucessfully.");
+        loadFiles();
+      }
+      else {
+        alert(response.data.error);
+      }
     })
     .catch(function (error) {
       console.log(error);

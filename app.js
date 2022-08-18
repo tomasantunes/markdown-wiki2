@@ -381,7 +381,7 @@ app.post("/api/files/edit", (req, res) => {
 
   var con = connectDB();
   var sql = "UPDATE files SET title = ?, content = ?, extension = ?, category_id = ? WHERE id = ?;";
-  con.query(sql, [title, content, extension, id, category_id], function(err, result) {
+  con.query(sql, [title, content, extension, category_id, id], function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err});
