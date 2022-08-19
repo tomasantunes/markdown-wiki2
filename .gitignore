@@ -1,4 +1,5 @@
 node_modules
 main-wiki3-frontend/node_modules
-main-wiki3-frontend2/node_modules
 secret-config.json
+old-queries
+python-scripts

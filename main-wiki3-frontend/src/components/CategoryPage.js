@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown'
 import { CsvToHtmlTable } from 'react-csv-to-table';
 import Menu from './Menu';
 import Select from 'react-select';
+import path from 'path-browserify';
 
 export default function CategoryPage() {
   const {id} = useParams();
@@ -253,7 +254,15 @@ export default function CategoryPage() {
             <ul className="image-files">
               {imageFiles.map((image) => 
                 <li key={image['id']}>
-                  <img src={config.BACKEND_URL + "/api/images/get/" + image.title + "." + image.extension} />
+                  <div className="row">
+                    <div className="col-md-10">
+                      <h3>{image['title']}</h3>
+                    </div>
+                    <div className="col-md-2 text-end">
+                      <button class="btn btn-danger delete-btn" value={image['id']} onClick={deleteFile}>Delete</button>
+                    </div>
+                  </div>
+                  <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
                 </li>
               )}
             </ul>
