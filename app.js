@@ -306,6 +306,29 @@ app.get("/api/files/getone", (req, res) => {
   });
 });
 
+app.get("/api/files/search", (req, res) => {
+  var searchQuery = req.query.searchQuery;
+
+  var con = connectDB();
+  var sql = "SELECT f.id, f.title, c.name AS category_name, c2.name AS parent_category_name FROM files f INNER JOIN categories c ON c.id = f.category_id INNER JOIN categories c2 ON c.parent_id = c2.id WHERE title LIKE ? OR content LIKE ?"
+
+  con.query(sql, ['%' + searchQuery + '%', '%' + searchQuery + '%'], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err.message});
+      return;
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "No results have been found."});
+    }
+    con.end();
+  });
+
+});
+
 app.post("/api/files/delete", (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
   if (!secretConfig.IP_WHITELIST.includes(ip)) {

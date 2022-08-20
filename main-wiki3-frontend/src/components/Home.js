@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Menu from "./Menu";
-import AddTextFile from './AddTextFile';
+import Search from './Search';
 import $ from 'jquery';
 window.jQuery = $;
 window.$ = $;
@@ -15,6 +15,7 @@ export default function Home() {
       <div className="container-fluid full-height">
         <div className="row full-height">
           <Menu />
+          <Search />
         </div>
       </div>
     </>
