@@ -7,6 +7,10 @@ var cors = require('cors');
 var mysql = require('mysql2');
 var fileUpload = require('express-fileupload');
 var secretConfig = require('./secret-config.json');
+const { extension } = require('mime-types');
+const fs = require('fs');
+const axios = require('axios');
+const crypto = require('crypto');
 
 var app = express();
 
@@ -449,8 +453,9 @@ app.post('/api/upload-media-file', function(req, res) {
   var category_id = req.body.category;
   var tags = req.body.tags;
   const file = req.files.file;
-  const filepath = __dirname + "/media-files/" + file.name;
-  const filepath2 = "media-files/" + file.name;
+  var new_filename = crypto.randomBytes(16).toString('hex');
+  const filepath = __dirname + "/media-files/" + new_filename + path.extname(file.name);
+  const filepath2 = "media-files/" + new_filename + path.extname(file.name);
 
   file.mv(filepath, (err) => {
     if (err) {
@@ -468,21 +473,92 @@ app.post('/api/upload-media-file', function(req, res) {
 
       var file_id = result.insertId;
 
-      var tags_arr = tags.split(",");
-      for (var i in tags_arr) {
-        getTagId(tags_arr[i], function(result) {
-          if (result.status == "OK") {
-            assignTagToFile(file_id, result.data);
-          }
-          else {
-            console.log("Tag not found.");
-          }
-          res.json({status: "OK", data: "A file has been inserted successfully."});
-          con.end();
-        });
+      if (tags != "" && tags != undefined) {
+        var tags_arr = tags.split(",");
+        for (var i in tags_arr) {
+          getTagId(tags_arr[i], function(result) {
+            if (result.status == "OK") {
+              assignTagToFile(file_id, result.data);
+            }
+            else {
+              console.log("Tag not found.");
+            }
+            
+          });
+        }
       }
+      res.json({status: "OK", data: "A file has been inserted successfully."});
+      con.end();
     });
   });
+});
+
+function downloadImage(imageUrl, category_id, tags, cb) {
+  axios
+  .get(imageUrl, {
+    responseType: 'arraybuffer'
+  })
+  .then(response => {
+    var buffer = Buffer.from(response.data, 'binary');
+    const contentType = response.headers['content-type'];
+    const ext = extension(contentType);
+    var new_filename = crypto.randomBytes(16).toString('hex');
+    const filepath = __dirname + "/media-files/" + new_filename + ext;
+    const filepath2 = "media-files/" + new_filename + ext;
+    fs.writeFile(filepath, buffer, () => {
+      console.log('File has been saved.');
+
+      var con = connectDB();
+      var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
+
+      con.query(sql, [new_filename, filepath2, ext, category_id], function(err, result) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        var file_id = result.insertId;
+
+        if (tags != "" && tags != undefined) {
+          var tags_arr = tags.split(",");
+          for (var i in tags_arr) {
+            getTagId(tags_arr[i], function(result) {
+              if (result.status == "OK") {
+                assignTagToFile(file_id, result.data);
+              }
+              else {
+                console.log("Tag not found.");
+              }
+            });
+          }
+        }
+        cb({status: "OK", data: "A file has been inserted successfully."});
+        con.end();
+      });
+    });
+  })
+  .catch(function(err) {
+    console.log(err.message);
+    cb({status: "NOK", error: err.message});
+  });
+  
+}
+
+app.post('/api/upload-image-url', function(req, res) {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
+  var imageUrl = req.body.imageUrl;
+  var category_id = req.body.category;
+  var tags = req.body.tags;
+
+  console.log(imageUrl);
+  downloadImage(imageUrl, category_id, tags, function(result) {
+    res.json(result);
+  })
 });
 
 app.get("/api/images/get/:filename", (req, res) => {
