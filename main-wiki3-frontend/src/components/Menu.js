@@ -9,6 +9,7 @@ const Menu = () => {
     {title: "Add File", link: "/add-file"},
     {title: "Add Category", link: "/add-category"},
     {title: "Add Tag", link: "/add-tag"},
+    {title: "Bookmarks", link: "/bookmarks"},
   ];
 
   const [menuItems, setMenuItems] = useState(menuItemsInitialState);

@@ -20,8 +20,8 @@ app.set('view engine', 'ejs');
 app.set('trust proxy', true)
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ extended: false, limit: '50mb' }))
+app.use(express.urlencoded({ limit: '50mb', extended: false, parameterLimit: 50000 }))
 app.use(cookieParser());
 app.use(cors());
 app.use(fileUpload({
@@ -564,6 +564,10 @@ app.post('/api/upload-image-url', function(req, res) {
 app.get("/api/images/get/:filename", (req, res) => {
   var filename = req.params.filename;
   res.sendFile(__dirname + "/media-files/" + filename);
+});
+
+app.get("/api/bookmarks", (req, res) => {
+  res.sendFile(__dirname + "/bookmarks/bookmarks.txt");
 });
 
 app.use(express.static('main-wiki3-frontend/build'));

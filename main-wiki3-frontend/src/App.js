@@ -10,6 +10,7 @@ import AddFile from './components/AddFile';
 import AddCategory from './components/AddCategory';
 import AddTag from './components/AddTag';
 import CategoryPage from './components/CategoryPage';
+import Bookmarks from './components/Bookmarks';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/add-tag" element={<AddTag />} />
         <Route path="/categories/:id" element={<CategoryPage />}/>
+        <Route path="/bookmarks" element={<Bookmarks />} />
       </Routes>
     </BrowserRouter>
   );
