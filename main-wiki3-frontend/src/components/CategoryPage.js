@@ -22,6 +22,10 @@ export default function CategoryPage() {
     tags: "",
     extension: ""
   });
+  const [appendToFile, setAppendToFile] = useState({
+    id: "",
+    content: ""
+  });
   const extensions = [
     {value: "md", label: "Markdown - MD"},
     {value: "txt", label: "Text - TXT"},
@@ -74,6 +78,15 @@ export default function CategoryPage() {
     })
   }
 
+  function showAppendToFile(e) {
+    var id = e.target.value;
+    
+    setAppendToFile({
+      id: id,
+      content: "",
+    });
+  }
+
   function deleteFile(e) {
     axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
     .then(function(response) {
@@ -99,6 +112,30 @@ export default function CategoryPage() {
     })
     .catch(function (error) {
       console.log(error);
+    });
+  }
+
+  function submitAppendToFile(e) {
+    e.preventDefault();
+    axios.post(config.BACKEND_URL + '/api/files/append', appendToFile)
+    .then(function (response) {
+      if (response.data.status == "OK") {
+        alert("File has been appended sucessfully.");
+        loadFiles();
+      }
+      else {
+        alert(response.data.error);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  function changeAppendToFileContent(e) {
+    setAppendToFile({
+      ...appendToFile,
+      "content": e.target.value
     });
   }
 
@@ -298,6 +335,7 @@ export default function CategoryPage() {
                   </div>
                   <div className="col-md-2 text-end">
                     <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile} data-bs-toggle="modal" data-bs-target=".editFileModal">Edit</button>
+                    <button class="btn btn-primary append-btn" value={file['id']} onClick={showAppendToFile} data-bs-toggle="modal" data-bs-target=".appendModal">Append</button>
                     <button class="btn btn-danger delete-btn" value={file['id']} onClick={deleteFile}>Delete</button>
                   </div>
                 </div>
@@ -364,6 +402,35 @@ export default function CategoryPage() {
                 <div className="form-group py-2">
                   <label className="control-label">Extension</label>
                   <Select value={selectedExtension} options={extensions} onChange={changeEditFileExtension} />
+                </div>
+                <div className="form-group">
+                    <div style={{textAlign: "right"}}>
+                        <button type="submit" className="btn btn-primary">Save</button>
+                    </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal appendModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Append To File</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form onSubmit={submitAppendToFile}>
+                <div className="form-group py-2">
+                    <label className="control-label">Content</label>
+                    <div>
+                        <textarea className="form-control input-lg" name="content" value={appendToFile.content} onChange={changeAppendToFileContent} rows={15}></textarea>
+                    </div>
                 </div>
                 <div className="form-group">
                     <div style={{textAlign: "right"}}>

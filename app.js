@@ -438,6 +438,28 @@ app.post("/api/files/edit", (req, res) => {
   });
 });
 
+app.post("/api/files/append", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
+  var id = req.body.id;
+  var content = "\n" + req.body.content;
+
+  var con = connectDB();
+  var sql = "UPDATE files SET content = CONCAT(content, ?) WHERE id = ?;";
+  con.query(sql, [content, id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    res.json({status: "OK", data: "File has been appended successfully."});
+    con.end();
+  });
+});
+
 app.post('/api/upload-media-file', function(req, res) {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
   if (!secretConfig.IP_WHITELIST.includes(ip)) {
