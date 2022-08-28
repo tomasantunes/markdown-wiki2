@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import config from '../config.json';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown'
@@ -10,6 +11,7 @@ import path from 'path-browserify';
 
 export default function CategoryPage() {
   const {id} = useParams();
+  const location = useLocation();
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [editFile, setEditFile] = useState({
@@ -237,7 +239,15 @@ export default function CategoryPage() {
   useEffect(() => {
     loadImageFiles();
     loadFiles();
-  }, [id]); 
+  }, [id]);
+
+  useEffect(() => {
+    const hash = location.hash
+    const el = hash && document.getElementById(hash.substr(1))
+    if (el) {    
+        el.scrollIntoView({behavior: "smooth"})
+    }
+  }, [location.hash])
 
   useEffect(() =>{
     loadImageFiles();
@@ -251,9 +261,22 @@ export default function CategoryPage() {
         <div className="row full-height">
           <Menu />
           <div className="col-md-8 p-5">
-            <ul className="image-files">
+            <h3>Index</h3>
+            <ul className="index">
               {imageFiles.map((image) => 
                 <li key={image['id']}>
+                  <Link to={{ pathname: "/categories/" + id, hash: "#" + image['id'] }}>{image['title']}</Link>
+                </li>
+              )}
+              {files.map((file) => 
+                <li key={file['id']}>
+                  <Link to={{ pathname: "/categories/" + id, hash: "#" + file['id'] }}>{file['title']}</Link>
+                </li>
+              )}
+            </ul>
+            <ul className="image-files">
+              {imageFiles.map((image) => 
+                <li key={image['id']} id={image['id']}>
                   <div className="row">
                     <div className="col-md-10">
                       <h3>{image['title']}</h3>
@@ -268,7 +291,7 @@ export default function CategoryPage() {
             </ul>
             <ul className="files">
             {files.map((file) => 
-              <li key={file['id']}>
+              <li key={file['id']} id={file['id']}>
                 <div className="row">
                   <div className="col-md-10">
                     <h3>{file['title']}</h3>
