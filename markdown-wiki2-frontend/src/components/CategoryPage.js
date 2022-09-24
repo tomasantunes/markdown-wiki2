@@ -315,10 +315,10 @@ export default function CategoryPage() {
               {imageFiles.map((image) => 
                 <li key={image['id']} id={image['id']}>
                   <div className="row">
-                    <div className="col-md-10">
+                    <div className="col-md-8">
                       <h3>{image['title']}</h3>
                     </div>
-                    <div className="col-md-2 text-end">
+                    <div className="col-md-4 text-end">
                       <button class="btn btn-danger delete-btn" value={image['id']} onClick={deleteFile}>Delete</button>
                     </div>
                   </div>
@@ -330,10 +330,10 @@ export default function CategoryPage() {
             {files.map((file) => 
               <li key={file['id']} id={file['id']}>
                 <div className="row">
-                  <div className="col-md-10">
+                  <div className="col-md-8">
                     <h3>{file['title']}</h3>
                   </div>
-                  <div className="col-md-2 text-end">
+                  <div className="col-md-4 text-end">
                     <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile} data-bs-toggle="modal" data-bs-target=".editFileModal">Edit</button>
                     <button class="btn btn-primary append-btn" value={file['id']} onClick={showAppendToFile} data-bs-toggle="modal" data-bs-target=".appendModal">Append</button>
                     <button class="btn btn-danger delete-btn" value={file['id']} onClick={deleteFile}>Delete</button>

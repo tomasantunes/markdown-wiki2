@@ -39,7 +39,9 @@ export default function Search() {
             <div class="mb-3">
               <input type="text" class="form-control" value={searchQuery} onChange={changeSearchQuery} />
             </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">Search</button>
+            </div>
         </form>
         <table className="table">
           <thead>

@@ -33,7 +33,7 @@ function connectDB() {
     host: 'localhost',
     user: 'root',
     password: secretConfig.DB_PASSWORD,
-    database: 'mainwiki3',
+    database: 'markdownwiki2',
   });
   con.connect(function(err) {
       if (err) {
@@ -107,6 +107,13 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
 }
 
 app.get("/api/categories/list", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  console.log(ip);
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var con = connectDB();
 
   var sql = "SELECT * FROM categories;";
@@ -311,6 +318,12 @@ app.get("/api/files/getone", (req, res) => {
 });
 
 app.get("/api/files/search", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var searchQuery = req.query.searchQuery;
 
   var con = connectDB();
@@ -584,18 +597,36 @@ app.post('/api/upload-image-url', function(req, res) {
 });
 
 app.get("/api/images/get/:filename", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   var filename = req.params.filename;
   res.sendFile(__dirname + "/media-files/" + filename);
 });
 
 app.get("/api/bookmarks", (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
   res.sendFile(__dirname + "/bookmarks/bookmarks.txt");
 });
 
-app.use(express.static('main-wiki3-frontend/build'));
+app.use(express.static('markdown-wiki2-frontend/build'));
 
 app.get('/*', (req,res) => {
-  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+  if (!secretConfig.IP_WHITELIST.includes(ip)) {
+    res.json({status: "NOK", error: "This IP is not authorized."});
+    return;
+  }
+
+  res.sendFile(path.resolve(__dirname) + '/markdown-wiki2-frontend/build/index.html');
 });
 
 // catch 404 and forward to error handler

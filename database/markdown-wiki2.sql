@@ -1,5 +1,5 @@
-CREATE DATABASE mainwiki3;
-USE mainwiki3;
+CREATE DATABASE markdownwiki2;
+USE markdownwiki2;
 
 CREATE TABLE files (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
