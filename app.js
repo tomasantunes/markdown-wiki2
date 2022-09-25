@@ -141,11 +141,9 @@ app.post("/api/categories/insert", (req, res) => {
   }
 
   var category = req.body.category;
-  var parentCategory = req.body.parentCategory;
-  getCategoryId(parentCategory, function(result) {
-    insertNewCategory(category, result.data, function() {
-      res.json({status: "OK", data: "A new category has been inserted."})
-    });
+  var parentCategoryId = req.body.parentCategory;
+  insertNewCategory(category, parentCategoryId, function() {
+    res.json({status: "OK", data: "A new category has been inserted."})
   });
 });
 
