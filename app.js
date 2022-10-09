@@ -11,6 +11,8 @@ const { extension } = require('mime-types');
 const fs = require('fs');
 const axios = require('axios');
 const crypto = require('crypto');
+var session = require('express-session');
+var editJson = require("edit-json-file");
 
 var app = express();
 
@@ -26,6 +28,11 @@ app.use(cookieParser());
 app.use(cors());
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
+}));
+app.use(session({
+  secret: secretConfig.SESSION_KEY,
+  resave: false,
+  saveUninitialized: true
 }));
 
 function connectDB() {
@@ -622,6 +629,10 @@ app.get("/login/:secret_token", (req, res) => {
 
   if (secret_token == secretConfig.SECRET_TOKEN) {
     req.session.isLoggedIn = true;
+    let file = editJson(`${__dirname}/sessions.json`);
+    var dt = new Date().toUTCString();
+    file.append("sessions", {login_date: dt});
+    file.save();
     res.redirect("/");
   }
   else {
