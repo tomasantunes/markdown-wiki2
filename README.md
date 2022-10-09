@@ -30,9 +30,7 @@ Go to PHPMyAdmin and run the SQL file at database/markdownwiki2.sql
 ```
 {
     "DB_PASSWORD": "",
-    "IP_WHITELIST": [
-        "127.0.0.1",
-        "::1"
-    ]
+    "SESSION_KEY": "XXXXXXXX",
+    "SECRET_TOKEN": "XXXXXXXXXXX"
 }
 ```

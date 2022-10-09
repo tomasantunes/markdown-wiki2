@@ -107,10 +107,8 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
 }
 
 app.get("/api/categories/list", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  console.log(ip);
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -134,9 +132,8 @@ app.get("/api/categories/list", (req, res) => {
 });
 
 app.post("/api/categories/insert", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -148,9 +145,8 @@ app.post("/api/categories/insert", (req, res) => {
 });
 
 app.post("/api/tags/insert", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -166,6 +162,10 @@ app.post("/api/tags/insert", (req, res) => {
 });
 
 app.get("/api/tags/list", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
   var con = connectDB();
 
   var sql = "SELECT * FROM tags;";
@@ -186,10 +186,8 @@ app.get("/api/tags/list", (req, res) => {
 });
 
 app.post("/api/files/insert", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  console.log(ip);
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -227,6 +225,10 @@ app.post("/api/files/insert", (req, res) => {
 });
 
 app.get("/api/files/get-files-from-category", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
   var category_id = req.query.id;
   var text_file_extensions = ["txt", "md", "csv", "json"]
 
@@ -251,6 +253,10 @@ app.get("/api/files/get-files-from-category", (req, res) => {
 });
 
 app.get("/api/files/get-image-files-from-category", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
   var category_id = req.query.id;
   var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png', 'jfif', 'webp']
 
@@ -275,6 +281,10 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
 });
 
 app.get("/api/files/getone", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
   var file_id = req.query.id;
 
   var con = connectDB();
@@ -316,9 +326,8 @@ app.get("/api/files/getone", (req, res) => {
 });
 
 app.get("/api/files/search", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -345,9 +354,8 @@ app.get("/api/files/search", (req, res) => {
 });
 
 app.post("/api/files/delete", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -402,9 +410,8 @@ function deleteTagsFromFile(file_id, cb) {
 }
 
 app.post("/api/files/edit", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -450,9 +457,8 @@ app.post("/api/files/edit", (req, res) => {
 });
 
 app.post("/api/files/append", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -472,9 +478,8 @@ app.post("/api/files/append", (req, res) => {
 });
 
 app.post('/api/upload-media-file', function(req, res) {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
   if (!req.files) {
@@ -578,9 +583,8 @@ function downloadImage(imageUrl, category_id, tags, cb) {
 }
 
 app.post('/api/upload-image-url', function(req, res) {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -595,9 +599,8 @@ app.post('/api/upload-image-url', function(req, res) {
 });
 
 app.get("/api/images/get/:filename", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
@@ -606,21 +609,31 @@ app.get("/api/images/get/:filename", (req, res) => {
 });
 
 app.get("/api/bookmarks", (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
   res.sendFile(__dirname + "/bookmarks/bookmarks.txt");
 });
 
+app.get("/login/:secret_token", (req, res) => {
+  var secret_token = req.params.secret_token;
+
+  if (secret_token == secretConfig.SECRET_TOKEN) {
+    req.session.isLoggedIn = true;
+    res.redirect("/");
+  }
+  else {
+    res.send("Invalid authorization.");
+  }
+});
+
 app.use(express.static('markdown-wiki2-frontend/build'));
 
 app.get('/*', (req,res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-  if (!secretConfig.IP_WHITELIST.includes(ip)) {
-    res.json({status: "NOK", error: "This IP is not authorized."});
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
