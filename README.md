@@ -21,6 +21,7 @@ Create a secret-config.json file
 Go to markdown-wiki2-frontend/src/config.json and check your URLs
 npm start
 Go to localhost:4001
+Use the following URL to login: localhost:4001/login/[SECRET_TOKEN] 
 ```
 
 ## How to create database
