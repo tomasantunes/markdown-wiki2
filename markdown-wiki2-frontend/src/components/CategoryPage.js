@@ -32,12 +32,14 @@ export default function CategoryPage() {
     {value: "csv", label: "Comma Separated Values - CSV"},
     {value: "json", label: "JavaScript Object Notation - JSON"}
   ];
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedExtension, setSelectedExtension] = useState({});
+  const [firstLoadFilesDone, setFirstLoadFilesDone] = useState(false);
 
   function showEditFile(e) {
     var id = e.target.value;
@@ -180,7 +182,6 @@ export default function CategoryPage() {
   }
 
   function loadFiles() {
-    setFiles([]);
     axios.get(config.BACKEND_URL + "/api/files/get-files-from-category", {
       params: {
         id: id
@@ -200,7 +201,6 @@ export default function CategoryPage() {
   }
 
   function loadImageFiles() {
-    setImageFiles([]);
     axios.get(config.BACKEND_URL + "/api/files/get-image-files-from-category", {
       params: {
         id: id
@@ -278,17 +278,27 @@ export default function CategoryPage() {
     loadFiles();
   }, [id]);
 
-  useEffect(() => {
+  function scrollToFile() {
     const hash = location.hash
     const el = hash && document.getElementById(hash.substr(1))
     if (el) {    
         el.scrollIntoView({behavior: "smooth"})
     }
-  }, [location.hash])
+  }
+
+  useEffect(() => {
+    scrollToFile();
+  }, [location.hash]);
+
+  useEffect(() => {
+    console.log(firstLoadFilesDone);
+    if (!firstLoadFilesDone && files.length > 0) {
+      scrollToFile();
+      setFirstLoadFilesDone(true);
+    }
+  }, [files]);
 
   useEffect(() =>{
-    loadImageFiles();
-    loadFiles();
     loadCategories();
     loadTags();
   },[])

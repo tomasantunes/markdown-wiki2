@@ -33,14 +33,14 @@ app.use(session({
   secret: secretConfig.SESSION_KEY,
   resave: false,
   saveUninitialized: true
-}));
+}))
 
 function connectDB() {
   var con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: secretConfig.DB_PASSWORD,
-    database: 'markdownwiki2',
+    database: 'mainwiki3',
   });
   con.connect(function(err) {
       if (err) {
@@ -341,7 +341,7 @@ app.get("/api/files/search", (req, res) => {
   var searchQuery = req.query.searchQuery;
 
   var con = connectDB();
-  var sql = "SELECT f.id, f.title, c.name AS category_name, c2.name AS parent_category_name FROM files f INNER JOIN categories c ON c.id = f.category_id INNER JOIN categories c2 ON c.parent_id = c2.id WHERE title LIKE ? OR content LIKE ?"
+  var sql = "SELECT f.id, f.title, c.name AS category_name, c2.name AS parent_category_name, c.id AS category_id FROM files f INNER JOIN categories c ON c.id = f.category_id INNER JOIN categories c2 ON c.parent_id = c2.id WHERE title LIKE ? OR content LIKE ?"
 
   con.query(sql, ['%' + searchQuery + '%', '%' + searchQuery + '%'], function(err, result) {
     if (err) {
@@ -640,15 +640,16 @@ app.get("/login/:secret_token", (req, res) => {
   }
 });
 
-app.use(express.static('markdown-wiki2-frontend/build'));
+app.use(express.static('main-wiki3-frontend/build'));
 
 app.get('/*', (req,res) => {
+  console.log(req.session.isLoggedIn);
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
-  res.sendFile(path.resolve(__dirname) + '/markdown-wiki2-frontend/build/index.html');
+  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
 });
 
 // catch 404 and forward to error handler

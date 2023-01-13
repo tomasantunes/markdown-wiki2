@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
+import {Link} from 'react-router-dom';
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,10 +47,10 @@ export default function Search() {
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Parent Category</th>
+              <th style={{width: "10%"}}>ID</th>
+              <th style={{width: "50%"}}>Title</th>
+              <th style={{width: "20%"}}>Category</th>
+              <th style={{width: "20%"}}>Parent Category</th>
             </tr>
           </thead>
           <tbody>
@@ -57,17 +58,16 @@ export default function Search() {
               {results.map((result) => 
                 <tr key={result['id']}>
                   <td>{result['id']}</td>
-                  <td>{result['title']}</td>
+                  <td><Link to={"/categories/" + result['category_id'] + "#" + result['id']}>{result['title']}</Link></td>
                   <td>{result['category_name']}</td>
                   <td>{result['parent_category_name']}</td>
                 </tr>  
               )}
-
-            {results.length < 1 &&
-              <h3>There are no results to display.</h3>
-            }
           </tbody>
         </table>
+        {results.length < 1 &&
+          <h3>There are no results to display.</h3>
+        }
       </div>
     </div>
   )
