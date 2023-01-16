@@ -59,7 +59,7 @@ export default function Search() {
                   link = "/categories/" + result['id'];
                 }
                 else if (result['type'] == "file") {
-                  link = "/categories/" + result['category_id' + "#" + result['id']];
+                  link = "/categories/" + result['category_id'] + "#" + result['id'];
                 }
                 else if (result['type'] == "tag") {
                   link = "";

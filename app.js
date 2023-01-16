@@ -307,7 +307,7 @@ app.get("/api/files/search", (req, res) => {
 
   var searchQuery = req.query.searchQuery;
 
-  var sql = "SELECT f.title AS name, 'file' AS type, c.id AS category_id FROM files f INNER JOIN categories c ON c.id = f.category_id WHERE f.title LIKE ? OR f.content LIKE ? OR c.name LIKE ?";
+  var sql = "SELECT f.id, f.title AS name, 'file' AS type, c.id AS category_id FROM files f INNER JOIN categories c ON c.id = f.category_id WHERE f.title LIKE ? OR f.content LIKE ? OR c.name LIKE ?";
 
   con.query(sql, ['%' + searchQuery + '%', '%' + searchQuery + '%', '%' + searchQuery + '%'], function(err, result) {
     if (err) {
@@ -316,7 +316,7 @@ app.get("/api/files/search", (req, res) => {
       return;
     }
 
-    var sql2 = "SELECT c.name, 'category' AS type FROM categories c WHERE c.name LIKE ?";
+    var sql2 = "SELECT c.id, c.name, 'category' AS type FROM categories c WHERE c.name LIKE ?";
 
     con.query(sql2, ['%' + searchQuery + '%'], function(err2, result2) {
       if (err2) {
@@ -325,7 +325,7 @@ app.get("/api/files/search", (req, res) => {
         return;
       }
       console.log(result2);
-      var sql3 = "SELECT t.name, 'tag' AS type FROM tags t WHERE t.name LIKE ?";
+      var sql3 = "SELECT t.id, t.name, 'tag' AS type FROM tags t WHERE t.name LIKE ?";
       con.query(sql3, ['%' + searchQuery + '%'], function(err3, result3) {
         if (err3) {
           console.log(err3);
