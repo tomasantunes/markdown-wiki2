@@ -210,9 +210,8 @@ app.get("/api/files/get-files-from-category", (req, res) => {
     return;
   }
   var category_id = req.query.id;
-  var text_file_extensions = ["txt", "md", "csv", "json"]
+  var text_file_extensions = ["txt", "md", "csv", "json"];
 
-  console.log(category_id);
   var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
 
   con.query(sql, [category_id, text_file_extensions], function(err, result) {
@@ -230,6 +229,31 @@ app.get("/api/files/get-files-from-category", (req, res) => {
   });
 });
 
+app.get("/api/files/get-files-from-tag", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var tag_id = req.query.id;
+  var text_file_extensions = ["txt", "md", "csv", "json"];
+
+  var sql = "SELECT f.* FROM files AS f INNER JOIN files_tags ft ON ft.file_id = f.id WHERE ft.tag_id = ? AND f.extension IN (?)";
+
+  con.query(sql, [tag_id, text_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files under this tag."});
+    }
+  });
+});
+
 app.get("/api/files/get-image-files-from-category", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -238,10 +262,34 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
   var category_id = req.query.id;
   var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png', 'jfif', 'webp']
 
-  console.log(category_id);
   var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
 
   con.query(sql, [category_id, image_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files under this category."});
+    }
+  });
+});
+
+app.get("/api/files/get-image-files-from-tag", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var tag_id = req.query.id;
+  var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png', 'jfif', 'webp'];
+
+  var sql = "SELECT f.* FROM files AS f INNER JOIN files_tags ft ON ft.file_id = f.id WHERE ft.tag_id = ? AND f.extension IN (?)";
+
+  con.query(sql, [tag_id, image_file_extensions], function(err, result) {
     if (err) {
       console.log(err.message);
       res.json({status: "NOK", error: err.message});
