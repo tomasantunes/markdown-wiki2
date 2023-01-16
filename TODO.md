@@ -1,6 +1,8 @@
 # TODO
 
 - Create page for single tag with files of the tag
+- Fix changing page from category to category.
+- Pop an alert when you delete a file.
 - Validate if fields are not empty on front-end forms
 - Change category listing to support infinite nesting levels
 - Create page for dashboard
