@@ -47,22 +47,31 @@ export default function Search() {
         <table className="table">
           <thead>
             <tr>
-              <th style={{width: "10%"}}>ID</th>
-              <th style={{width: "50%"}}>Title</th>
-              <th style={{width: "20%"}}>Category</th>
-              <th style={{width: "20%"}}>Parent Category</th>
+              <th style={{width: "25%"}}>Type</th>
+              <th style={{width: "75%"}}>Title</th>
             </tr>
           </thead>
           <tbody>
             
-              {results.map((result) => 
-                <tr key={result['id']}>
-                  <td>{result['id']}</td>
-                  <td><Link to={"/categories/" + result['category_id'] + "#" + result['id']}>{result['title']}</Link></td>
-                  <td>{result['category_name']}</td>
-                  <td>{result['parent_category_name']}</td>
-                </tr>  
-              )}
+              {results.map((result) => {
+                var link = "";
+                if (result['type'] == "category") {
+                  link = "/categories/" + result['id'];
+                }
+                else if (result['type'] == "file") {
+                  link = "/categories/" + result['category_id' + "#" + result['id']];
+                }
+                else if (result['type'] == "tag") {
+                  link = "";
+                }
+
+                return (
+                  <tr key={result['id']}>
+                    <td>{result['type']}</td>
+                    <td><Link to={link}>{result['name']}</Link></td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
         {results.length < 1 &&

@@ -1,6 +1,6 @@
 # TODO
 
-- Include categories and tags on search results
+- Create page for single tag with files of the tag
 - Validate if fields are not empty on front-end forms
 - Change category listing to support infinite nesting levels
 - Create page for dashboard

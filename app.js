@@ -33,27 +33,17 @@ app.use(session({
   secret: secretConfig.SESSION_KEY,
   resave: false,
   saveUninitialized: true
-}))
+}));
 
-function connectDB() {
-  var con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: secretConfig.DB_PASSWORD,
-    database: 'mainwiki3',
-  });
-  con.connect(function(err) {
-      if (err) {
-          console.log("MySQL is not connected.");
-          throw err;
-      }
-      console.log("Connected to MySQL!");
-  });
-  return con;
-}
+var con = mysql.createPool({
+  connectionLimit : 90,
+  host: 'localhost',
+  user: 'root',
+  password: secretConfig.DB_PASSWORD,
+  database: 'mainwiki3',
+});
 
 function getCategoryId(category_name, cb) {
-  var con = connectDB();
   var sql = "SELECT id FROM categories WHERE name = ?;";
 
   con.query(sql, [category_name], function(err, result) {
@@ -63,12 +53,10 @@ function getCategoryId(category_name, cb) {
       else {
         cb({status: "NOK", error: "This category doesn't exist."});
       }
-      con.end();
   });
 }
 
 function getTagId(tag_name, cb) {
-  var con = connectDB();
   var sql = "SELECT id FROM tags WHERE name = ?;";
 
   con.query(sql, [tag_name], function(err, result) {
@@ -78,38 +66,30 @@ function getTagId(tag_name, cb) {
       else {
         cb({status: "NOK", error: "This tag doesn't exist."});
       }
-      con.end();
   });
 }
 
 function assignTagToFile(file_id, tag_id) {
-  var con = connectDB();
-
   var sql = "INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?);";
 
   con.query(sql, [file_id, tag_id], function(err, result) {
     console.log(result);
-    con.end();
   });
 };
 
 function insertNewTag(tag_name, cb) {
-  var con = connectDB();
   var sql = "INSERT INTO tags (name) VALUES (?);";
 
   con.query(sql, [tag_name], function(err, result) {
     cb({status: "OK", data: result.insertId});
-    con.end();
   });
 }
 
 function insertNewCategory(category_name, parentCategoryId, cb) {
-  var con = connectDB();
   var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?);";
 
   con.query(sql, [category_name, parentCategoryId], function(err, result) {
     cb({status: "OK", data: result.insertId});
-    con.end();
   });
 }
 
@@ -118,8 +98,6 @@ app.get("/api/categories/list", (req, res) => {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
-
-  var con = connectDB();
 
   var sql = "SELECT * FROM categories;";
 
@@ -134,7 +112,6 @@ app.get("/api/categories/list", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no categories."});
     }
-    con.end();
   });
 });
 
@@ -173,7 +150,6 @@ app.get("/api/tags/list", (req, res) => {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
-  var con = connectDB();
 
   var sql = "SELECT * FROM tags;";
 
@@ -188,7 +164,6 @@ app.get("/api/tags/list", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no categories."});
     }
-    con.end();
   });
 });
 
@@ -204,7 +179,6 @@ app.post("/api/files/insert", (req, res) => {
   var category_id = req.body.category;
   var tags = req.body.tags;
 
-  var con = connectDB();
   var sql = "INSERT INTO files (title, content, extension, category_id) VALUES (?, ?, ?, ?);";
   con.query(sql, [title, content, extension, category_id], function(err, result) {
     if (err) {
@@ -227,7 +201,6 @@ app.post("/api/files/insert", (req, res) => {
       }
     }
     res.json({status: "OK", data: "A file has been inserted successfully."});
-    con.end();
   });
 });
 
@@ -240,7 +213,6 @@ app.get("/api/files/get-files-from-category", (req, res) => {
   var text_file_extensions = ["txt", "md", "csv", "json"]
 
   console.log(category_id);
-  var con = connectDB();
   var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
 
   con.query(sql, [category_id, text_file_extensions], function(err, result) {
@@ -255,7 +227,6 @@ app.get("/api/files/get-files-from-category", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no files under this category."});
     }
-    con.end();
   });
 });
 
@@ -268,7 +239,6 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
   var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png', 'jfif', 'webp']
 
   console.log(category_id);
-  var con = connectDB();
   var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
 
   con.query(sql, [category_id, image_file_extensions], function(err, result) {
@@ -283,7 +253,6 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
     else {
       res.json({status: "NOK", error: "There are no files under this category."});
     }
-    con.end();
   });
 });
 
@@ -294,7 +263,6 @@ app.get("/api/files/getone", (req, res) => {
   }
   var file_id = req.query.id;
 
-  var con = connectDB();
   var sql = "SELECT f.*, c.parent_id, c.name AS category_name FROM files As f INNER JOIN categories AS c ON c.id = f.category_id WHERE f.id = ?;";
 
   con.query(sql, [file_id], function(err, result) {
@@ -323,7 +291,6 @@ app.get("/api/files/getone", (req, res) => {
           console.log("No tags have been found.");
         }
         res.json({status: "OK", data: file});
-        con.end();
       }); 
     }
     else {
@@ -340,22 +307,40 @@ app.get("/api/files/search", (req, res) => {
 
   var searchQuery = req.query.searchQuery;
 
-  var con = connectDB();
-  var sql = "SELECT f.id, f.title, c.name AS category_name, c2.name AS parent_category_name, c.id AS category_id FROM files f INNER JOIN categories c ON c.id = f.category_id INNER JOIN categories c2 ON c.parent_id = c2.id WHERE title LIKE ? OR content LIKE ?"
+  var sql = "SELECT f.title AS name, 'file' AS type, c.id AS category_id FROM files f INNER JOIN categories c ON c.id = f.category_id WHERE f.title LIKE ? OR f.content LIKE ? OR c.name LIKE ?";
 
-  con.query(sql, ['%' + searchQuery + '%', '%' + searchQuery + '%'], function(err, result) {
+  con.query(sql, ['%' + searchQuery + '%', '%' + searchQuery + '%', '%' + searchQuery + '%'], function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err.message});
       return;
     }
-    if (result.length > 0) {
-      res.json({status: "OK", data: result});
-    }
-    else {
-      res.json({status: "NOK", error: "No results have been found."});
-    }
-    con.end();
+
+    var sql2 = "SELECT c.name, 'category' AS type FROM categories c WHERE c.name LIKE ?";
+
+    con.query(sql2, ['%' + searchQuery + '%'], function(err2, result2) {
+      if (err2) {
+        console.log(err2);
+        res.json({status: "NOK", error: err2.message});
+        return;
+      }
+      console.log(result2);
+      var sql3 = "SELECT t.name, 'tag' AS type FROM tags t WHERE t.name LIKE ?";
+      con.query(sql3, ['%' + searchQuery + '%'], function(err3, result3) {
+        if (err3) {
+          console.log(err3);
+          res.json({status: "NOK", error: err3.message});
+          return;
+        }
+        var search_results = [...result2, ...result3, ...result];
+        if (search_results.length > 0) {
+          res.json({status: "OK", data: search_results});
+        }
+        else {
+          res.json({status: "NOK", error: "No results have been found."});
+        }
+      });
+    });
   });
 
 });
@@ -368,19 +353,16 @@ app.post("/api/files/delete", (req, res) => {
 
   var id = req.body.id;
 
-  var con = connectDB();
   var sql = "DELETE FROM files WHERE id = ?;";
   con.query(sql, [id], function(err, result) {
     var sql2 = "DELETE FROM files_tags WHERE file_id = ?;";
     con.query(sql2, [id], function(err2, result2) {
       res.json({status: "OK", data: "File has been deleted successfully."});
-      con.end();
     }) 
   });
 });
 
 function checkCategory(file_id, category_id, cb) {
-  var con = connectDB();
   var sql = "SELECT * FROM files WHERE file_id = ? AND category_id = ?;";
   con.query(sql, [file_id, category_id], function(err, result) {
     if (result.length > 0) {
@@ -389,12 +371,10 @@ function checkCategory(file_id, category_id, cb) {
     else {
       cb(false);
     }
-    con.end();
   })
 }
 
 function checkTag(file_id, tag_id, cb) {
-  var con = connectDB();
   var sql = "SELECT * FROM files_tags WHERE file_id = ? AND tag_id = ?;";
   con.query(sql, [file_id, tag_id], function(err, result) {
     if (result.length > 0) {
@@ -403,16 +383,13 @@ function checkTag(file_id, tag_id, cb) {
     else {
       cb(false);
     }
-    con.end();
   })
 }
 
 function deleteTagsFromFile(file_id, cb) {
-  var con = connectDB();
   var sql = "DELETE FROM files_tags WHERE file_id = ?;";
   con.query(sql, [file_id], function(err, result) {
     cb(true);
-    con.end();
   });
 }
 
@@ -431,7 +408,6 @@ app.post("/api/files/edit", (req, res) => {
 
   console.log(category_id);
 
-  var con = connectDB();
   var sql = "UPDATE files SET title = ?, content = ?, extension = ?, category_id = ? WHERE id = ?;";
   con.query(sql, [title, content, extension, category_id, id], function(err, result) {
     if (err) {
@@ -459,7 +435,6 @@ app.post("/api/files/edit", (req, res) => {
       });
     }
     res.json({status: "OK", data: "File has been edited successfully."});
-    con.end();
   });
 });
 
@@ -472,7 +447,6 @@ app.post("/api/files/append", (req, res) => {
   var id = req.body.id;
   var content = "\n" + req.body.content;
 
-  var con = connectDB();
   var sql = "UPDATE files SET content = CONCAT(content, ?) WHERE id = ?;";
   con.query(sql, [content, id], function(err, result) {
     if (err) {
@@ -480,7 +454,6 @@ app.post("/api/files/append", (req, res) => {
       res.json({status: "NOK", error: err});
     }
     res.json({status: "OK", data: "File has been appended successfully."});
-    con.end();
   });
 });
 
@@ -507,7 +480,6 @@ app.post('/api/upload-media-file', function(req, res) {
       return res.json({status: "NOK", error: err.message});
     }
 
-    var con = connectDB();
     var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
 
     con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath2, path.extname(file.name).replace(".", ""), category_id], function(err, result) {
@@ -533,7 +505,6 @@ app.post('/api/upload-media-file', function(req, res) {
         }
       }
       res.json({status: "OK", data: "A file has been inserted successfully."});
-      con.end();
     });
   });
 });
@@ -553,7 +524,6 @@ function downloadImage(imageUrl, category_id, tags, cb) {
     fs.writeFile(filepath, buffer, () => {
       console.log('File has been saved.');
 
-      var con = connectDB();
       var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
 
       con.query(sql, [new_filename, filepath2, ext, category_id], function(err, result) {
@@ -578,7 +548,6 @@ function downloadImage(imageUrl, category_id, tags, cb) {
           }
         }
         cb({status: "OK", data: "A file has been inserted successfully."});
-        con.end();
       });
     });
   })
