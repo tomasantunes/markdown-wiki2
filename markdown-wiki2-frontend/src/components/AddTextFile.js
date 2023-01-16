@@ -63,7 +63,10 @@ export default function AddTextFile() {
 
   function submitNewFile(e) {
     e.preventDefault();
-    console.log(newFile.tags);
+    if (newFile.title.trim() == "" || newFile.extension.trim() == "" || newFile.category.trim() == "" || newFile.content.trim() == "") {
+      alert("Fields cannot be empty.");
+      return;
+    }
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
       if (response.data.status == "OK") {

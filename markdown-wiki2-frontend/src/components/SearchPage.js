@@ -1,14 +1,14 @@
 import React from 'react';
 import Menu from "./Menu";
-import Dashboard from './Dashboard';
+import Search from './Search';
 
-export default function Home() {
+export default function SearchPage() {
   return (
     <>
       <div className="container-fluid full-height">
         <div className="row full-height">
           <Menu />
-          <Dashboard />
+          <Search />
         </div>
       </div>
     </>

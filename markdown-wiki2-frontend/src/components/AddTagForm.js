@@ -16,6 +16,12 @@ export default function AddTagForm() {
   
     function submitNewTag(e) {
       e.preventDefault();
+
+      if (newTag.tag.trim() == "") {
+        alert("Tag name cannot be empty.");
+        return;
+      }
+
       axios.post(config.BACKEND_URL + '/api/tags/insert', newTag)
       .then(function (response) {
         alert("A new tag has been inserted successfully.")
@@ -33,7 +39,7 @@ export default function AddTagForm() {
             <div className="form-group py-2">
                 <label className="control-label">Tag</label>
                 <div>
-                    <input type="text" className="form-control input-lg" name="category" value={newTag.tag} onChange={changeNewTagTag}/>
+                    <input type="text" className="form-control input-lg" name="tag" value={newTag.tag} onChange={changeNewTagTag}/>
                 </div>
             </div>
             <div className="form-group">

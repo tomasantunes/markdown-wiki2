@@ -6,6 +6,7 @@ import MenuItems from "./MenuItems";
 const Menu = () => {
   const menuItemsInitialState = [
     {title: "Home", link: "/"},
+    {title: "Search", link: "/search"},
     {title: "Add File", link: "/add-file"},
     {title: "Add Category", link: "/add-category"},
     {title: "Add Tag", link: "/add-tag"},
@@ -62,7 +63,7 @@ const Menu = () => {
   return (
     <div className="left-sidebar col-md-2 full-min-height">
       <ul className="menus">
-        <h2 className="brand">MarkdownWiki2</h2>
+        <h2 className="brand">MainWiki3</h2>
         {menuItems.map((menu, index) => {
           const depthLevel = 0;
           return <MenuItems items={menu} key={index} depthLevel={depthLevel} />;

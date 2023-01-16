@@ -24,6 +24,12 @@ export default function AddCategoryForm() {
 
   function submitNewCategory(e) {
     e.preventDefault();
+
+    if (newCategory.category.trim() == "" || newCategory.parentCategory.trim() == "") {
+      alert("Fields cannot be empty.");
+      return;
+    }
+
     axios.post(config.BACKEND_URL + '/api/categories/insert', newCategory)
     .then(function (response) {
       console.log(response['data']);

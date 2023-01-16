@@ -3,7 +3,6 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import logo from './logo.svg';
 import './App.css';
 import Home from './components/Home';
 import AddFile from './components/AddFile';
@@ -12,6 +11,7 @@ import AddTag from './components/AddTag';
 import CategoryPage from './components/CategoryPage';
 import Bookmarks from './components/Bookmarks';
 import Tag from './components/Tag';
+import SearchPage from './components/SearchPage';
 
 
 function App() {
@@ -19,6 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/add-file" element={<AddFile />} />
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/add-tag" element={<AddTag />} />

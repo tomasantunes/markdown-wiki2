@@ -13,6 +13,10 @@ export default function Search() {
 
   function submitSearch(e) {
     e.preventDefault();
+    if (searchQuery.trim() == "") {
+      alert("Search query cannot be empty.");
+      return;
+    }
     setResults([]);
     axios.get(config.BACKEND_URL + "/api/files/search", {
       params: {
@@ -62,7 +66,7 @@ export default function Search() {
                   link = "/categories/" + result['category_id'] + "#" + result['id'];
                 }
                 else if (result['type'] == "tag") {
-                  link = "";
+                  link = "/tag/" + result['id'];
                 }
 
                 return (

@@ -43,6 +43,12 @@ export default function AddMediaFile() {
 
   const submitNewFile = (e) => {
     e.preventDefault();
+
+    if (addMediaFile.file.trim() == "" || addMediaFile.category == "") {
+      alert("Fields cannot be empty.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", addMediaFile.file);
     formData.append("category", addMediaFile.category);
