@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
+import swal from '@sweetalert/with-react';
 
 export default function AddCategoryForm() {
   const [newCategory, setNewCategory] = useState({
@@ -26,7 +27,7 @@ export default function AddCategoryForm() {
     e.preventDefault();
 
     if (newCategory.category.trim() == "" || newCategory.parentCategory.trim() == "") {
-      alert("Fields cannot be empty.");
+      swal("Fields cannot be empty.");
       return;
     }
 

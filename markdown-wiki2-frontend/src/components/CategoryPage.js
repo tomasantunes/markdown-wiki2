@@ -8,6 +8,7 @@ import { CsvToHtmlTable } from 'react-csv-to-table';
 import Menu from './Menu';
 import Select from 'react-select';
 import path from 'path-browserify';
+import swal from '@sweetalert/with-react';
 
 export default function CategoryPage() {
   const {id} = useParams();
@@ -76,7 +77,7 @@ export default function CategoryPage() {
       });
     })
     .catch(function(err) {
-      alert(err.message);
+      swal(err.message);
     })
   }
 
@@ -93,10 +94,10 @@ export default function CategoryPage() {
     axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
     .then(function(response) {
       loadFiles();
-      alert("File has been deleted.")
+      swal("File has been deleted.")
     })
     .catch(function(err) {
-      alert(err.message);
+      swal(err.message);
     });
   }
 
@@ -105,11 +106,11 @@ export default function CategoryPage() {
     axios.post(config.BACKEND_URL + '/api/files/edit', editFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        alert("File has been edited sucessfully.");
+        swal("File has been edited sucessfully.");
         loadFiles();
       }
       else {
-        alert(response.data.error);
+        swal(response.data.error);
       }
     })
     .catch(function (error) {
@@ -122,11 +123,11 @@ export default function CategoryPage() {
     axios.post(config.BACKEND_URL + '/api/files/append', appendToFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        alert("File has been appended sucessfully.");
+        swal("File has been appended sucessfully.");
         loadFiles();
       }
       else {
-        alert(response.data.error);
+        swal(response.data.error);
       }
     })
     .catch(function (error) {
@@ -269,7 +270,7 @@ export default function CategoryPage() {
       }
     })
     .catch(function(err) {
-      alert(err.message);
+      swal(err.message);
     }); 
   }
 

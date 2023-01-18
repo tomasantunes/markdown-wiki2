@@ -3,6 +3,7 @@ import axios from 'axios';
 import config from '../config.json';
 import FileUploader from './FileUploader';
 import Select from 'react-select';
+import swal from '@sweetalert/with-react';
 
 export default function AddMediaFile() {
   const [addMediaFile, setAddMediaFile] = useState({
@@ -45,7 +46,7 @@ export default function AddMediaFile() {
     e.preventDefault();
 
     if (addMediaFile.file.trim() == "" || addMediaFile.category == "") {
-      alert("Fields cannot be empty.");
+      swal("Fields cannot be empty.");
       return;
     }
 
@@ -58,14 +59,14 @@ export default function AddMediaFile() {
       .post(config.BACKEND_URL + "/api/upload-media-file", formData)
       .then((response) => {
         if (response.data.status == "OK") {
-          alert("File has been uploaded successfully.");
+          swal("File has been uploaded successfully.");
         }
         else {
           console.log(response.data.error);
-          alert(response.data.error);
+          swal(response.data.error);
         }
       })
-      .catch((err) => alert("File Upload Error"));
+      .catch((err) => swal("File Upload Error"));
   };
 
   function loadCategories() {
@@ -118,7 +119,7 @@ export default function AddMediaFile() {
       }
     })
     .catch(function(err) {
-      alert(err.message);
+      swal(err.message);
     }); 
   }
 
@@ -133,7 +134,7 @@ export default function AddMediaFile() {
         <h1>Add Media File</h1>
         <form onSubmit={submitNewFile}>
           <div className="form-group py-2">
-              <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => alert(error)} />
+              <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => swal(error)} />
           </div>
           <div className="form-group py-2">
               <label className="control-label">Category</label>

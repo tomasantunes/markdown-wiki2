@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
+import swal from '@sweetalert/with-react';
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,7 +15,7 @@ export default function Search() {
   function submitSearch(e) {
     e.preventDefault();
     if (searchQuery.trim() == "") {
-      alert("Search query cannot be empty.");
+      swal("Search query cannot be empty.");
       return;
     }
     setResults([]);
@@ -29,11 +30,11 @@ export default function Search() {
         setResults(response.data.data);
       }
       else {
-        alert(response.data.error);
+        swal(response.data.error);
       }
     })
     .catch(function(err) {
-      alert(err.message);
+      swal(err.message);
     });
   }
 
