@@ -115,6 +115,34 @@ app.get("/api/categories/list", (req, res) => {
   });
 });
 
+app.get("/api/get-10-random-sentences", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var text_file_extensions = ["txt", "md"];
+
+  var sql = "SELECT * FROM files WHERE extension IN (?) ORDER BY RAND() LIMIT 10;";
+  con.query(sql, [text_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    var sentences = [];
+    for (var i in result) {
+      var content = result[i]['content'];
+      var lines = content.split("\n");
+      lines = lines.filter(function(line) {
+        return line.trim() != "";
+      });
+      var random_line = lines[Math.floor(Math.random() * lines.length)];
+      sentences.push(random_line);
+    }
+    res.json({status: "OK", data: sentences});
+  });
+});
+
 app.post("/api/categories/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
