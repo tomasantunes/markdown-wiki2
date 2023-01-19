@@ -8,3 +8,4 @@
 - Create list of 10 largest text files
 - Create wordcloud with 50 most common words excluding stopwords.
 - Create page with pinned files.
+- Add PDF files.
