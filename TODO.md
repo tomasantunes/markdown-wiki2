@@ -2,7 +2,6 @@
 
 - Change category listing to support infinite nesting levels
 - Apply tags to all files
-- Fix formatting error on ordered lists.
 - Create list of top 10 tags by nr. of files.
 - Create list of top 10 categories by nr. of files.
 - Create list of 10 most recent submissions
