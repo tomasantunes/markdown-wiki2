@@ -64,7 +64,7 @@ export default function AddTextFile() {
 
   function submitNewFile(e) {
     e.preventDefault();
-    if (newFile.title.trim() == "" || newFile.extension.trim() == "" || newFile.category.trim() == "" || newFile.content.trim() == "") {
+    if (newFile.title.trim() == "" || newFile.extension.trim() == "" || newFile.category == "" || newFile.content.trim() == "") {
       swal("Fields cannot be empty.");
       return;
     }
