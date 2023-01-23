@@ -43,6 +43,7 @@ var con = mysql.createPool({
   database: 'mainwiki3',
 });
 
+// Functions
 function getCategoryId(category_name, cb) {
   var sql = "SELECT id FROM categories WHERE name = ?;";
 
@@ -93,28 +94,87 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
   });
 }
 
-app.get("/api/categories/list", (req, res) => {
-  if (!req.session.isLoggedIn) {
-    res.json({status: "NOK", error: "Invalid Authorization."});
-    return;
-  }
-
-  var sql = "SELECT * FROM categories;";
-
-  con.query(sql, [], function(err, result) {
-    if (err) {
-      console.log(err.message);
-      res.json({status: "NOK", error: err.message});
-    }
+function checkCategory(file_id, category_id, cb) {
+  var sql = "SELECT * FROM files WHERE file_id = ? AND category_id = ?;";
+  con.query(sql, [file_id, category_id], function(err, result) {
     if (result.length > 0) {
-      res.json({status: "OK", data: result});
+      cb(true);
     }
     else {
-      res.json({status: "NOK", error: "There are no categories."});
+      cb(false);
     }
-  });
-});
+  })
+}
 
+function checkTag(file_id, tag_id, cb) {
+  var sql = "SELECT * FROM files_tags WHERE file_id = ? AND tag_id = ?;";
+  con.query(sql, [file_id, tag_id], function(err, result) {
+    if (result.length > 0) {
+      cb(true);
+    }
+    else {
+      cb(false);
+    }
+  })
+}
+
+function deleteTagsFromFile(file_id, cb) {
+  var sql = "DELETE FROM files_tags WHERE file_id = ?;";
+  con.query(sql, [file_id], function(err, result) {
+    cb(true);
+  });
+}
+
+function downloadImage(imageUrl, category_id, tags, cb) {
+  axios
+  .get(imageUrl, {
+    responseType: 'arraybuffer'
+  })
+  .then(response => {
+    var buffer = Buffer.from(response.data, 'binary');
+    const contentType = response.headers['content-type'];
+    const ext = extension(contentType);
+    var new_filename = crypto.randomBytes(16).toString('hex');
+    const filepath = __dirname + "/media-files/" + new_filename + ext;
+    const filepath2 = "media-files/" + new_filename + ext;
+    fs.writeFile(filepath, buffer, () => {
+      console.log('File has been saved.');
+
+      var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
+
+      con.query(sql, [new_filename, filepath2, ext, category_id], function(err, result) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+
+        var file_id = result.insertId;
+
+        if (tags != "" && tags != undefined) {
+          var tags_arr = tags.split(",");
+          for (var i in tags_arr) {
+            getTagId(tags_arr[i], function(result) {
+              if (result.status == "OK") {
+                assignTagToFile(file_id, result.data);
+              }
+              else {
+                console.log("Tag not found.");
+              }
+            });
+          }
+        }
+        cb({status: "OK", data: "A file has been inserted successfully."});
+      });
+    });
+  })
+  .catch(function(err) {
+    console.log(err.message);
+    cb({status: "NOK", error: err.message});
+  });
+  
+}
+
+// Dashboard Routes
 app.get("/api/get-10-random-sentences", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -143,6 +203,62 @@ app.get("/api/get-10-random-sentences", (req, res) => {
   });
 });
 
+app.get("/api/get-top10-categories", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT categories.name, COUNT(files.category_id) AS count FROM files INNER JOIN categories ON files.category_id = categories.id GROUP BY files.category_id ORDER BY count DESC LIMIT 10;";
+  con.query(sql, [], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    res.json({status: "OK", data: result});
+  });
+});
+
+app.get("/api/get-top10-tags", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT tags.name, COUNT(files_tags.tag_id) AS count FROM files_tags INNER JOIN tags ON files_tags.tag_id = tags.id GROUP BY files_tags.tag_id ORDER BY count DESC LIMIT 10;";
+  con.query(sql, [], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    res.json({status: "OK", data: result});
+  });
+});
+
+
+// Categories CRUD Routes
+app.get("/api/categories/list", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT * FROM categories;";
+
+  con.query(sql, [], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no categories."});
+    }
+  });
+});
+
 app.post("/api/categories/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -156,6 +272,8 @@ app.post("/api/categories/insert", (req, res) => {
   });
 });
 
+
+// Tags CRUD Routes
 app.post("/api/tags/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -195,6 +313,8 @@ app.get("/api/tags/list", (req, res) => {
   });
 });
 
+
+// Files Routes
 app.post("/api/files/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -438,36 +558,7 @@ app.post("/api/files/delete", (req, res) => {
   });
 });
 
-function checkCategory(file_id, category_id, cb) {
-  var sql = "SELECT * FROM files WHERE file_id = ? AND category_id = ?;";
-  con.query(sql, [file_id, category_id], function(err, result) {
-    if (result.length > 0) {
-      cb(true);
-    }
-    else {
-      cb(false);
-    }
-  })
-}
 
-function checkTag(file_id, tag_id, cb) {
-  var sql = "SELECT * FROM files_tags WHERE file_id = ? AND tag_id = ?;";
-  con.query(sql, [file_id, tag_id], function(err, result) {
-    if (result.length > 0) {
-      cb(true);
-    }
-    else {
-      cb(false);
-    }
-  })
-}
-
-function deleteTagsFromFile(file_id, cb) {
-  var sql = "DELETE FROM files_tags WHERE file_id = ?;";
-  con.query(sql, [file_id], function(err, result) {
-    cb(true);
-  });
-}
 
 app.post("/api/files/edit", (req, res) => {
   if (!req.session.isLoggedIn) {
@@ -533,6 +624,8 @@ app.post("/api/files/append", (req, res) => {
   });
 });
 
+// Upload Media Files Routes
+
 app.post('/api/upload-media-file', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -585,55 +678,6 @@ app.post('/api/upload-media-file', function(req, res) {
   });
 });
 
-function downloadImage(imageUrl, category_id, tags, cb) {
-  axios
-  .get(imageUrl, {
-    responseType: 'arraybuffer'
-  })
-  .then(response => {
-    var buffer = Buffer.from(response.data, 'binary');
-    const contentType = response.headers['content-type'];
-    const ext = extension(contentType);
-    var new_filename = crypto.randomBytes(16).toString('hex');
-    const filepath = __dirname + "/media-files/" + new_filename + ext;
-    const filepath2 = "media-files/" + new_filename + ext;
-    fs.writeFile(filepath, buffer, () => {
-      console.log('File has been saved.');
-
-      var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
-
-      con.query(sql, [new_filename, filepath2, ext, category_id], function(err, result) {
-        if (err) {
-          console.log(err);
-          return;
-        }
-
-        var file_id = result.insertId;
-
-        if (tags != "" && tags != undefined) {
-          var tags_arr = tags.split(",");
-          for (var i in tags_arr) {
-            getTagId(tags_arr[i], function(result) {
-              if (result.status == "OK") {
-                assignTagToFile(file_id, result.data);
-              }
-              else {
-                console.log("Tag not found.");
-              }
-            });
-          }
-        }
-        cb({status: "OK", data: "A file has been inserted successfully."});
-      });
-    });
-  })
-  .catch(function(err) {
-    console.log(err.message);
-    cb({status: "NOK", error: err.message});
-  });
-  
-}
-
 app.post('/api/upload-image-url', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -669,6 +713,7 @@ app.get("/api/bookmarks", (req, res) => {
   res.sendFile(__dirname + "/bookmarks/bookmarks.txt");
 });
 
+// Authentication Routes
 app.get("/login/:secret_token", (req, res) => {
   var secret_token = req.params.secret_token;
 
@@ -685,6 +730,8 @@ app.get("/login/:secret_token", (req, res) => {
   }
 });
 
+
+// Front-End Routes
 app.use(express.static('main-wiki3-frontend/build'));
 
 app.get('/*', (req,res) => {
