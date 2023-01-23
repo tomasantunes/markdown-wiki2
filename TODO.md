@@ -10,3 +10,4 @@
 - Create page with pinned files.
 - Add PDF files.
 - Add button to edit images.
+- Create form to upload image by URL
