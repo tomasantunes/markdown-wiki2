@@ -10,8 +10,5 @@
 - Create page with pinned files.
 - Add PDF files.
 - Add button to edit images.
-<<<<<<< HEAD
 - Create form to upload image by URL
-=======
 - Change delay when hiding pop-up menu.
->>>>>>> 4a1c98ba58612aaa5ccbde0005b51359d99f4fa4
