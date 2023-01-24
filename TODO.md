@@ -12,3 +12,5 @@
 - Add button to edit images.
 - Create form to upload image by URL
 - Change delay when hiding pop-up menu.
+- Export files for download.
+- Create a markdown visual editor.
