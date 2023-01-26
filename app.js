@@ -235,6 +235,27 @@ app.get("/api/get-top10-tags", (req, res) => {
   });
 });
 
+app.get("/api/get-10-most-recent", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT * FROM files ORDER BY id DESC LIMIT 10;";
+  con.query(sql, [], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files."});
+    }
+  });
+});
+
 
 // Categories CRUD Routes
 app.get("/api/categories/list", (req, res) => {

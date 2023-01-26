@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
+import {Link} from 'react-router-dom';
 
 export default function Dashboard() {
   const [list10RandomSentences, setList10RandomSentences] = useState([]);
   const [listTop10Categories, setListTop10Categories] = useState([]);
   const [listTop10Tags, setListTop10Tags] = useState([]);
+  const [list10MostRecent, setList10MostRecent] = useState([]);
 
   function load10RandomSentences() {
     axios
@@ -33,7 +35,30 @@ export default function Dashboard() {
     axios
       .get(config.BACKEND_URL + "/api/get-top10-tags")
       .then((response) => {
-        setListTop10Tags(response.data.data);
+        console.log(response.data);
+        if (response.data.status == "OK") {
+          setListTop10Tags(response.data.data);
+        }
+        else {
+          alert(response.data.error);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function load10MostRecent() {
+    axios
+      .get(config.BACKEND_URL + "/api/get-10-most-recent")
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.status == "OK") {
+          setList10MostRecent(response.data.data);
+        }
+        else {
+          alert(response.data.error);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -44,6 +69,7 @@ export default function Dashboard() {
     load10RandomSentences();
     loadTop10Categories();
     loadTop10Tags();
+    load10MostRecent();
   }, []);
   return (
     <div className="col-md-10 full-min-height p-5">
@@ -66,6 +92,12 @@ export default function Dashboard() {
           <li key={index}>{item.name}</li>
         ))}
       </ol>
+      <h3>10 Most Recent Files</h3>
+      <ul className="list-10-most-recent">
+        {list10MostRecent.map((item, index) => (
+          <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
+        ))}
+      </ul>
     </div>
   )
 }
