@@ -174,6 +174,74 @@ function downloadImage(imageUrl, category_id, tags, cb) {
   
 }
 
+function nthMostCommon(str, amount) {
+
+  const stickyWords =[
+    "the",
+    "there",
+    "by",
+    "at",
+    "and",
+    "so",
+    "if",
+    "than",
+    "but",
+    "about",
+    "in",
+    "on",
+    "the",
+    "was",
+    "for",
+    "that",
+    "said",
+    "a",
+    "or",
+    "of",
+    "to",
+    "there",
+    "will",
+    "be",
+    "what",
+    "get",
+    "go",
+    "think",
+    "just",
+    "every",
+    "are",
+    "it",
+    "were",
+    "had",
+    "i",
+    "very",
+    ];
+    str= str.toLowerCase();
+    var splitUp = str.split(/\s/);
+    const wordsArray = splitUp.filter(function(x){
+    return !stickyWords.includes(x) ;
+            });
+    var wordOccurrences = {}
+    for (var i = 0; i < wordsArray.length; i++) {
+        wordOccurrences['_'+wordsArray[i]] = ( wordOccurrences['_'+wordsArray[i]] || 0 ) + 1;
+    }
+    var result = Object.keys(wordOccurrences).reduce(function(acc, currentKey) {
+        /* you may want to include a binary search here */
+        for (var i = 0; i < amount; i++) {
+            if (!acc[i]) {
+                acc[i] = { word: currentKey.slice(1, currentKey.length), occurences: wordOccurrences[currentKey] };
+                break;
+            } else if (acc[i].occurences < wordOccurrences[currentKey]) {
+                acc.splice(i, 0, { word: currentKey.slice(1, currentKey.length), occurences: wordOccurrences[currentKey] });
+                if (acc.length > amount)
+                    acc.pop();
+                break;
+            }
+        }
+        return acc;
+    }, []);
+ 
+    return result;
+    }
+
 // Dashboard Routes
 app.get("/api/get-10-random-sentences", (req, res) => {
   if (!req.session.isLoggedIn) {
@@ -200,6 +268,30 @@ app.get("/api/get-10-random-sentences", (req, res) => {
       sentences.push(random_line);
     }
     res.json({status: "OK", data: sentences});
+  });
+});
+
+app.get("/api/get-50-most-common-words", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var text_file_extensions = ["txt", "md"];
+
+  var sql = "SELECT * FROM files WHERE extension IN (?)";
+  con.query(sql, [text_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    var text = "";
+    for (var i in result) {
+      var content = result[i]['content'];
+      text += content;
+    }
+    var words = nthMostCommon(text, 50);
+    res.json({status: "OK", data: words});
   });
 });
 

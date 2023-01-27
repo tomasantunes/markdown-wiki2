@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
+import ReactWordcloud from 'react-wordcloud';
 
 export default function Dashboard() {
   const [list10RandomSentences, setList10RandomSentences] = useState([]);
@@ -9,6 +10,12 @@ export default function Dashboard() {
   const [listTop10Tags, setListTop10Tags] = useState([]);
   const [list10MostRecent, setList10MostRecent] = useState([]);
   const [list10Largest, setList10Largest] = useState([]);
+  const [list50MostCommonWords, setList50MostCommonWords] = useState([]);
+  const wordCloudSize = [600, 400];
+  const wordCloudOptions = {
+    rotations: 0,
+    rotationAngles: [0, 0],
+  };
 
   function load10RandomSentences() {
     axios
@@ -36,7 +43,6 @@ export default function Dashboard() {
     axios
       .get(config.BACKEND_URL + "/api/get-top10-tags")
       .then((response) => {
-        console.log(response.data);
         if (response.data.status == "OK") {
           setListTop10Tags(response.data.data);
         }
@@ -53,7 +59,6 @@ export default function Dashboard() {
     axios
       .get(config.BACKEND_URL + "/api/get-10-most-recent")
       .then((response) => {
-        console.log(response.data);
         if (response.data.status == "OK") {
           setList10MostRecent(response.data.data);
         }
@@ -70,9 +75,30 @@ export default function Dashboard() {
     axios
       .get(config.BACKEND_URL + "/api/get-10-largest")
       .then((response) => {
-        console.log(response.data);
         if (response.data.status == "OK") {
           setList10Largest(response.data.data);
+        }
+        else {
+          alert(response.data.error);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function load50MostCommonWords() {
+    axios
+      .get(config.BACKEND_URL + "/api/get-50-most-common-words")
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.status == "OK") {
+          var words = [];
+          for (var i in response.data.data) {
+            words.push({text: response.data.data[i].word, value: 50})
+          }
+          console.log(words);
+          setList50MostCommonWords(words);
         }
         else {
           alert(response.data.error);
@@ -89,6 +115,7 @@ export default function Dashboard() {
     loadTop10Tags();
     load10MostRecent();
     load10Largest();
+    load50MostCommonWords();
   }, []);
   return (
     <div className="col-md-10 full-min-height p-5">
@@ -123,6 +150,8 @@ export default function Dashboard() {
           <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
         ))}
       </ol>
+      <h3>Top 50 Most Common Words</h3>
+      <ReactWordcloud words={list50MostCommonWords} size={wordCloudSize} options={wordCloudOptions} />
     </div>
   )
 }
