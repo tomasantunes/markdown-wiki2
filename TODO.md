@@ -11,3 +11,4 @@
 - Fix error when linking to files
 - Export files for download.
 - Create a markdown visual editor.
+- Change "Add Category" form to use a dropdown for the parent category.
