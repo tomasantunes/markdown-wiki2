@@ -11,6 +11,7 @@ const Menu = () => {
     {title: "Add Category", link: "/add-category"},
     {title: "Add Tag", link: "/add-tag"},
     {title: "Bookmarks", link: "/bookmarks"},
+    {title: "Pinned", link: "/pinned"},
   ];
 
   const [menuItems, setMenuItems] = useState(menuItemsInitialState);
@@ -63,7 +64,7 @@ const Menu = () => {
   return (
     <div className="left-sidebar col-md-2 full-min-height">
       <ul className="menus">
-        <h2 className="brand">Markdown Wiki 2</h2>
+        <h2 className="brand">MarkdownWiki2</h2>
         {menuItems.map((menu, index) => {
           const depthLevel = 0;
           return <MenuItems items={menu} key={index} depthLevel={depthLevel} />;

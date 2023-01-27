@@ -536,6 +536,30 @@ app.get("/api/files/get-files-from-tag", (req, res) => {
   });
 });
 
+app.get("/api/files/get-pinned-files", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var text_file_extensions = ["txt", "md", "csv", "json"];
+
+  var sql = "SELECT f.* FROM files AS f WHERE f.pinned = 1 AND f.extension IN (?)";
+
+  con.query(sql, [text_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files under this category."});
+    }
+  });
+});
+
 app.get("/api/files/get-image-files-from-category", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -562,6 +586,30 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
 });
 
 app.get("/api/files/get-image-files-from-tag", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var image_file_extensions = ['jpg', 'jpeg', 'gif', 'png', 'jfif', 'webp'];
+
+  var sql = "SELECT f.* FROM files AS f WHERE f.pinned = 1 AND f.extension IN (?)";
+
+  con.query(sql, [image_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no files under this category."});
+    }
+  });
+});
+
+app.get("/api/files/get-pinned-images", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
@@ -755,6 +803,42 @@ app.post("/api/files/append", (req, res) => {
       res.json({status: "NOK", error: err});
     }
     res.json({status: "OK", data: "File has been appended successfully."});
+  });
+});
+
+app.post("/api/files/pin", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+
+  var sql = "UPDATE files SET pinned = 1 WHERE id = ?;";
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    res.json({status: "OK", data: "File has been pinned."});
+  });
+});
+
+app.post("/api/files/unpin", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+
+  var sql = "UPDATE files SET pinned = 0 WHERE id = ?;";
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    res.json({status: "OK", data: "File has been unpinned."});
   });
 });
 

@@ -12,6 +12,7 @@ import CategoryPage from './components/CategoryPage';
 import Bookmarks from './components/Bookmarks';
 import Tag from './components/Tag';
 import SearchPage from './components/SearchPage';
+import Pinned from './components/Pinned';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/categories/:id" element={<CategoryPage />}/>
         <Route path="/tag/:id" element={<Tag />}/>
         <Route path="/bookmarks" element={<Bookmarks />} />
+        <Route path="/pinned" element={<Pinned />} />
       </Routes>
     </BrowserRouter>
   );

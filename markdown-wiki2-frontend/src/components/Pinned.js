@@ -10,8 +10,7 @@ import Select from 'react-select';
 import path from 'path-browserify';
 import swal from '@sweetalert/with-react';
 
-export default function CategoryPage() {
-  const {id} = useParams();
+export default function Pinned() {
   const location = useLocation();
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
@@ -190,8 +189,8 @@ export default function CategoryPage() {
   function unpinFile(e) {
     axios.post(config.BACKEND_URL + "/api/files/unpin", {id: e.target.value})
     .then(function(response) {
-      loadFiles();
       swal("File has been unpinned.");
+      loadFiles();
     })
     .catch(function(err) {
       swal(err.message);
@@ -206,11 +205,7 @@ export default function CategoryPage() {
   }
 
   function loadFiles() {
-    axios.get(config.BACKEND_URL + "/api/files/get-files-from-category", {
-      params: {
-        id: id
-      }
-    })
+    axios.get(config.BACKEND_URL + "/api/files/get-pinned-files")
     .then(function(response) {
       if (response['data'].status == "OK") {
         setFiles(response['data']['data']);
@@ -225,11 +220,7 @@ export default function CategoryPage() {
   }
 
   function loadImageFiles() {
-    axios.get(config.BACKEND_URL + "/api/files/get-image-files-from-category", {
-      params: {
-        id: id
-      }
-    })
+    axios.get(config.BACKEND_URL + "/api/files/get-pinned-images")
     .then(function(response) {
       if (response['data'].status == "OK") {
         setImageFiles(response['data']['data']);
@@ -297,11 +288,6 @@ export default function CategoryPage() {
     }); 
   }
 
-  useEffect(() => {
-    loadImageFiles();
-    loadFiles();
-  }, [id]);
-
   function scrollToFile() {
     const hash = location.hash
     const el = hash && document.getElementById(hash.substr(1))
@@ -325,6 +311,8 @@ export default function CategoryPage() {
   useEffect(() =>{
     loadCategories();
     loadTags();
+    loadImageFiles();
+    loadFiles();
   },[])
   return (
     <>
@@ -336,12 +324,12 @@ export default function CategoryPage() {
             <ul className="index">
               {imageFiles.map((image) => 
                 <li key={image['id']}>
-                  <Link to={{ pathname: "/categories/" + id, hash: "#" + image['id'] }}>{image['title']}</Link>
+                  <Link to={{ pathname: "/pinned", hash: "#" + image['id'] }}>{image['title']}</Link>
                 </li>
               )}
               {files.map((file) => 
                 <li key={file['id']}>
-                  <Link to={{ pathname: "/categories/" + id, hash: "#" + file['id'] }}>{file['title']}</Link>
+                  <Link to={{ pathname: "/pinned", hash: "#" + file['id'] }}>{file['title']}</Link>
                 </li>
               )}
             </ul>

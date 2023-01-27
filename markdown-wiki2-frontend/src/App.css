@@ -198,6 +198,10 @@ ul {
   margin-right: 15px;
 }
 
+.pin-btn {
+  margin-right: 15px;
+}
+
 .swal-button--confirm {
   background-color: #0B5ED7 !important;
 }
