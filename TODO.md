@@ -2,7 +2,6 @@
 
 - Change category listing to support infinite nesting levels
 - Apply tags to all files
-- Create page with pinned files.
 - Add PDF files.
 - Add button to edit images.
 - Create form to upload image by URL
