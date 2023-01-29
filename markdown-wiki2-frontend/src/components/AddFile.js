@@ -1,7 +1,7 @@
 import React from 'react';
 import Menu from './Menu';
 import AddTextFile from './AddTextFile';
-import AddMediaFile from './AddMediaFile'
+import AddMediaFile from './AddMediaFile';
 
 export default function AddFile() {
   return (

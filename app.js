@@ -935,6 +935,8 @@ app.get("/api/bookmarks", (req, res) => {
 app.get("/login/:secret_token", (req, res) => {
   var secret_token = req.params.secret_token;
 
+  console.log(secret_token);
+  console.log(secretConfig.SECRET_TOKEN);
   if (secret_token == secretConfig.SECRET_TOKEN) {
     req.session.isLoggedIn = true;
     let file = editJson(`${__dirname}/sessions.json`);

@@ -4,6 +4,7 @@ import config from '../config.json';
 import FileUploader from './FileUploader';
 import Select from 'react-select';
 import swal from '@sweetalert/with-react';
+import AddImageURL from './AddImageURL';
 
 export default function AddMediaFile() {
   const [addMediaFile, setAddMediaFile] = useState({
@@ -154,6 +155,7 @@ export default function AddMediaFile() {
               </div>
           </div>
         </form>
+        <AddImageURL />
       </div>
     </div>
   )
