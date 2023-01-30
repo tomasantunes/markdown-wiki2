@@ -81,6 +81,63 @@ export default function Pinned() {
     })
   }
 
+  function showEditImage(e) {
+    var id = e.target.value;
+
+    axios.get(config.BACKEND_URL + "/api/files/getone", {
+      params: {
+        id: id
+      }
+    })
+    .then(function(response) {
+      setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
+      var extension = extensions.filter(e => {
+        return e.value === response.data.data.extension
+      });
+      setSelectedExtension(extension);
+      if (response.data.data.hasOwnProperty("tags")) {
+        var tags_sel = [];
+        var tags_arr = response.data.data.tags.split(",");
+        for (var i in tags_arr) {
+          var tag = tags.filter(t => {
+            return t.label === tags_arr[i];
+          })[0];
+          tags_sel.push(tag);
+        }
+        setSelectedTags(tags_sel);
+      }
+      setEditFile({
+        id: response.data.data.id,
+        title: response.data.data.title,
+        content: "",
+        category: response.data.data.category_id,
+        tags: response.data.data.tags,
+        extension: ""
+      });
+    })
+    .catch(function(err) {
+      swal(err.message);
+    })
+
+  }
+
+  function submitEditImage(e) {
+    e.preventDefault();
+    axios.post(config.BACKEND_URL + '/api/images/edit', editFile)
+    .then(function (response) {
+      if (response.data.status == "OK") {
+        swal("File has been edited sucessfully.");
+        loadFiles();
+      }
+      else {
+        swal(response.data.error);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
   function showAppendToFile(e) {
     var id = e.target.value;
     
@@ -342,6 +399,7 @@ export default function Pinned() {
                     </div>
                     <div className="col-md-4 text-end">
                       {image['pinned'] == 0 ? <button class="btn btn-primary pin-btn" value={image['id']} onClick={pinFile}>Pin</button> : <button class="btn btn-secondary pin-btn" value={image['id']} onClick={unpinFile}>Unpin</button>}
+                      <button class="btn btn-primary edit-btn" value={image['id']} onClick={showEditImage} data-bs-toggle="modal" data-bs-target=".editImageModal">Edit</button>
                       <button class="btn btn-danger delete-btn" value={image['id']} onClick={deleteFile}>Delete</button>
                     </div>
                   </div>
@@ -426,6 +484,47 @@ export default function Pinned() {
                 <div className="form-group py-2">
                   <label className="control-label">Extension</label>
                   <Select value={selectedExtension} options={extensions} onChange={changeEditFileExtension} />
+                </div>
+                <div className="form-group">
+                    <div style={{textAlign: "right"}}>
+                        <button type="submit" className="btn btn-primary">Save</button>
+                    </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal editImageModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form onSubmit={submitEditImage}>
+                <div className="form-group py-2">
+                    <label className="control-label">Title</label>
+                    <div>
+                        <input type="text" className="form-control input-lg" name="content" value={editFile.title} onChange={changeEditFileTitle} />
+                    </div>
+                </div>
+                <div className="form-group py-2">
+                    <label className="control-label">Category</label>
+                    <div>
+                        <Select value={selectedCategory}options={categories} onChange={changeEditFileCategory} />
+                    </div>
+                </div>
+                <div className="form-group py-2">
+                    <label className="control-label">Tags</label>
+                    <div>
+                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} />
+                    </div>
                 </div>
                 <div className="form-group">
                     <div style={{textAlign: "right"}}>

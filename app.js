@@ -842,7 +842,7 @@ app.post("/api/files/unpin", (req, res) => {
   });
 });
 
-// Upload Media Files Routes
+// Images Routes
 
 app.post('/api/upload-media-file', function(req, res) {
   if (!req.session.isLoggedIn) {
@@ -922,6 +922,50 @@ app.get("/api/images/get/:filename", (req, res) => {
   res.sendFile(__dirname + "/media-files/" + filename);
 });
 
+app.post("/api/images/edit", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+  var title = req.body.title;
+  var category_id = req.body.category;
+  var tags = req.body.tags;
+
+  var sql = "UPDATE files SET title = ?, category_id = ? WHERE id = ?;";
+
+  con.query(sql, [title, category_id, id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    if (tags == undefined || tags == "") {
+      deleteTagsFromFile(id, function(result) {
+        console.log("Tags have been deleted.")
+      });
+    }
+    else {
+      var tags_arr = tags.split(",");
+      deleteTagsFromFile(id, function(result) {
+        for (var i in tags_arr) {
+          getTagId(tags_arr[i], function(result) {
+            if (result.status == "OK") {
+              assignTagToFile(id, result.data);
+            }
+            else {
+              res.json({status: "NOK", error: "Tag not found."});
+            }
+          });
+        }
+      });
+    }
+    res.json({status: "OK", data: "Images has been edited successfully."});
+  });
+});
+
+
+// Bookmarks Routes
 app.get("/api/bookmarks", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
