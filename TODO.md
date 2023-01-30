@@ -14,3 +14,4 @@
 - Create button with modal to set category sort index.
 - Pop an alert when adding category.
 - Create dropdown to sort category files.
+- Display category title on category's page.
