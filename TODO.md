@@ -8,3 +8,4 @@
 - Export files for download.
 - Create a markdown visual editor.
 - Change "Add Category" form to use a dropdown for the parent category.
+- Create page for organized bookmarks
