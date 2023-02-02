@@ -5,6 +5,7 @@ import Dropdown from "./Dropdown";
 
 const MenuItems = ({ items, depthLevel }) => {
   const [dropdown, setDropdown] = useState(false);
+  const [mouseLeaveEvent, setMouseLeaveEvent] = useState();
 
   let ref = useRef();
 
@@ -24,11 +25,14 @@ const MenuItems = ({ items, depthLevel }) => {
   }, [dropdown]);
 
   const onMouseEnter = () => {
+    clearTimeout(mouseLeaveEvent);
     window.innerWidth > 960 && setDropdown(true);
   };
 
   const onMouseLeave = () => {
-    window.innerWidth > 960 && setDropdown(false);
+    setMouseLeaveEvent(setTimeout(function() {
+      window.innerWidth > 960 && setDropdown(false);
+    }, 750));
   };
 
   return (
