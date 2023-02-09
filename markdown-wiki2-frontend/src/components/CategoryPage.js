@@ -15,6 +15,7 @@ export default function CategoryPage() {
   const location = useLocation();
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
+  const [pdfFiles, setPdfFiles] = useState([]);
   const [editFile, setEditFile] = useState({
     id: "",
     title: "",
@@ -299,6 +300,25 @@ export default function CategoryPage() {
     });
   }
 
+  function loadPDFFiles() {
+    axios.get(config.BACKEND_URL + "/api/files/get-pdf-files-from-category", {
+      params: {
+        id: id
+      }
+    })
+    .then(function(response) {
+      if (response['data'].status == "OK") {
+        setPdfFiles(response['data']['data']);
+      }
+      else {
+        console.log(response['data'].error);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+  }
+
   function loadCategories() {
     setCategories([]);
     axios.get(config.BACKEND_URL + "/api/categories/list")
@@ -357,6 +377,7 @@ export default function CategoryPage() {
     console.log(id);
     loadImageFiles();
     loadFiles();
+    loadPDFFiles();
   }, [id]);
 
   function scrollToFile() {
@@ -394,6 +415,11 @@ export default function CategoryPage() {
               {imageFiles.map((image) => 
                 <li key={image['id']}>
                   <Link to={{ pathname: "/categories/" + id, hash: "#" + image['id'] }}>{image['title']}</Link>
+                </li>
+              )}
+              {pdfFiles.map((pdf) => 
+                <li key={pdf['id']}>
+                  <a href={"/api/get-file/" + path.basename(pdf['path'])}>{pdf['title']}</a>
                 </li>
               )}
               {files.map((file) => 

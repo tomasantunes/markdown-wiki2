@@ -14,6 +14,7 @@ export default function Pinned() {
   const location = useLocation();
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
+  const [pdfFiles, setPdfFiles] = useState([]);
   const [editFile, setEditFile] = useState({
     id: "",
     title: "",
@@ -291,6 +292,21 @@ export default function Pinned() {
     });
   }
 
+  function loadPDFFiles() {
+    axios.get(config.BACKEND_URL + "/api/files/get-pinned-pdf-files")
+    .then(function(response) {
+      if (response['data'].status == "OK") {
+        setPdfFiles(response['data']['data']);
+      }
+      else {
+        console.log(response['data'].error);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+  }
+
   function loadCategories() {
     setCategories([]);
     axios.get(config.BACKEND_URL + "/api/categories/list")
@@ -370,6 +386,7 @@ export default function Pinned() {
     loadTags();
     loadImageFiles();
     loadFiles();
+    loadPDFFiles();
   },[])
   return (
     <>
@@ -382,6 +399,11 @@ export default function Pinned() {
               {imageFiles.map((image) => 
                 <li key={image['id']}>
                   <Link to={{ pathname: "/pinned", hash: "#" + image['id'] }}>{image['title']}</Link>
+                </li>
+              )}
+              {pdfFiles.map((pdf) => 
+                <li key={pdf['id']}>
+                  <a href={"/api/get-file/" + path.basename(pdf['path'])}>{pdf['title']}</a>
                 </li>
               )}
               {files.map((file) => 

@@ -585,7 +585,7 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
   });
 });
 
-app.get("/api/files/get-image-files-from-tag", (req, res) => {
+app.get("/api/files/get-pinned-images", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
@@ -604,12 +604,12 @@ app.get("/api/files/get-image-files-from-tag", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this category."});
+      res.json({status: "NOK", error: "There are no files under this tag."});
     }
   });
 });
 
-app.get("/api/files/get-pinned-images", (req, res) => {
+app.get("/api/files/get-image-files-from-tag", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
@@ -629,7 +629,81 @@ app.get("/api/files/get-pinned-images", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
+      res.json({status: "NOK", error: "There are no files under this tag."});
+    }
+  });
+});
+
+app.get("/api/files/get-pdf-files-from-category", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var category_id = req.query.id;
+  var pdf_file_extensions = ['pdf']
+
+  var sql = "SELECT f.* FROM files AS f WHERE f.category_id = ? AND f.extension IN (?)";
+
+  con.query(sql, [category_id, pdf_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
       res.json({status: "NOK", error: "There are no files under this category."});
+    }
+  });
+});
+
+app.get("/api/files/get-pinned-pdf-files", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var pdf_file_extensions = ['pdf'];
+
+  var sql = "SELECT f.* FROM files AS f WHERE f.pinned = 1 AND f.extension IN (?)";
+
+  con.query(sql, [pdf_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no pinned files of this type."});
+    }
+  });
+});
+
+app.get("/api/files/get-pdf-files-from-tag", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  var tag_id = req.query.id;
+  var pdf_file_extensions = ['pdf'];
+
+  var sql = "SELECT f.* FROM files AS f INNER JOIN files_tags ft ON ft.file_id = f.id WHERE ft.tag_id = ? AND f.extension IN (?)";
+
+  con.query(sql, [tag_id, pdf_file_extensions], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "NOK", error: "There are no pinned files of this type."});
     }
   });
 });
@@ -962,6 +1036,16 @@ app.post("/api/images/edit", (req, res) => {
     }
     res.json({status: "OK", data: "Images has been edited successfully."});
   });
+});
+
+app.get("/api/get-file/:filename", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var filename = req.params.filename;
+  res.sendFile(__dirname + "/media-files/" + filename);
 });
 
 
