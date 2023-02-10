@@ -187,19 +187,23 @@ ul {
 }
 
 .edit-btn {
-  margin-right: 15px;
+  margin: 5px;
 }
 
 .delete-btn {
-  margin-right: 15px;
+  margin: 5px;
 }
 
 .append-btn {
-  margin-right: 15px;
+  margin: 5px;
 }
 
 .pin-btn {
-  margin-right: 15px;
+  margin: 5px;
+}
+
+.download-btn {
+  margin: 5px;
 }
 
 .swal-button--confirm {

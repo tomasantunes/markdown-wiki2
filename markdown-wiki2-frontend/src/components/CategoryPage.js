@@ -456,6 +456,7 @@ export default function CategoryPage() {
                     {file['pinned'] == 0 ? <button class="btn btn-primary pin-btn" value={file['id']} onClick={pinFile}>Pin</button> : <button class="btn btn-secondary pin-btn" value={file['id']} onClick={unpinFile}>Unpin</button>}
                     <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile} data-bs-toggle="modal" data-bs-target=".editFileModal">Edit</button>
                     <button class="btn btn-primary append-btn" value={file['id']} onClick={showAppendToFile} data-bs-toggle="modal" data-bs-target=".appendModal">Append</button>
+                    <a class="btn btn-secondary download-btn" value={file['id']} href={"/api/download-text-file/" + file['id']}>Download</a>
                     <button class="btn btn-danger delete-btn" value={file['id']} onClick={deleteFile}>Delete</button>
                   </div>
                 </div>

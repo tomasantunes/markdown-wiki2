@@ -916,6 +916,33 @@ app.post("/api/files/unpin", (req, res) => {
   });
 });
 
+app.get("/api/download-text-file/:id", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.params.id;
+
+  var sql = "SELECT * FROM files WHERE id = ?";
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    if (result.length > 0) {
+      var file = result[0];
+      res.setHeader('Content-disposition', 'attachment; filename=' + file.title + "." + file.extension);
+      res.setHeader('Content-type', 'text/plain');
+      res.charset = 'UTF-8';
+      res.write(file.content);
+      res.end();
+    }
+    else {
+      res.json({status: "NOK", error: "File not found."});
+    }
+  });
+});
 // Images Routes
 
 app.post('/api/upload-media-file', function(req, res) {
