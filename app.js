@@ -431,6 +431,56 @@ app.get("/api/categories/list", (req, res) => {
   });
 });
 
+app.get("/api/categories/getone", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.query.id;
+
+  var sql = "SELECT * FROM categories WHERE id = ?;";
+
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result[0]});
+    }
+    else {
+      res.json({status: "NOK", error: "Category not found."});
+    }
+  });
+});
+
+app.post("/api/categories/delete", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+
+  var sql = "DELETE FROM categories WHERE id = ?;";
+
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    var sql2 = "DELETE FROM files f INNER JOIN files_tags ft ON f.id = ft.file_id WHERE f.category_id = ?;";
+    con.query(sql2, [id], function(err2, result2) {
+      if (err) {
+        console.log(err.message);
+        res.json({status: "NOK", error: err2.message});
+      }
+      res.json({status: "OK", data: "This category has been deleted."});
+    });
+  });
+});
+
 app.post("/api/categories/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});

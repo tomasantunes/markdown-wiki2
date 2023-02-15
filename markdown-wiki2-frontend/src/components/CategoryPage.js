@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import config from '../config.json';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown'
 import { CsvToHtmlTable } from 'react-csv-to-table';
 import Menu from './Menu';
@@ -20,6 +20,9 @@ const bootstrap = require('bootstrap');
 
 export default function CategoryPage() {
   const {id} = useParams();
+  const [category, setCategory] = useState({
+    "name": ""
+  });
   const location = useLocation();
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
@@ -50,6 +53,7 @@ export default function CategoryPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedExtension, setSelectedExtension] = useState({});
   const [firstLoadFilesDone, setFirstLoadFilesDone] = useState(false);
+  const navigate = useNavigate();
 
   function showEditFile(e) {
     var id = e.target.value;
@@ -398,8 +402,57 @@ export default function CategoryPage() {
     }); 
   }
 
+  function loadCategoryInfo() {
+    axios.get(config.BACKEND_URL + "/api/categories/getone", {
+      params: {
+        id: id
+      }
+    })
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        console.log(response.data.data);
+        setCategory(response.data.data);
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
+
+  function deleteCategory() {
+    MySwal.fire({
+      title: 'Are you sure you want to delete this category? All the files in this category will be deleted.',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      denyButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.post(config.BACKEND_URL + "/api/categories/delete", {id: id})
+        .then(function(response) {
+          if (response.data.status == "OK") {
+            MySwal.fire('This category has been deleted.')
+            .then(function(value) {
+              navigate("/");
+            })
+          }
+          else {
+            MySwal.fire('There was an error deleting this category.');
+          }
+        })
+        .catch(function(err) {
+          MySwal.fire(err.message);
+        });
+      }
+    })
+  }
+
   useEffect(() => {
     console.log(id);
+    loadCategoryInfo();
     loadImageFiles();
     loadFiles();
     loadPDFFiles();
@@ -435,6 +488,8 @@ export default function CategoryPage() {
         <div className="row full-height">
           <Menu />
           <div className="col-md-8 p-5">
+            <h2>{category['name']}</h2>
+            <button className="btn btn-danger" onClick={deleteCategory}>Delete</button>
             <h3>Index</h3>
             <ul className="index">
               {imageFiles.map((image) => 
