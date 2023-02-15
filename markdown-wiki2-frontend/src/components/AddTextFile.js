@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import Select from 'react-select';
-import swal from '@sweetalert/with-react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function AddTextFile() {
   const extensions = [
@@ -65,16 +68,16 @@ export default function AddTextFile() {
   function submitNewFile(e) {
     e.preventDefault();
     if (newFile.title.trim() == "" || newFile.extension.trim() == "" || newFile.category == "" || newFile.content.trim() == "") {
-      swal("Fields cannot be empty.");
+      MySwal.fire("Fields cannot be empty.");
       return;
     }
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        swal("A new file has been inserted.");
+        MySwal.fire("A new file has been inserted.");
       }
       else {
-        swal(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch(function (error) {
@@ -132,7 +135,7 @@ export default function AddTextFile() {
       }
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     }); 
   }
 

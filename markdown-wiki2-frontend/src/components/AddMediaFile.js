@@ -3,8 +3,11 @@ import axios from 'axios';
 import config from '../config.json';
 import FileUploader from './FileUploader';
 import Select from 'react-select';
-import swal from '@sweetalert/with-react';
 import AddImageURL from './AddImageURL';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function AddMediaFile() {
   const [addMediaFile, setAddMediaFile] = useState({
@@ -47,7 +50,7 @@ export default function AddMediaFile() {
     e.preventDefault();
 
     if (addMediaFile.file == "" || addMediaFile.category == "") {
-      swal("Fields cannot be empty.");
+      MySwal.fire("Fields cannot be empty.");
       return;
     }
 
@@ -60,14 +63,14 @@ export default function AddMediaFile() {
       .post(config.BACKEND_URL + "/api/upload-media-file", formData)
       .then((response) => {
         if (response.data.status == "OK") {
-          swal("File has been uploaded successfully.");
+          MySwal.fire("File has been uploaded successfully.");
         }
         else {
           console.log(response.data.error);
-          swal(response.data.error);
+          MySwal.fire(response.data.error);
         }
       })
-      .catch((err) => swal("File Upload Error"));
+      .catch((err) => MySwal.fire("File Upload Error"));
   };
 
   function loadCategories() {
@@ -120,7 +123,7 @@ export default function AddMediaFile() {
       }
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     }); 
   }
 
@@ -135,7 +138,7 @@ export default function AddMediaFile() {
         <h1>Add Media File</h1>
         <form onSubmit={submitNewFile}>
           <div className="form-group py-2">
-              <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => swal(error)} />
+              <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => MySwal.fire(error)} />
           </div>
           <div className="form-group py-2">
               <label className="control-label">Category</label>

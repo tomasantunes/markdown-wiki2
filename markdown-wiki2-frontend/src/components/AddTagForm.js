@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
-import swal from '@sweetalert/with-react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function AddTagForm() {
     const [newTag, setNewTag] = useState({
@@ -19,13 +22,13 @@ export default function AddTagForm() {
       e.preventDefault();
 
       if (newTag.tag.trim() == "") {
-        swal("Tag name cannot be empty.");
+        MySwal.fire("Tag name cannot be empty.");
         return;
       }
 
       axios.post(config.BACKEND_URL + '/api/tags/insert', newTag)
       .then(function (response) {
-        swal("A new tag has been inserted successfully.")
+        MySwal.fire("A new tag has been inserted successfully.")
       })
       .catch(function (error) {
         console.log(error);

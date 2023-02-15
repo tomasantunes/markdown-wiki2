@@ -2,7 +2,10 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
-import swal from '@sweetalert/with-react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,7 +18,7 @@ export default function Search() {
   function submitSearch(e) {
     e.preventDefault();
     if (searchQuery.trim() == "") {
-      swal("Search query cannot be empty.");
+      MySwal.fire("Search query cannot be empty.");
       return;
     }
     setResults([]);
@@ -30,11 +33,11 @@ export default function Search() {
         setResults(response.data.data);
       }
       else {
-        swal(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     });
   }
 

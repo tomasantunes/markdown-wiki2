@@ -2,7 +2,10 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import Select from 'react-select';
-import swal from '@sweetalert/with-react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function AddImageURL() {
   const [addImageURL, setAddImageURL] = useState({
@@ -45,7 +48,7 @@ export default function AddImageURL() {
     e.preventDefault();
 
     if (addImageURL.imageUrl.trim() == "" || addImageURL.category == "") {
-      swal("Fields cannot be empty.");
+      MySwal.fire("Fields cannot be empty.");
       return;
     }
   
@@ -53,14 +56,14 @@ export default function AddImageURL() {
       .post(config.BACKEND_URL + "/api/upload-image-url", addImageURL)
       .then((response) => {
         if (response.data.status == "OK") {
-          swal("Image has been added successfully.");
+          MySwal.fire("Image has been added successfully.");
         }
         else {
           console.log(response.data.error);
-          swal(response.data.error);
+          MySwal.fire(response.data.error);
         }
       })
-      .catch((err) => swal("There was an error adding the image."));
+      .catch((err) => MySwal.fire("There was an error adding the image."));
   };
 
   function loadCategories() {
@@ -113,7 +116,7 @@ export default function AddImageURL() {
       }
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     }); 
   }
 

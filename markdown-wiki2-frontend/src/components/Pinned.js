@@ -8,8 +8,11 @@ import { CsvToHtmlTable } from 'react-csv-to-table';
 import Menu from './Menu';
 import Select from 'react-select';
 import path from 'path-browserify';
-import swal from '@sweetalert/with-react';
 import $ from 'jquery';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
@@ -83,7 +86,7 @@ export default function Pinned() {
       });
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     })
   }
 
@@ -122,7 +125,7 @@ export default function Pinned() {
       });
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     })
 
   }
@@ -132,11 +135,11 @@ export default function Pinned() {
     axios.post(config.BACKEND_URL + '/api/images/edit', editFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        swal("File has been edited sucessfully.");
+        MySwal.fire("File has been edited sucessfully.");
         loadFiles();
       }
       else {
-        swal(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch(function (error) {
@@ -156,13 +159,13 @@ export default function Pinned() {
   function deleteFile(e) {
     axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
     .then(function(response) {
-      swal("File has been deleted.")
+      MySwal.fire("File has been deleted.")
       .then(function(value) {
         loadFiles();
       });
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     });
   }
 
@@ -171,14 +174,14 @@ export default function Pinned() {
     axios.post(config.BACKEND_URL + '/api/files/edit', editFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        swal("File has been edited sucessfully.")
+        MySwal.fire("File has been edited sucessfully.")
         .then(function(value) {
           $(".editFileModal").modal("hide");
           loadFiles();
         });
       }
       else {
-        swal(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch(function (error) {
@@ -191,14 +194,14 @@ export default function Pinned() {
     axios.post(config.BACKEND_URL + '/api/files/append', appendToFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        swal("File has been edited sucessfully.")
+        MySwal.fire("File has been edited sucessfully.")
         .then(function(value) {
           $(".editImageModal").modal("hide");
           loadFiles();
         });
       }
       else {
-        swal(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch(function (error) {
@@ -250,21 +253,21 @@ export default function Pinned() {
     axios.post(config.BACKEND_URL + "/api/files/pin", {id: e.target.value})
     .then(function(response) {
       loadFiles();
-      swal("File has been pinned.");
+      MySwal.fire("File has been pinned.");
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     });
   }
 
   function unpinFile(e) {
     axios.post(config.BACKEND_URL + "/api/files/unpin", {id: e.target.value})
     .then(function(response) {
-      swal("File has been unpinned.");
+      MySwal.fire("File has been unpinned.");
       loadFiles();
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     });
   }
 
@@ -379,7 +382,7 @@ export default function Pinned() {
       }
     })
     .catch(function(err) {
-      swal(err.message);
+      MySwal.fire(err.message);
     }); 
   }
 

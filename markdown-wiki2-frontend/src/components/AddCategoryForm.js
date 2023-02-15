@@ -1,8 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import config from '../config.json';
-import swal from '@sweetalert/with-react';
 import Select from 'react-select';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function AddCategoryForm() {
   const [categories, setCategories] = useState([]);
@@ -31,21 +34,21 @@ export default function AddCategoryForm() {
     e.preventDefault();
 
     if (newCategory.category.trim() == "" || newCategory.parentCategory.trim() == "") {
-      swal("Fields cannot be empty.");
+      MySwal.fire("Fields cannot be empty.");
       return;
     }
 
     axios.post(config.BACKEND_URL + '/api/categories/insert', newCategory)
     .then(function (response) {
       console.log(response['data']);
-      swal("New category has been added.")
+      MySwal.fire("New category has been added.")
       .then((value) => {
         window.location.reload();
       });
     })
     .catch(function (error) {
       console.log(error);
-      swal("There was an error adding the new category.");
+      MySwal.fire("There was an error adding the new category.");
     });
   }
 
