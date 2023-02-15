@@ -1,18 +1,22 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import swal from '@sweetalert/with-react';
+import Select from 'react-select';
 
 export default function AddCategoryForm() {
+  const [categories, setCategories] = useState([]);
+  const [selectedParentCategory, setSelectedParentCategory] = useState();
   const [newCategory, setNewCategory] = useState({
     "parentCategory": "",
     "category": ""
   });
 
-  function changeNewCategoryParentCategory(e) {
+  function changeNewCategoryParentCategory(item) {
+    setSelectedParentCategory(item);
     setNewCategory({
       ...newCategory,
-      "parentCategory": e.target.value
+      "parentCategory": item.value
     });
   }
 
@@ -34,11 +38,57 @@ export default function AddCategoryForm() {
     axios.post(config.BACKEND_URL + '/api/categories/insert', newCategory)
     .then(function (response) {
       console.log(response['data']);
+      swal("New category has been added.")
+      .then((value) => {
+        window.location.reload();
+      });
     })
     .catch(function (error) {
       console.log(error);
+      swal("There was an error adding the new category.");
     });
   }
+
+  function loadCategories() {
+    setCategories([]);
+    axios.get(config.BACKEND_URL + "/api/categories/list")
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var categories = response['data']['data'];
+        var categories_to_add = [];
+        categories_to_add.push({label: "root", value: "1"});
+        for (var i in categories) {
+          var menuItem = categories[i];
+          if (menuItem.parent_id == 1) {
+            var obj = {label: menuItem.name, value: menuItem.id};
+            categories_to_add.push(obj);
+            for (var j in categories) {
+              var menuItem2 = categories[j];
+              if (menuItem2.parent_id == obj.value) {
+                var obj2 = {label: ">>> " + menuItem2.name, value: menuItem2.id};
+                categories_to_add.push(obj2);
+                for (var k in categories) {
+                  var menuItem3 = categories[k];
+                  if (menuItem3.parent_id == obj2.value) {
+                    var obj3 = {label: ">>> >>> " + menuItem3.name, value: menuItem3.id};
+                    categories_to_add.push(obj3);
+                  }
+                }
+              }
+            }
+          }
+        }
+        setCategories(categories_to_add);
+      }
+    })
+    .catch(function(err) {
+      console.log(err.message);
+    }); 
+  }
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   return (
     <div className="col-md-4 full-min-height p-5">
@@ -54,7 +104,7 @@ export default function AddCategoryForm() {
           <div className="form-group py-2">
               <label className="control-label">Parent Category</label>
               <div>
-                  <input type="text" className="form-control input-lg" name="parentCategory" value={newCategory.parentCategory} onChange={changeNewCategoryParentCategory}/>
+                <Select value={selectedParentCategory} options={categories} onChange={changeNewCategoryParentCategory} />
               </div>
           </div>
           <div className="form-group">
