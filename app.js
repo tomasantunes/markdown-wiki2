@@ -544,7 +544,7 @@ app.get("/api/files/get-files-from-category", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this category."});
+      res.json({status: "NOK", error: "There are no files under this category.", code: 101});
     }
   });
 });
@@ -569,7 +569,7 @@ app.get("/api/files/get-files-from-tag", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this tag."});
+      res.json({status: "NOK", error: "There are no files under this tag.", code: 101});
     }
   });
 });
@@ -593,7 +593,7 @@ app.get("/api/files/get-pinned-files", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this category."});
+      res.json({status: "NOK", error: "There are no files under this category.", code: 101});
     }
   });
 });
@@ -618,7 +618,7 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this category."});
+      res.json({status: "NOK", error: "There are no files under this category.", code: 101});
     }
   });
 });
@@ -642,7 +642,7 @@ app.get("/api/files/get-pinned-images", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this tag."});
+      res.json({status: "NOK", error: "There are no files under this tag.", code: 101});
     }
   });
 });
@@ -667,7 +667,7 @@ app.get("/api/files/get-image-files-from-tag", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this tag."});
+      res.json({status: "NOK", error: "There are no files under this tag.", code: 101});
     }
   });
 });
@@ -692,7 +692,7 @@ app.get("/api/files/get-pdf-files-from-category", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no files under this category."});
+      res.json({status: "NOK", error: "There are no files under this category.", code: 101});
     }
   });
 });
@@ -716,7 +716,7 @@ app.get("/api/files/get-pinned-pdf-files", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no pinned files of this type."});
+      res.json({status: "NOK", error: "There are no pinned files of this type.", code: 101});
     }
   });
 });
@@ -741,7 +741,7 @@ app.get("/api/files/get-pdf-files-from-tag", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no pinned files of this type."});
+      res.json({status: "NOK", error: "There are no pinned files of this type.", code: 101});
     }
   });
 });

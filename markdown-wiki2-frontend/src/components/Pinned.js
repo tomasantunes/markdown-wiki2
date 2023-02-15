@@ -151,8 +151,10 @@ export default function Pinned() {
   function deleteFile(e) {
     axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
     .then(function(response) {
-      loadFiles();
       swal("File has been deleted.")
+      .then(function(value) {
+        loadFiles();
+      });
     })
     .catch(function(err) {
       swal(err.message);
@@ -269,6 +271,9 @@ export default function Pinned() {
         setFiles(response['data']['data']);
       }
       else {
+        if (response['data'].code == 101) {
+          setFiles([]);
+        }
         console.log(response['data'].error);
       }
     })
@@ -284,6 +289,9 @@ export default function Pinned() {
         setImageFiles(response['data']['data']);
       }
       else {
+        if (response['data'].code == 101) {
+          setImageFiles([]);
+        }
         console.log(response['data'].error);
       }
     })
@@ -299,6 +307,9 @@ export default function Pinned() {
         setPdfFiles(response['data']['data']);
       }
       else {
+        if (response['data'].code == 101) {
+          setPdfFiles([]);
+        }
         console.log(response['data'].error);
       }
     })

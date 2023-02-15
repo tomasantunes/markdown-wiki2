@@ -134,8 +134,10 @@ export default function CategoryPage() {
   function deleteFile(e) {
     axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
     .then(function(response) {
-      loadFiles();
       swal("File has been deleted.")
+      .then(function(value) {
+        loadFiles();
+      });
     })
     .catch(function(err) {
       swal(err.message);
@@ -273,6 +275,9 @@ export default function CategoryPage() {
         setFiles(response['data']['data']);
       }
       else {
+        if (response['data'].code == 101) {
+          setFiles([]);
+        }
         console.log(response['data'].error);
       }
     })
@@ -292,6 +297,9 @@ export default function CategoryPage() {
         setImageFiles(response['data']['data']);
       }
       else {
+        if (response['data'].code == 101) {
+          setImageFiles([]);
+        }
         console.log(response['data'].error);
       }
     })
@@ -311,6 +319,9 @@ export default function CategoryPage() {
         setPdfFiles(response['data']['data']);
       }
       else {
+        if (response['data'].code == 101) {
+          setFiles([]);
+        }
         console.log(response['data'].error);
       }
     })
