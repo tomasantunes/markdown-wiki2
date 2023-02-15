@@ -9,5 +9,4 @@
 - Create button with modal to set category sort index.
 - Create dropdown to sort category files.
 - Display category title on category's page.
-- Close modal after editing post.
 - Replace sweetalert with sweetalert2.

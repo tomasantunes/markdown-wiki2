@@ -9,6 +9,11 @@ import Menu from './Menu';
 import Select from 'react-select';
 import path from 'path-browserify';
 import swal from '@sweetalert/with-react';
+import $ from 'jquery';
+window.jQuery = $;
+window.$ = $;
+global.jQuery = $;
+const bootstrap = require('bootstrap');
 
 export default function Pinned() {
   const location = useLocation();
@@ -166,8 +171,11 @@ export default function Pinned() {
     axios.post(config.BACKEND_URL + '/api/files/edit', editFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        swal("File has been edited sucessfully.");
-        loadFiles();
+        swal("File has been edited sucessfully.")
+        .then(function(value) {
+          $(".editFileModal").modal("hide");
+          loadFiles();
+        });
       }
       else {
         swal(response.data.error);
@@ -183,8 +191,11 @@ export default function Pinned() {
     axios.post(config.BACKEND_URL + '/api/files/append', appendToFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        swal("File has been appended sucessfully.");
-        loadFiles();
+        swal("File has been edited sucessfully.")
+        .then(function(value) {
+          $(".editImageModal").modal("hide");
+          loadFiles();
+        });
       }
       else {
         swal(response.data.error);
