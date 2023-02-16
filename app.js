@@ -415,7 +415,7 @@ app.get("/api/categories/list", (req, res) => {
     return;
   }
 
-  var sql = "SELECT * FROM categories;";
+  var sql = "SELECT id, parent_id, name, created_at, updated_at, IFNULL(sort_index, 99999999) AS sort_index FROM categories ORDER BY sort_index, id;";
 
   con.query(sql, [], function(err, result) {
     if (err) {
@@ -491,6 +491,26 @@ app.post("/api/categories/insert", (req, res) => {
   var parentCategoryId = req.body.parentCategory;
   insertNewCategory(category, parentCategoryId, function() {
     res.json({status: "OK", data: "A new category has been inserted."})
+  });
+});
+
+app.post("/api/categories/set-sort-index", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+  var sort_index = req.body.sort_index;
+
+  var sql = "UPDATE categories SET sort_index = ? WHERE id = ?;";
+
+  con.query(sql, [sort_index, id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    res.json({status: "OK", data: "This category's sort index has been updated."});
   });
 });
 

@@ -47,6 +47,7 @@ ALTER TABLE files ADD category_id INT(11) DEFAULT NULL;
 UPDATE files f JOIN files_categories fc ON f.id = fc.file_id SET f.category_id = fc.category_id;
 DROP TABLE files_categories;
 ALTER TABLE files ADD pinned BOOLEAN DEFAULT FALSE;
+ALTER TABLE categories ADD sort_index INT(11);
 
 
 

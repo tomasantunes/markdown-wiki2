@@ -53,6 +53,7 @@ export default function CategoryPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedExtension, setSelectedExtension] = useState({});
   const [firstLoadFilesDone, setFirstLoadFilesDone] = useState(false);
+  const [sortIndex, setSortIndex] = useState();
   const navigate = useNavigate();
 
   function showEditFile(e) {
@@ -211,6 +212,10 @@ export default function CategoryPage() {
     .catch(function (error) {
       console.log(error);
     });
+  }
+
+  function changeSortIndex(e) {
+    setSortIndex(e.target.value);
   }
 
   function changeAppendToFileContent(e) {
@@ -450,6 +455,30 @@ export default function CategoryPage() {
     })
   }
 
+  function submitSetSortIndex(e) {
+    e.preventDefault();
+    var data = {
+      id: id,
+      sort_index: sortIndex
+    };
+
+    axios.post(config.BACKEND_URL + "/api/categories/set-sort-index", data)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        MySwal.fire(response.data.data)
+        .then(function(value) {
+          $(".setSortIndexModal").modal("hide");
+        })
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
+
   useEffect(() => {
     console.log(id);
     loadCategoryInfo();
@@ -490,6 +519,7 @@ export default function CategoryPage() {
           <div className="col-md-8 p-5">
             <h2>{category['name']}</h2>
             <button className="btn btn-danger" onClick={deleteCategory}>Delete</button>
+            <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target=".setSortIndexModal">Set Sort Index</button>
             <h3>Index</h3>
             <ul className="index">
               {imageFiles.map((image) => 
@@ -672,6 +702,35 @@ export default function CategoryPage() {
                     <label className="control-label">Content</label>
                     <div>
                         <textarea className="form-control input-lg" name="content" value={appendToFile.content} onChange={changeAppendToFileContent} rows={15}></textarea>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div style={{textAlign: "right"}}>
+                        <button type="submit" className="btn btn-primary">Save</button>
+                    </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal setSortIndexModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Set Sort Index</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form onSubmit={submitSetSortIndex}>
+                <div className="form-group py-2">
+                    <label className="control-label">Sort Index</label>
+                    <div>
+                        <input type="text" className="form-control input-lg" name="sortIndex" value={sortIndex} onChange={changeSortIndex} />
                     </div>
                 </div>
                 <div className="form-group">
