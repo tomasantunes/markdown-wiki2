@@ -1,15 +1,15 @@
-var urlApi = "https://mainwiki3.paken.xyz";
+var urlApi = "https://example.com";
 var category_id = "";
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create({
-        title: 'Save Selected Text to MainWiki3',
+        title: 'Save Selected Text to MarkdownWiki2',
         contexts: ["selection"],
         id: "saveTextContextAction"
     });
 
     chrome.contextMenus.create({
-        title: "Save Image to MainWiki3", 
+        title: "Save Image to MarkdownWiki2", 
         contexts: ["image", "link"], 
         id: "saveImageContextAction"
       });    

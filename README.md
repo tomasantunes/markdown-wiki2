@@ -17,8 +17,8 @@ npm run build
 
 ## How to run
 ```
-Create a secret-config.json file
-Go to markdown-wiki2-frontend/src/config.json and check your URLs
+Create a secret-config.json file by copying and renaming the secret-config-base.json
+Create a config.json file by copying and renaming the file markdown-wiki2-frontend/src/config-base.json
 npm start
 Go to localhost:4001
 Use the following URL to login: localhost:4001/login/[SECRET_TOKEN] 
@@ -26,12 +26,3 @@ Use the following URL to login: localhost:4001/login/[SECRET_TOKEN]
 
 ## How to create database
 Go to PHPMyAdmin and run the SQL file at database/markdownwiki2.sql
-
-## How to create a secret-config.json file
-```
-{
-    "DB_PASSWORD": "",
-    "SESSION_KEY": "XXXXXXXX",
-    "SECRET_TOKEN": "XXXXXXXXXXX"
-}
-```

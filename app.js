@@ -37,10 +37,10 @@ app.use(session({
 
 var con = mysql.createPool({
   connectionLimit : 90,
-  host: 'localhost',
-  user: 'root',
+  host: secretConfig.DB_HOST,
+  user: secretConfig.DB_USER,
   password: secretConfig.DB_PASSWORD,
-  database: 'mainwiki3',
+  database: secretConfig.DB_NAME,
 });
 
 // Functions
@@ -1195,7 +1195,7 @@ app.get("/login/:secret_token", (req, res) => {
 
 
 // Front-End Routes
-app.use(express.static('main-wiki3-frontend/build'));
+app.use(express.static('frontend/build'));
 
 app.get('/*', (req,res) => {
   console.log(req.session.isLoggedIn);

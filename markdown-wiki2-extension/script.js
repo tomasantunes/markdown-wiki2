@@ -1,4 +1,4 @@
-var url = "https://mainwiki3.paken.xyz";
+var url = "https://example.com";
 var categoriesList = [];
 
 console.log("x1");

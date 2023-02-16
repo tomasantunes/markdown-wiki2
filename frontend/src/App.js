@@ -1,3 +1,4 @@
+import {React, useEffect} from 'react';
 import {
   BrowserRouter,
   Routes,
@@ -13,9 +14,13 @@ import Bookmarks from './components/Bookmarks';
 import Tag from './components/Tag';
 import SearchPage from './components/SearchPage';
 import Pinned from './components/Pinned';
+import config from './config.json';
 
 
 function App() {
+  useEffect(() => {
+    document.title = config['SITENAME'];
+  }, []);
   return (
     <BrowserRouter>
       <Routes>

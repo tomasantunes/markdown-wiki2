@@ -1,12 +1,12 @@
 {
-    "name": "MainWiki3-Extension",
+    "name": "MarkdownWiki2-Extension",
     "version": "1.0.0",
-    "description": "Extension for MainWiki3",
+    "description": "Extension for MarkdownWiki2",
     "manifest_version": 3,
     "author": "Tomás Antunes",
     "action":{
         "default_popup": "index.html",
-        "default_title": "MainWiki3-Extension"
+        "default_title": "MarkdownWiki2-Extension"
     },
     "permissions": [
         "contextMenus"
@@ -14,5 +14,5 @@
     "background": { 
         "service_worker": "background.js"
     },
-    "host_permissions": ["https://mainwiki3.paken.xyz/*"]
+    "host_permissions": ["https://example.com/*"]
 }
