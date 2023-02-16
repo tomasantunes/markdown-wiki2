@@ -5,7 +5,6 @@ old-queries
 python-scripts
 bookmarks
 frontend/src/config.json
-frontend/src/config.json
 database/mainwiki3.sql
 database/mainwiki3-dump1.sql
 database/mainwiki3-dump2.sql
