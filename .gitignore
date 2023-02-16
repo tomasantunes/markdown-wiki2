@@ -1,11 +1,11 @@
 node_modules
-main-wiki3-frontend/node_modules
+frontend/node_modules
 secret-config.json
 old-queries
 python-scripts
 bookmarks
-main-wiki3-frontend/src/config.json
-markdown-wiki2-frontend/src/config.json
+frontend/src/config.json
+frontend/src/config.json
 database/mainwiki3.sql
 database/mainwiki3-dump1.sql
 database/mainwiki3-dump2.sql
