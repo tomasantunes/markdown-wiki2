@@ -19,6 +19,7 @@ npm run build
 ```
 Create a secret-config.json file by copying and renaming the secret-config-base.json
 Create a config.json file by copying and renaming the file markdown-wiki2-frontend/src/config-base.json
+Create a sessions.json file by copying and renaming the file sessions-base.json
 npm start
 Go to localhost:4001
 Use the following URL to login: localhost:4001/login/[SECRET_TOKEN] 
