@@ -1204,7 +1204,7 @@ app.get('/*', (req,res) => {
     return;
   }
 
-  res.sendFile(path.resolve(__dirname) + '/main-wiki3-frontend/build/index.html');
+  res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
 });
 
 // catch 404 and forward to error handler
