@@ -4,21 +4,18 @@ import config from '../config.json';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import AddMarkdownFile from './AddMarkdownFile';
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 
 const MySwal = withReactContent(Swal);
+const mdParser = new MarkdownIt();
 
 export default function AddTextFile() {
-  const extensions = [
-    {value: "md", label: "Markdown - MD"},
-    {value: "txt", label: "Text - TXT"},
-    {value: "csv", label: "Comma Separated Values - CSV"},
-    {value: "json", label: "JavaScript Object Notation - JSON"}
-  ];
   const [newFile, setNewFile] = useState({
     "title": "",
     "content": "",
-    "extension": "",
+    "extension": "md",
     "category": "",
     "tags": ""
   });
@@ -37,6 +34,13 @@ export default function AddTextFile() {
     setNewFile({
       ...newFile,
       "content": e.target.value
+    });
+  }
+
+  function handleEditorChange({ html, text }) {
+    setNewFile({
+      ...newFile,
+      "content": text
     });
   }
 
@@ -68,7 +72,7 @@ export default function AddTextFile() {
 
   function submitNewFile(e) {
     e.preventDefault();
-    if (newFile.title.trim() == "" || newFile.extension.trim() == "" || newFile.category == "" || newFile.content.trim() == "") {
+    if (newFile.title.trim() == "" || newFile.category == "" || newFile.content.trim() == "") {
       MySwal.fire("Fields cannot be empty.");
       return;
     }
@@ -146,46 +150,39 @@ export default function AddTextFile() {
   }, []);
 
   return (
-    <div className="col-md-4 full-min-height p-5">
-      <div className="bg-grey p-5">
-        <h1>Add Text File</h1>
-        <form onSubmit={submitNewFile}>
-          <div className="form-group py-2">
-              <label className="control-label">Title</label>
-              <div>
-                  <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Content</label>
-              <div>
-                  <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Category</label>
-              <div>
-                  <Select options={categories} onChange={changeNewFileCategory} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Tags</label>
-              <div>
-                <Select isMulti options={tags} onChange={changeNewFileTags} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-            <label className="control-label">Extension</label>
-            <Select options={extensions} onChange={changeNewFileExtension} />
-          </div>
-          <div className="form-group">
-              <div style={{textAlign: "right"}}>
-                  <button type="submit" className="btn btn-primary">Submit</button>
-              </div>
-          </div>
-        </form>
-        <AddMarkdownFile />
-      </div>
-    </div>
+    <>
+      <h1>Add Markdown File</h1>
+      <form onSubmit={submitNewFile}>
+        <div className="form-group py-2">
+            <label className="control-label">Title</label>
+            <div>
+                <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Content</label>
+            <div>
+                <MdEditor style={{ height: '500px' }} renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Category</label>
+            <div>
+                <Select options={categories} onChange={changeNewFileCategory} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Tags</label>
+            <div>
+              <Select isMulti options={tags} onChange={changeNewFileTags} />
+            </div>
+        </div>
+        <div className="form-group">
+            <div style={{textAlign: "right"}}>
+                <button type="submit" className="btn btn-primary">Submit</button>
+            </div>
+        </div>
+      </form>
+    </>
   )
 }
