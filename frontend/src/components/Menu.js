@@ -16,7 +16,63 @@ const Menu = () => {
 
   const [menuItems, setMenuItems] = useState(menuItemsInitialState);
 
+  function getChildren(parent_id, categories) {
+    var children = [];
+    for (var i in categories) {
+      var category = categories[i];
+      if (category.parent_id == parent_id) {
+        children.push(category);
+      }
+    }
+    return children;
+  }
+
+  function getChildrenCount(parent_id, categories) {
+    var count = 0;
+    for (var i in categories) {
+      var category = categories[i];
+      if (category.parent_id == parent_id) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  function addCategory(category, categories) {
+    var obj = {title: category.name, link: "/categories/" + category.id, id: category.id};
+    if (getChildrenCount(category.id, categories) > 0) {
+      obj['submenu'] = [];
+      var children = getChildren(category.id, categories);
+      for (var i in children) {
+        obj['submenu'].push(addCategory(children[i], categories));
+      }
+    }
+    return obj;
+  }
+
   function loadCategories() {
+    setMenuItems(menuItemsInitialState);
+    axios.get(config.BACKEND_URL + '/api/categories/list')
+    .then(function (response) {
+      var categories = response['data']['data'];
+      var categories_to_add = [];
+      for (var i in categories) {
+        var category = categories[i];
+        if (category.parent_id == 1) {
+          categories_to_add.push(addCategory(category, categories));
+        }
+      }
+      setMenuItems(
+        menuItems => [...menuItems, ...categories_to_add]
+      );
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  /*
+  function loadCategoriesOld() {
     setMenuItems(menuItemsInitialState);
     axios.get(config.BACKEND_URL + '/api/categories/list')
     .then(function (response) {
@@ -57,6 +113,7 @@ const Menu = () => {
       console.log(error);
     });
   }
+  */
 
   useEffect(() => {
     loadCategories();

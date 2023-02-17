@@ -25,6 +25,7 @@ export default function AddTextFile() {
 
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+  var categories_to_add = [];
 
   function changeNewFileTitle(e) {
     setNewFile({
@@ -86,7 +87,8 @@ export default function AddTextFile() {
     });
   }
 
-  function loadCategories() {
+  /*
+  function loadCategoriesOld() {
     setCategories([]);
     axios.get(config.BACKEND_URL + "/api/categories/list")
     .then(function(response) {
@@ -120,6 +122,62 @@ export default function AddTextFile() {
     .catch(function(err) {
       console.log(err.message);
     }); 
+  }
+  */
+
+  function getChildren(parent_id, categories) {
+    var children = [];
+    for (var i in categories) {
+      var category = categories[i];
+      if (category.parent_id == parent_id) {
+        children.push(category);
+      }
+    }
+    return children;
+  }
+
+  function getChildrenCount(parent_id, categories) {
+    var count = 0;
+    for (var i in categories) {
+      var category = categories[i];
+      if (category.parent_id == parent_id) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  function addCategory(category, categories, level) {
+    var prefix = ">>> ".repeat(level);
+    var obj = {label: prefix + category.name, value: category.id};
+    if (getChildrenCount(category.id, categories) > 0) {
+      level += 1;
+      var children = getChildren(category.id, categories);
+      for (var i in children) {
+        addCategory(children[i], categories, level);
+      }
+    }
+    categories_to_add.push(obj);
+  }
+
+  function loadCategories() {
+    console.log("Loading categories recursively...");
+    setCategories([]);
+    axios.get(config.BACKEND_URL + '/api/categories/list')
+    .then(function (response) {
+      var categories = response['data']['data'];
+      categories_to_add = [];
+      for (var i in categories) {
+        var category = categories[i];
+        if (category.parent_id == 1) {
+          addCategory(category, categories, 0);
+        }
+      }
+      setCategories(categories_to_add);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   }
 
   function loadTags() {
