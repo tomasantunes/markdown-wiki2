@@ -5,4 +5,3 @@
 - Fix error when linking to files
 - Create a markdown visual editor.
 - Create page for organized bookmarks
-- Create dropdown to sort category files.
