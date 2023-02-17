@@ -206,6 +206,14 @@ ul {
   margin: 5px;
 }
 
+.btn-delete-category {
+  margin: 5px;
+}
+
+.btn-set-sort-index {
+  margin: 5px;
+}
+
 .swal-button--confirm {
   background-color: #0B5ED7 !important;
 }

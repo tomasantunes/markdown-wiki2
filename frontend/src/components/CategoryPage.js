@@ -45,6 +45,14 @@ export default function CategoryPage() {
     {value: "csv", label: "Comma Separated Values - CSV"},
     {value: "json", label: "JavaScript Object Notation - JSON"}
   ];
+  const sortOrders = [
+    {value: "alpha-asc", label: "Alphabetical Ascending"},
+    {value: "alpha-desc", label: "Alphabetical Descending"},
+    {value: "date-asc", label: "Date Ascending"},
+    {value: "date-desc", label: "Date Descending"},
+    {value: "size-asc", label: "Size Ascending"},
+    {value: "size-desc", label: "Size Descending"},
+  ];
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [categories, setCategories] = useState([]);
@@ -54,6 +62,7 @@ export default function CategoryPage() {
   const [selectedExtension, setSelectedExtension] = useState({});
   const [firstLoadFilesDone, setFirstLoadFilesDone] = useState(false);
   const [sortIndex, setSortIndex] = useState();
+  const [selectedSortOrder, setSelectedSortOrder] = useState({value: "date-asc", label: "Date Ascending"});
   const navigate = useNavigate();
 
   function showEditFile(e) {
@@ -216,6 +225,32 @@ export default function CategoryPage() {
 
   function changeSortIndex(e) {
     setSortIndex(e.target.value);
+  }
+
+  function changeSortOrder(item) {
+    setSelectedSortOrder(item);
+    var sorted = [];
+    switch(item.value) {
+      case "alpha-asc":
+        sorted = [...files].sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "alpha-desc":
+        sorted = [...files].sort((a, b) => a.title.localeCompare(b.title)).reverse();
+        break;
+      case "date-asc":
+        sorted = [...files].sort((a, b) => a["id"] - b["id"]);
+        break;
+      case "date-desc":
+        sorted = [...files].sort((a, b) => a["id"] - b["id"]).reverse();
+        break;
+      case "size-asc":
+        sorted = [...files].sort((a, b) => a["content"].length - b["content"].length);
+        break;
+      case "size-desc":
+        sorted = [...files].sort((a, b) => a["content"].length - b["content"].length).reverse();
+        break;
+    }
+    setFiles(sorted);
   }
 
   function changeAppendToFileContent(e) {
@@ -518,8 +553,11 @@ export default function CategoryPage() {
           <Menu />
           <div className="col-md-8 p-5">
             <h2>{category['name']}</h2>
-            <button className="btn btn-danger" onClick={deleteCategory}>Delete</button>
-            <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target=".setSortIndexModal">Set Sort Index</button>
+            <button className="btn btn-danger btn-delete-category" onClick={deleteCategory}>Delete</button>
+            <button className="btn btn-primary btn-set-sort-index" data-bs-toggle="modal" data-bs-target=".setSortIndexModal">Set Sort Index</button>
+            <div style={{width: "200px", margin: "5px"}}>
+              <Select value={selectedSortOrder} options={sortOrders} onChange={changeSortOrder}  />
+            </div>
             <h3>Index</h3>
             <ul className="index">
               {imageFiles.map((image) => 
