@@ -1051,6 +1051,32 @@ app.get("/api/download-text-file/:id", (req, res) => {
     }
   });
 });
+
+// Bookmarks Routes
+app.post('/api/upload-bookmarks', function(req, res) {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  if (!req.files) {
+    console.log("No file has been detected.");
+    res.json({status: "NOK", error: "No file has been detected."});
+    return;
+  }
+  const file = req.files.file;
+  const filepath = __dirname + "/bookmarks/" + file.name;
+
+  file.mv(filepath, (err) => {
+    if (err) {
+      return res.json({status: "NOK", error: err.message});
+    }
+
+    // TO-DO: Convert bookmarks to JSON and save them to the database.
+    
+  });
+});
+
+
 // Images Routes
 
 app.post('/api/upload-media-file', function(req, res) {
