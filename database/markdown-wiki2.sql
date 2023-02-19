@@ -44,11 +44,11 @@ CREATE TABLE tags (
 
 CREATE TABLE bookmarks (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    parent_id INT(11),
-    title VARCHAR(2048),
-    url TEXT,
-    type VARCHAR(128),
-    tags TEXT,
+    parent_id INT(11) NOT NULL DEFAULT 0,
+    title VARCHAR(2048) NOT NULL DEFAULT '',
+    url TEXT NOT NULL DEFAULT '',
+    type VARCHAR(128) NOT NULL DEFAULT '',
+    tags TEXT NOT NULL DEFAULT '',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE(parent_id, title, url, type)
