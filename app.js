@@ -13,7 +13,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 var session = require('express-session');
 var editJson = require("edit-json-file");
-const PythonShell = require('python-shell');
+const PythonShell = require('python-shell').PythonShell;
 
 var app = express();
 
@@ -1220,12 +1220,7 @@ app.post('/api/upload-bookmarks', function(req, res) {
       args: [filepath]
     };
     
-    PythonShell.run('convert-bookmarks.py', options, function (err, results) {
-      if (err) {
-        console.log(err);
-        res.json({status: "NOK", error: JSON.stringify(err)});
-        return;
-      }
+    PythonShell.run('convert-bookmarks.py', options).then(function (results) {
       res.json({status: "OK", data: "Bookmarks have been uploaded successfully."});
     });
   });

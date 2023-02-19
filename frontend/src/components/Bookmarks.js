@@ -3,11 +3,17 @@ import axios from 'axios';
 import Menu from './Menu';
 import config from '../config.json';
 import Select from 'react-select';
+import FileUploader from './FileUploader';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function Bookmarks() {
   const [bookmarksFolders, setBookmarksFolders] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [folder, setFolder] = useState();
+  const [bookmarksFile, setBookmarksFile] = useState();
 
   function changeFolder(folder) {
     setFolder(folder);
@@ -29,6 +35,29 @@ export default function Bookmarks() {
     }
     console.log(children);
     return children;
+  }
+
+  function changeBookmarksFile({file}) {
+    setBookmarksFile(file);
+  }
+
+  function uploadBookmarksFile() {
+    const formData = new FormData();
+    formData.append("file", bookmarksFile);
+    axios.post(config.BACKEND_URL + "/api/upload-bookmarks", formData)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        MySwal.fire("Bookmarks file has been uploaded successfully.");
+        loadBookmarks();
+      }
+      else {
+        MySwal.fire("Error uploading bookmarks file.");
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      MySwal.fire("Error uploading bookmarks file.");
+    })
   }
 
   function loadBookmarksFolders() {
@@ -74,7 +103,16 @@ export default function Bookmarks() {
           <Menu />
           <div className="col-md-10 full-min-height p-5">
             <h2>Bookmarks</h2>
-            <Select value={folder} options={bookmarksFolders} onChange={changeFolder} />
+            
+            <div className="upload-bookmarks">
+              <h4>Upload Bookmarks(HTML)</h4>
+              <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
+              <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
+            </div>
+            <div style={{width: "400px"}}>
+              <h4>Select Folder</h4>
+              <Select value={folder} options={bookmarksFolders} onChange={changeFolder} />
+            </div>
             {/* TODO: Create table to show bookmarks for each folder */}
           </div>
         </div>

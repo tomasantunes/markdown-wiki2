@@ -214,6 +214,20 @@ ul {
   margin: 5px;
 }
 
+.btn-upload-bookmarks {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.upload-bookmarks {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 25px;
+  width: 400px;
+}
+
 .swal-button--confirm {
   background-color: #0B5ED7 !important;
 }
