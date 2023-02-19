@@ -14,11 +14,13 @@ export default function Bookmarks() {
   const [bookmarks, setBookmarks] = useState([]);
   const [folder, setFolder] = useState();
   const [bookmarksFile, setBookmarksFile] = useState();
+  const [isUploading, setIsUploading] = useState(false);
 
   function changeFolder(folder) {
     setFolder(folder);
   }
 
+  /*
   function getChildrenFolders(folder, level) {
     var children = [];
     level += 1;
@@ -37,30 +39,36 @@ export default function Bookmarks() {
     }
     return children;
   }
+  */
 
   function changeBookmarksFile({file}) {
     setBookmarksFile(file);
   }
 
   function uploadBookmarksFile() {
+    setIsUploading(true);
     const formData = new FormData();
     formData.append("file", bookmarksFile);
     axios.post(config.BACKEND_URL + "/api/upload-bookmarks", formData)
     .then(function(response) {
       if (response.data.status == "OK") {
+        setIsUploading(false);
         MySwal.fire("Bookmarks file has been uploaded successfully.");
-        loadBookmarks();
+        //loadBookmarks();
       }
       else {
+        setIsUploading(false);
         MySwal.fire("Error uploading bookmarks file.");
       }
     })
     .catch(function(err) {
+      setIsUploading(false);
       console.log(err);
       MySwal.fire("Error uploading bookmarks file.");
     })
   }
 
+  /*
   function loadBookmarksFolders() {
     var folders = [];
     for (var i in bookmarks) {
@@ -75,7 +83,9 @@ export default function Bookmarks() {
     }
     setBookmarksFolders(folders);
   }
+  */
 
+  /*
   function loadBookmarks() {
     axios.get(config.BACKEND_URL + "/api/bookmarks/get-all")
     .then(function(response) {
@@ -84,15 +94,16 @@ export default function Bookmarks() {
       }
     });
   }
+  */
 
   useEffect(() => {
     if (bookmarks.length > 0) {
-      loadBookmarksFolders();
+      //loadBookmarksFolders();
     }
   }, [bookmarks]);
 
   useEffect(() => {
-    loadBookmarks();
+    //loadBookmarks();
   }, []);
 
   return (
@@ -107,6 +118,7 @@ export default function Bookmarks() {
               <h4>Upload Bookmarks(HTML)</h4>
               <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
               <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
+              {isUploading && <p>Uploading...</p>}
             </div>
             <div>
               <h4>Select Folder</h4>

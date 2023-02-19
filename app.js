@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var mysql = require('mysql2');
+var mysql_async = require('mysql2/promise');
 var fileUpload = require('express-fileupload');
 var secretConfig = require('./secret-config.json');
 const { extension } = require('mime-types');
@@ -38,11 +39,25 @@ app.use(session({
 
 var con = mysql.createPool({
   connectionLimit : 90,
+  connectTimeout: 1000000,
   host: secretConfig.DB_HOST,
   user: secretConfig.DB_USER,
   password: secretConfig.DB_PASSWORD,
   database: secretConfig.DB_NAME,
 });
+
+var con2 = mysql_async.createPool({
+  connectionLimit : 90,
+  connectTimeout: 1000000,
+  host: secretConfig.DB_HOST,
+  user: secretConfig.DB_USER,
+  password: secretConfig.DB_PASSWORD,
+  database: secretConfig.DB_NAME,
+});
+
+con2.query('SET GLOBAL connect_timeout=28800')
+con2.query('SET GLOBAL interactive_timeout=28800')
+con2.query('SET GLOBAL wait_timeout=28800')
 
 // Functions
 function getCategoryId(category_name, cb) {
@@ -279,7 +294,58 @@ function nthMostCommon(str, amount) {
     }, []);
  
     return result;
+}
+
+async function saveBookmark(bookmark, parent_id) {
+  if (bookmark.type != "bookmark") {
+    var sql = "INSERT INTO bookmarks (title, type, parent_id) VALUES (?, 'folder', ?);";
+    try {
+      var result = await con2.query(sql, [bookmark.title, parent_id]);
+      return {status: "OK", insertId: result[0].insertId, type: "folder"};
     }
+    catch(err) {
+      console.log(err);
+      if (err.errno == 1062) {
+        var sql2 = "SELECT id FROM bookmarks WHERE title = ? AND type <> 'bookmark' AND parent_id = ?;";
+        var result2 = await con2.query(sql2, [bookmark.title, parent_id]);
+        return {status: "OK", insertId: result2[0][0].id, type: "folder"};
+      }
+      return {status: "NOK"};
+    }
+  }
+  else if (bookmark.type == "bookmark") {
+    try {
+      var sql2 = "INSERT INTO bookmarks (title, url, type, parent_id) VALUES (?, ?, 'bookmark', ?);";
+      var result2 = await con2.query(sql2, [bookmark.title || "", bookmark.url, parent_id]);
+      return {status: "OK", type: "bookmark"};
+    }
+    catch(err) {
+      console.log(err);
+      return {status: "NOK"};
+    }
+  }
+}
+
+async function saveBookmarksRecursively(bookmarks, parent_id) {
+  for (var i in bookmarks) {
+    var bookmark = bookmarks[i];
+    var result = await saveBookmark(bookmark, parent_id);
+    if (result.status == "OK") {
+      if (result.type == "folder") {
+        parent_id = result.insertId;
+        await saveBookmarksRecursively(bookmark.children, parent_id);
+      }
+    }
+    else {
+      console.log("Error saving bookmark: " + (bookmark.title || "N/A"));
+    }
+  }
+}
+
+async function saveBookmarksToDatabase(bookmarks) {
+  await saveBookmarksRecursively(bookmarks, 0);
+  return {status: "OK"};
+}
 
 // Dashboard Routes
 app.get("/api/get-10-random-sentences", (req, res) => {
@@ -1056,7 +1122,6 @@ app.get("/api/download-text-file/:id", (req, res) => {
 
 
 // Images Routes
-
 app.post('/api/upload-media-file', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1220,8 +1285,16 @@ app.post('/api/upload-bookmarks', function(req, res) {
       args: [filepath]
     };
     
-    PythonShell.run('convert-bookmarks.py', options).then(function (results) {
-      res.json({status: "OK", data: "Bookmarks have been uploaded successfully."});
+    PythonShell.run('convert-bookmarks.py', options).then(async function (results) {
+      var file = editJson(`${__dirname}/bookmarks/bookmarks.json`);
+      var data = file.toObject();
+      var result = await saveBookmarksToDatabase(data);
+      if (result.status == "OK") {
+        res.json({status: "OK", data: "Bookmarks have been uploaded successfully."});
+      }
+      else {
+        res.json({status: "NOK", error: "There was an error uploading bookmarks."});
+      }
     });
   });
 });
