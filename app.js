@@ -1231,6 +1231,12 @@ app.post('/api/upload-bookmarks', function(req, res) {
   });
 });
 
+app.get("/api/bookmarks/get-all", (req, res) => {
+  var file = editJson(`${__dirname}/bookmarks/bookmarks.json`);
+  var data = file.toObject();
+  res.json({status: "OK", data: data});
+});
+
 // Authentication Routes
 app.get("/login/:secret_token", (req, res) => {
   var secret_token = req.params.secret_token;
