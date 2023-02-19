@@ -21,6 +21,7 @@
     "http-errors": "~1.6.3",
     "mime-types": "^2.1.35",
     "morgan": "~1.9.1",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "python-shell": "^5.0.0"
   }
 }

@@ -13,6 +13,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 var session = require('express-session');
 var editJson = require("edit-json-file");
+const PythonShell = require('python-shell');
 
 var app = express();
 
@@ -1052,29 +1053,6 @@ app.get("/api/download-text-file/:id", (req, res) => {
   });
 });
 
-// Bookmarks Routes
-app.post('/api/upload-bookmarks', function(req, res) {
-  if (!req.session.isLoggedIn) {
-    res.json({status: "NOK", error: "Invalid Authorization."});
-    return;
-  }
-  if (!req.files) {
-    console.log("No file has been detected.");
-    res.json({status: "NOK", error: "No file has been detected."});
-    return;
-  }
-  const file = req.files.file;
-  const filepath = __dirname + "/bookmarks/" + file.name;
-
-  file.mv(filepath, (err) => {
-    if (err) {
-      return res.json({status: "NOK", error: err.message});
-    }
-
-    // TO-DO: Convert bookmarks to JSON and save them to the database.
-    
-  });
-});
 
 
 // Images Routes
@@ -1218,6 +1196,39 @@ app.get("/api/bookmarks", (req, res) => {
   }
 
   res.sendFile(__dirname + "/bookmarks/bookmarks.txt");
+});
+
+app.post('/api/upload-bookmarks', function(req, res) {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+  if (!req.files) {
+    console.log("No file has been detected.");
+    res.json({status: "NOK", error: "No file has been detected."});
+    return;
+  }
+  const file = req.files.file;
+  const filepath = __dirname + "/bookmarks/" + file.name;
+
+  file.mv(filepath, (err) => {
+    if (err) {
+      return res.json({status: "NOK", error: err.message});
+    }
+
+    var options = {
+      args: [filepath]
+    };
+    
+    PythonShell.run('convert-bookmarks.py', options, function (err, results) {
+      if (err) {
+        console.log(err);
+        res.json({status: "NOK", error: JSON.stringify(err)});
+        return;
+      }
+      res.json({status: "OK", data: "Bookmarks have been uploaded successfully."});
+    });
+  });
 });
 
 // Authentication Routes
