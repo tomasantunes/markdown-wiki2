@@ -1299,10 +1299,30 @@ app.post('/api/upload-bookmarks', function(req, res) {
   });
 });
 
-app.get("/api/bookmarks/get-all", (req, res) => {
+app.get("/api/bookmarks/get-json", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
   var file = editJson(`${__dirname}/bookmarks/bookmarks.json`);
   var data = file.toObject();
   res.json({status: "OK", data: data});
+});
+
+app.get("/api/bookmarks/get-folders", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT * FROM bookmarks WHERE type = 'folder'";
+  con.query(sql, function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err});
+      return;
+    }
+    res.json({status: "OK", data: result});
+  });
 });
 
 // Authentication Routes

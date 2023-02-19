@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 const MySwal = withReactContent(Swal);
 
 export default function Bookmarks() {
-  const [bookmarksFolders, setBookmarksFolders] = useState([]);
+  const [bookmarkFolders, setBookmarkFolders] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [folder, setFolder] = useState();
   const [bookmarksFile, setBookmarksFile] = useState();
@@ -19,27 +19,6 @@ export default function Bookmarks() {
   function changeFolder(folder) {
     setFolder(folder);
   }
-
-  /*
-  function getChildrenFolders(folder, level) {
-    var children = [];
-    level += 1;
-    var prefix = ">>> ".repeat(level);
-    for (var i in folder.children) {
-      if (folder.children[i].type != "bookmark") {
-        children.push({value: folder.children[i].title, label: prefix + folder.children[i].title});
-      }
-      if (folder.children[i].type != "bookmark" && folder.children[i].children.length > 0) {
-        var children2 = getChildrenFolders(folder.children[i], level);
-        console.log(prefix);
-        for (var j in children2) {
-          children.push(children2[j]);
-        }
-      }
-    }
-    return children;
-  }
-  */
 
   function changeBookmarksFile({file}) {
     setBookmarksFile(file);
@@ -67,25 +46,7 @@ export default function Bookmarks() {
       MySwal.fire("Error uploading bookmarks file.");
     })
   }
-
-  /*
-  function loadBookmarksFolders() {
-    var folders = [];
-    for (var i in bookmarks) {
-      if (bookmarks[i].type != "bookmark") {
-        var level = 0;
-        folders.push({value: bookmarks[i].title, label: bookmarks[i].title});
-        var children = getChildrenFolders(bookmarks[i], level);
-        for (var j in children) {
-          folders.push(children[j]);
-        }
-      }
-    }
-    setBookmarksFolders(folders);
-  }
-  */
-
-  /*
+  
   function loadBookmarks() {
     axios.get(config.BACKEND_URL + "/api/bookmarks/get-all")
     .then(function(response) {
@@ -94,16 +55,47 @@ export default function Bookmarks() {
       }
     });
   }
-  */
+
+  function getChildrenFolders(folder1, folders1, level) {
+    level++;
+    var children = [];
+    var prefix = ">>> ".repeat(level);
+    for (var i in folders1) {
+      var child = folders1[i];
+      if (child.parent_id == folder1.id) {
+        children.push({value: child.id, label: prefix + child.title});
+        children = children.concat(getChildrenFolders(child, folders1, level));
+      }
+    }
+    return children;
+  }
+
+  function loadBookmarkFolders() {
+    axios.get(config.BACKEND_URL + "/api/bookmarks/get-folders")
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var folders1 = response.data.data;
+        var folders_to_add = [];
+        var folder1 = {id: 0};
+        var children = getChildrenFolders(folder1, folders1, -1);
+        folders_to_add = folders_to_add.concat(children);
+        setBookmarkFolders(folders_to_add);
+      }
+      else {
+        MySwal.fire("Error loading bookmark folders.");
+      }
+    });
+  }
+  
 
   useEffect(() => {
     if (bookmarks.length > 0) {
-      //loadBookmarksFolders();
+      
     }
   }, [bookmarks]);
 
   useEffect(() => {
-    //loadBookmarks();
+    loadBookmarkFolders();
   }, []);
 
   return (
@@ -122,7 +114,7 @@ export default function Bookmarks() {
             </div>
             <div>
               <h4>Select Folder</h4>
-              <Select value={folder} options={bookmarksFolders} onChange={changeFolder} />
+              <Select value={folder} options={bookmarkFolders} onChange={changeFolder} />
             </div>
             {/* TODO: Create table to show bookmarks for each folder */}
           </div>
