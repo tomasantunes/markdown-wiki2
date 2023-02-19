@@ -19,21 +19,22 @@ export default function Bookmarks() {
     setFolder(folder);
   }
 
-  function getChildrenFolders(folder) {
+  function getChildrenFolders(folder, level) {
     var children = [];
-    console.log(folder.children);
+    level += 1;
+    var prefix = ">>> ".repeat(level);
     for (var i in folder.children) {
       if (folder.children[i].type != "bookmark") {
-        children.push(folder.children[i]);
+        children.push({value: folder.children[i].title, label: prefix + folder.children[i].title});
       }
       if (folder.children[i].type != "bookmark" && folder.children[i].children.length > 0) {
-        var children2 = getChildrenFolders(folder.children[i]);
+        var children2 = getChildrenFolders(folder.children[i], level);
+        console.log(prefix);
         for (var j in children2) {
           children.push(children2[j]);
         }
       }
     }
-    console.log(children);
     return children;
   }
 
@@ -61,25 +62,23 @@ export default function Bookmarks() {
   }
 
   function loadBookmarksFolders() {
-    console.log(bookmarks);
     var folders = [];
     for (var i in bookmarks) {
       if (bookmarks[i].type != "bookmark") {
+        var level = 0;
         folders.push({value: bookmarks[i].title, label: bookmarks[i].title});
-        var children = getChildrenFolders(bookmarks[i]);
+        var children = getChildrenFolders(bookmarks[i], level);
         for (var j in children) {
-          folders.push({value: children[j].title, label: children[j].title});
+          folders.push(children[j]);
         }
       }
     }
-    console.log(folders);
     setBookmarksFolders(folders);
   }
 
   function loadBookmarks() {
     axios.get(config.BACKEND_URL + "/api/bookmarks/get-all")
     .then(function(response) {
-      console.log(response.data);
       if (response.data.status == "OK") {
         setBookmarks(response.data.data);
       }
@@ -109,7 +108,7 @@ export default function Bookmarks() {
               <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
               <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
             </div>
-            <div style={{width: "400px"}}>
+            <div>
               <h4>Select Folder</h4>
               <Select value={folder} options={bookmarksFolders} onChange={changeFolder} />
             </div>
