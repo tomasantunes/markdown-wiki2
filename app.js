@@ -332,8 +332,7 @@ async function saveBookmarksRecursively(bookmarks, parent_id) {
     var result = await saveBookmark(bookmark, parent_id);
     if (result.status == "OK") {
       if (result.type == "folder") {
-        parent_id = result.insertId;
-        await saveBookmarksRecursively(bookmark.children, parent_id);
+        await saveBookmarksRecursively(bookmark.children, result.insertId);
       }
     }
     else {
