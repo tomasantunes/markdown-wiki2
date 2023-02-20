@@ -5,5 +5,4 @@
 - Apply tags to all files
 - Fix error when linking to files
 - Create edit modal for bookmarks.
-- Implement 2-factor authentication by email.
 - Create installation script.

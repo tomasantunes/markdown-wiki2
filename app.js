@@ -15,6 +15,7 @@ const crypto = require('crypto');
 var session = require('express-session');
 var editJson = require("edit-json-file");
 const PythonShell = require('python-shell').PythonShell;
+var nodemailer = require('nodemailer'); 
 
 var app = express();
 
@@ -1373,6 +1374,67 @@ app.get("/login/:secret_token", (req, res) => {
 });
 */
 
+app.post("/api/check-pin", (req, res) => {
+  var login_id = req.body.login_id;
+  var pin = req.body.pin;
+
+  var sql = "SELECT * FROM logins WHERE id = ? AND created_at > (NOW() - INTERVAL 1 HOUR) AND ISNULL(is_valid);";
+  con.query(sql, [login_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return; 
+    }
+    if (result.length > 0) {
+      if (result[0].pin == pin) {
+        var sql2 = "UPDATE logins SET is_valid = 1 WHERE id = ?;";
+        con.query(sql2, [login_id]);
+        let file = editJson(`${__dirname}/sessions.json`);
+        var dt = new Date().toUTCString();
+        file.append("sessions", {login_date: dt});
+        file.save();
+        req.session.isLoggedIn = true;
+        res.json({status: "OK", data: "PIN is correct."});
+      }
+      else {
+        var sql2 = "UPDATE logins SET is_valid = 0 WHERE id = ?;";
+        con.query(sql2, [login_id]);
+        res.json({status: "NOK", error: "PIN is incorrect."});
+      }
+    }
+    else {
+      var sql2 = "UPDATE logins SET is_valid = 0 WHERE id = ?;";
+      con.query(sql2, [login_id]);
+      res.json({status: "NOK", error: "PIN has expired. Please try again."});
+    }
+  });
+  
+});
+
+function sendPinEmail(pin) {
+  var smtpTransport = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+          user: secretConfig.SITE_EMAIL,
+          pass: secretConfig.SITE_EMAIL_PASSWORD
+      }
+  });
+  var mailOptions = {
+      from: secretConfig.SITE_EMAIL,
+      to: secretConfig.USER_EMAIL, 
+      subject: 'PIN',
+      text: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: ' + pin + '. This PIN will expire in 1 hour.'
+  }
+  smtpTransport.sendMail(mailOptions, function(error, response){
+      if(error){
+          console.log(error);
+      }else{
+          res.redirect('/');
+      }
+  });
+}
+
 app.post("/api/check-login", (req, res) => {
   var user = req.body.user;
   var pass = req.body.pass;
@@ -1382,14 +1444,14 @@ app.post("/api/check-login", (req, res) => {
   con.query(sql, function (err, result) {
     if (result.length <= 5) {
       if (user == secretConfig.USER && pass == secretConfig.PASS) {
-        req.session.isLoggedIn = true;
-        var sql2 = "INSERT INTO logins (is_valid) VALUES (1);";
-        con.query(sql2);
-        let file = editJson(`${__dirname}/sessions.json`);
-        var dt = new Date().toUTCString();
-        file.append("sessions", {login_date: dt});
-        file.save();
-        res.json({status: "OK", data: "Login successful."});
+        var pin = (""+Math.random()).substring(2,8);
+        var sql2 = "INSERT INTO logins (pin) VALUES (?);";
+        con.query(sql2, [pin], function(err2, result2) {
+          var login_id = result2.insertId;
+          sendPinEmail(pin);
+          res.json({status: "OK", data: {msg: "Username and password are correct. Please enter PIN.", login_id: login_id}});
+        });
+        
       }
       else {
         var sql2 = "INSERT INTO logins (is_valid) VALUES (0);";
@@ -1401,8 +1463,6 @@ app.post("/api/check-login", (req, res) => {
       res.json({status: "NOK", error: "Too many login attempts."});
     }
   });
-  
-  
 });
 
 

@@ -22,6 +22,7 @@
     "mime-types": "^2.1.35",
     "morgan": "~1.9.1",
     "mysql2": "^2.3.3",
+    "nodemailer": "^6.9.1",
     "python-shell": "^5.0.0"
   }
 }

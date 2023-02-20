@@ -24,7 +24,29 @@ export default function Login() {
     .then(res => {
       if (res.data.status == "OK") {
         console.log(res.data.data);
-        navigate("/dashboard");
+        var login_id = res.data.data.login_id;
+        Swal.fire({
+          title: 'Enter PIN',
+          input: 'text',
+          showCancelButton: true,
+          showConfirmButton: true,
+          showCloseButton: true,
+        }).then((result) => {
+          console.log(result.value);
+          console.log(login_id);
+          axios.post(config.BACKEND_URL + "/api/check-pin", {login_id: login_id, pin: result.value})
+          .then(function(response) {
+            if (response.data.status == "OK") {
+              navigate("/dashboard");
+            }
+            else {
+              MySwal.fire(response.data.error);
+            }
+          })
+          .catch(function(err) {
+            MySwal.fire(err.message);
+          });
+        });
       }
       else {
         MySwal.fire(res.data.error);

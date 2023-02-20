@@ -66,6 +66,8 @@ UPDATE files f JOIN files_categories fc ON f.id = fc.file_id SET f.category_id =
 DROP TABLE files_categories;
 ALTER TABLE files ADD pinned BOOLEAN DEFAULT FALSE;
 ALTER TABLE categories ADD sort_index INT(11);
+ALTER TABLE logins MODIFY is_valid BOOLEAN DEFAULT NULL;
+ALTER TABLE logins ADD pin VARCHAR(128);
 
 
 
