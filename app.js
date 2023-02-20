@@ -1325,6 +1325,46 @@ app.get("/api/bookmarks/get-folders", (req, res) => {
   });
 });
 
+app.get("/api/bookmarks/getone", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.query.id;
+
+  var sql = "SELECT * FROM bookmarks WHERE id = ?;";
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    res.json({status: "OK", data: result[0]});
+  });
+});
+
+app.post("/api/bookmarks/edit", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+  var title = req.body.title;
+  var url = req.body.url;
+  var parent_id = req.body.parent_id;
+  var tags = req.body.tags;
+
+  var sql = "UPDATE bookmarks SET title = ?, url = ?, parent_id = ?, tags = ? WHERE id = ?;";
+  con.query(sql, [title, url, parent_id, tags, id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err});
+      return;
+    }
+    res.json({status: "OK", data: "The bookmark was edited successfully."});
+  });
+});
+
 app.get("/api/get-bookmarks-from-folder", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1378,35 +1418,47 @@ app.post("/api/check-pin", (req, res) => {
   var login_id = req.body.login_id;
   var pin = req.body.pin;
 
-  var sql = "SELECT * FROM logins WHERE id = ? AND created_at > (NOW() - INTERVAL 1 HOUR) AND ISNULL(is_valid);";
-  con.query(sql, [login_id], function(err, result) {
-    if (err) {
-      res.json({status: "NOK", error: JSON.stringify(err)});
-      return; 
-    }
-    if (result.length > 0) {
-      if (result[0].pin == pin) {
-        var sql2 = "UPDATE logins SET is_valid = 1 WHERE id = ?;";
-        con.query(sql2, [login_id]);
-        let file = editJson(`${__dirname}/sessions.json`);
-        var dt = new Date().toUTCString();
-        file.append("sessions", {login_date: dt});
-        file.save();
-        req.session.isLoggedIn = true;
-        res.json({status: "OK", data: "PIN is correct."});
+  if (secretConfig.USE_2FA == true) {
+    var sql = "SELECT * FROM logins WHERE id = ? AND created_at > (NOW() - INTERVAL 1 HOUR) AND ISNULL(is_valid);";
+    con.query(sql, [login_id], function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: JSON.stringify(err)});
+        return; 
+      }
+      if (result.length > 0) {
+        if (result[0].pin == pin) {
+          var sql2 = "UPDATE logins SET is_valid = 1 WHERE id = ?;";
+          con.query(sql2, [login_id]);
+          let file = editJson(`${__dirname}/sessions.json`);
+          var dt = new Date().toUTCString();
+          file.append("sessions", {login_date: dt});
+          file.save();
+          req.session.isLoggedIn = true;
+          res.json({status: "OK", data: "PIN is correct."});
+        }
+        else {
+          var sql2 = "UPDATE logins SET is_valid = 0 WHERE id = ?;";
+          con.query(sql2, [login_id]);
+          res.json({status: "NOK", error: "PIN is incorrect."});
+        }
       }
       else {
         var sql2 = "UPDATE logins SET is_valid = 0 WHERE id = ?;";
         con.query(sql2, [login_id]);
-        res.json({status: "NOK", error: "PIN is incorrect."});
+        res.json({status: "NOK", error: "PIN has expired. Please try again."});
       }
-    }
-    else {
-      var sql2 = "UPDATE logins SET is_valid = 0 WHERE id = ?;";
-      con.query(sql2, [login_id]);
-      res.json({status: "NOK", error: "PIN has expired. Please try again."});
-    }
-  });
+    });
+  }
+  else {
+    var sql = "INSERT INTO logins (is_valid) VALUES (1);";
+    con.query(sql, [pin]);
+    let file = editJson(`${__dirname}/sessions.json`);
+    var dt = new Date().toUTCString();
+    file.append("sessions", {login_date: dt});
+    file.save();
+    req.session.isLoggedIn = true;
+    res.json({status: "OK", error: "PIN is not required."});
+  }
   
 });
 
@@ -1444,14 +1496,18 @@ app.post("/api/check-login", (req, res) => {
   con.query(sql, function (err, result) {
     if (result.length <= 5) {
       if (user == secretConfig.USER && pass == secretConfig.PASS) {
-        var pin = (""+Math.random()).substring(2,8);
-        var sql2 = "INSERT INTO logins (pin) VALUES (?);";
-        con.query(sql2, [pin], function(err2, result2) {
-          var login_id = result2.insertId;
-          sendPinEmail(pin);
-          res.json({status: "OK", data: {msg: "Username and password are correct. Please enter PIN.", login_id: login_id}});
-        });
-        
+        if (secretConfig.USE_2FA == true) {
+          var pin = (""+Math.random()).substring(2,8);
+          var sql2 = "INSERT INTO logins (pin) VALUES (?);";
+          con.query(sql2, [pin], function(err2, result2) {
+            var login_id = result2.insertId;
+            sendPinEmail(pin);
+            res.json({status: "OK", data: {msg: "Username and password are correct. Please enter PIN.", login_id: login_id}});
+          });
+        }
+        else {
+          res.json({status: "OK", data: {msg: "Username and password are correct. PIN is not required.", login_id: -1}});
+        }
       }
       else {
         var sql2 = "INSERT INTO logins (is_valid) VALUES (0);";

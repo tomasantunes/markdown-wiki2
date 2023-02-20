@@ -7,8 +7,13 @@ import FileUploader from './FileUploader';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import ReactPaginate from 'react-paginate';
+import $ from 'jquery';
 
 const MySwal = withReactContent(Swal);
+window.jQuery = $;
+window.$ = $;
+global.jQuery = $;
+const bootstrap = require('bootstrap');
 
 export default function Bookmarks() {
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
@@ -19,6 +24,14 @@ export default function Bookmarks() {
   const [page, setPage] = useState(0);
   const bookmarksPerPage = 10;
   const [totalPages, setTotalPages] = useState(0);
+  const [editBookmark, setEditBookmark] = useState({
+    id: "",
+    title: "",
+    url: "",
+    tags: "",
+    parent_id: ""
+  });
+  const [editBookmarkSelectedFolder, setEditBookmarkSelectedFolder] = useState();
 
   function changeSelectedFolder(item) {
     setSelectedFolder(item);
@@ -26,6 +39,80 @@ export default function Bookmarks() {
 
   function changeBookmarksFile({file}) {
     setBookmarksFile(file);
+  }
+
+  function changeEditBookmarkFolder(item) {
+    setEditBookmarkSelectedFolder(item);
+    setEditBookmark({...editBookmark, parent_id: item.value});
+  }
+
+  function changeEditBookmarkTitle(e) {
+    setEditBookmark({...editBookmark, title: e.target.value});
+  }
+
+  function changeEditBookmarkUrl(e) {
+    setEditBookmark({...editBookmark, url: e.target.value});
+  }
+
+  function changeEditBookmarkTags(e) {
+    setEditBookmark({...editBookmark, tags: e.target.value});
+  }
+
+  function submitEditBookmark(e) {
+    e.preventDefault();
+    if (editBookmark.title.trim() == "" || editBookmark.url.trim() == "" || editBookmark.parent_id == "") {
+      MySwal.fire("Fields cannot be empty.");
+      return;
+    }
+    
+    axios.post(config.BACKEND_URL + "/api/bookmarks/edit", editBookmark)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        $(".editBookmarkModal").modal("hide");
+        MySwal.fire("Bookmark has been edited successfully.").then(function(value) {
+          loadBookmarks();
+        });
+      }
+      else {
+        MySwal.fire("Error editing bookmark: " + response.data.error);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      MySwal.fire("Error editing bookmark: " + err.message);
+    });
+  }
+
+  function showEditBookmark(e) {
+    var id = e.target.value;
+    axios.get(config.BACKEND_URL + "/api/bookmarks/getone", {
+      params: {
+        id: id
+      }
+    })
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        var bookmark = response.data.data;
+        setEditBookmark({
+          id: bookmark.id,
+          title: bookmark.title,
+          url: bookmark.url,
+          tags: bookmark.tags,
+          parent_id: bookmark.parent_id
+        });
+        setEditBookmarkSelectedFolder(bookmarkFolders.find(function(item) {
+          return item.value == bookmark.parent_id;
+        }));
+        $(".editBookmarkModal").modal("show");
+      }
+      else {
+        MySwal.fire("Error loading bookmark: " + response.data.error);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      MySwal.fire("Error loading bookmark: " + err.message);
+    });
   }
 
   function uploadBookmarksFile() {
@@ -173,7 +260,7 @@ export default function Bookmarks() {
                     <td>{bookmark.title}</td>
                     <td><a href={bookmark.url}>{bookmark.url}</a></td>
                     <td>{bookmark.tags}</td>
-                    <td><button className="btn btn-primary">Edit</button></td>
+                    <td><button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button></td>
                   </tr>
                   ))}
               </tbody>
@@ -189,6 +276,52 @@ export default function Bookmarks() {
               disabledClassName={"navigationDisabled"}
               activeClassName={"navigationActive"}
             />
+          </div>
+        </div>
+      </div>
+      <div class="modal editBookmarkModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Bookmark</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form onSubmit={submitEditBookmark}>
+                <div className="form-group py-2">
+                    <label className="control-label">Title</label>
+                    <div>
+                        <input type="text" className="form-control input-lg" name="title" value={editBookmark.title} onChange={changeEditBookmarkTitle} />
+                    </div>
+                </div>
+                <div className="form-group py-2">
+                    <label className="control-label">URL</label>
+                    <div>
+                        <input type="text" className="form-control input-lg" name="url" value={editBookmark.url} onChange={changeEditBookmarkUrl} />
+                    </div>
+                </div>
+                <div className="form-group py-2">
+                    <label className="control-label">Folder</label>
+                    <div>
+                        <Select value={editBookmarkSelectedFolder} options={bookmarkFolders} onChange={changeEditBookmarkFolder} />
+                    </div>
+                </div>
+                <div className="form-group py-2">
+                    <label className="control-label">Tags</label>
+                    <div>
+                        <input type="text" className="form-control input-lg" name="tags" value={editBookmark.tags} onChange={changeEditBookmarkTags} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div style={{textAlign: "right"}}>
+                        <button type="submit" className="btn btn-primary">Save</button>
+                    </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
           </div>
         </div>
       </div>
