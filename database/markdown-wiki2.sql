@@ -54,6 +54,12 @@ CREATE TABLE bookmarks (
     UNIQUE(parent_id, title, url, type)
 );
 
+CREATE TABLE logins (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    is_valid BOOLEAN NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO categories (name, parent_id) VALUES ('root', 0);
 ALTER TABLE files ADD category_id INT(11) DEFAULT NULL;
 UPDATE files f JOIN files_categories fc ON f.id = fc.file_id SET f.category_id = fc.category_id;

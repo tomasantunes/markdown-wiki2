@@ -37,6 +37,8 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 var con = mysql.createPool({
   connectionLimit : 90,
   connectTimeout: 1000000,
@@ -1352,6 +1354,8 @@ app.get("/api/get-bookmarks-from-folder", (req, res) => {
 });
 
 // Authentication Routes
+
+/*
 app.get("/login/:secret_token", (req, res) => {
   var secret_token = req.params.secret_token;
 
@@ -1369,20 +1373,150 @@ app.get("/login/:secret_token", (req, res) => {
     res.send("Invalid authorization.");
   }
 });
+*/
+
+app.post("/api/check-login", (req, res) => {
+  var user = req.body.user;
+  var pass = req.body.pass;
+
+  var sql = "SELECT * FROM logins WHERE is_valid = 0 AND created_at > (NOW() - INTERVAL 1 HOUR);";
+
+  con.query(sql, function (err, result) {
+    if (result.length <= 5) {
+      if (user == secretConfig.USER && pass == secretConfig.PASS) {
+        req.session.isLoggedIn = true;
+        var sql2 = "INSERT INTO logins (is_valid) VALUES (1);";
+        con.query(sql2);
+        let file = editJson(`${__dirname}/sessions.json`);
+        var dt = new Date().toUTCString();
+        file.append("sessions", {login_date: dt});
+        file.save();
+        res.json({status: "OK", data: "Login successful."});
+      }
+      else {
+        var sql2 = "INSERT INTO logins (is_valid) VALUES (0);";
+        con.query(sql2);
+        res.json({status: "NOK", error: "Wrong username/password."});
+      }
+    }
+    else {
+      res.json({status: "NOK", error: "Too many login attempts."});
+    }
+  });
+  
+  
+});
 
 
 // Front-End Routes
+
+app.get('/', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.redirect('/dashboard');;
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
 app.use(express.static('frontend/build'));
 
-app.get('/*', (req,res) => {
-  console.log(req.session.isLoggedIn);
-  if (!req.session.isLoggedIn) {
-    res.json({status: "NOK", error: "Invalid Authorization."});
-    return;
-  }
-
+app.get('/login', (req, res) => {
   res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
 });
+
+app.get('/dashboard', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/search', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/add-file', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/add-category', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/add-tag', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/categories/:id', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/tag/:id', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/bookmarks', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/pinned', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

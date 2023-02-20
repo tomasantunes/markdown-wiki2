@@ -14,6 +14,7 @@ import Bookmarks from './components/Bookmarks';
 import Tag from './components/Tag';
 import SearchPage from './components/SearchPage';
 import Pinned from './components/Pinned';
+import Login from './components/Login';
 import config from './config.json';
 
 
@@ -24,7 +25,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/add-file" element={<AddFile />} />
         <Route path="/add-category" element={<AddCategory />} />
@@ -33,6 +34,7 @@ function App() {
         <Route path="/tag/:id" element={<Tag />}/>
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/pinned" element={<Pinned />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
