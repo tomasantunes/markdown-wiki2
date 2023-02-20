@@ -231,3 +231,39 @@ ul {
 .swal-button--confirm {
   background-color: #0B5ED7 !important;
 }
+
+/* Pagination */
+.navigationButtons {
+	width: 80%;
+	height: 40px;
+	list-style: none;
+	display: flex;
+	justify-content: center;
+	margin: auto;
+	padding-top: 40px;
+	margin-bottom: 80px;
+}
+	
+.navigationButtons a {
+	padding: 10px;
+	margin: 8px;
+	border-radius: 5px;
+	border: 1px solid black;
+	color: black;
+	cursor: pointer;
+}
+	
+.navigationButtons a:hover {
+	color: white;
+	background-color: #444;
+}
+	
+.navigationActive a {
+	color: white;
+	background-color: #444;
+}
+	
+.navigationDisabled a {
+	color: white;
+	background-color: grey;
+}

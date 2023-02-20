@@ -1324,6 +1324,33 @@ app.get("/api/bookmarks/get-folders", (req, res) => {
   });
 });
 
+app.get("/api/get-bookmarks-from-folder", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var folder_id = req.query.folder_id;
+  var limit = req.query.limit;
+  var offset = req.query.offset;
+
+  var sql = "SELECT * FROM bookmarks WHERE type = 'bookmark' AND parent_id = ? ORDER BY id ASC LIMIT ? OFFSET ?;";
+  var sql2 = "SELECT COUNT(*) AS countresult FROM bookmarks WHERE type = 'bookmark' AND parent_id = ?;";
+  con.query(sql, [Number(folder_id), Number(limit), Number(offset)], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    con.query(sql2, [folder_id], function(err2, result2) {
+      if (err) {
+        res.json({status: "NOK", error: JSON.stringify(err2)});
+        return;
+      }
+      res.json({status: "OK", data: {bookmarks: result, count: result2[0].countresult}});
+    });
+  });
+});
+
 // Authentication Routes
 app.get("/login/:secret_token", (req, res) => {
   var secret_token = req.params.secret_token;
