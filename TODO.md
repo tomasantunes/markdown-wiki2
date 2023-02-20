@@ -5,5 +5,5 @@
 - Apply tags to all files
 - Fix error when linking to files
 - Create edit modal for bookmarks.
-- Change authentication to use a password and 2-factor authentication by email.
+- Implement 2-factor authentication by email.
 - Create installation script.

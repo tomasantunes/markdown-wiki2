@@ -37,8 +37,6 @@ app.use(session({
   saveUninitialized: true
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 var con = mysql.createPool({
   connectionLimit : 90,
   connectTimeout: 1000000,
@@ -1420,7 +1418,7 @@ app.get('/', (req,res) => {
   }
 });
 
-app.use(express.static('frontend/build'));
+app.use(express.static(path.resolve(__dirname) + 'frontend/build'));
 
 app.get('/login', (req, res) => {
   res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');

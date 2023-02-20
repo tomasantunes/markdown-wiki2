@@ -13,6 +13,7 @@ npm install
 cd markdown-wiki2-frontend
 npm install --legacy-peer-deps
 npm run build
+pip install bookmarks_parser
 ```
 
 ## How to run
