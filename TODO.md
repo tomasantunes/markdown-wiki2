@@ -7,3 +7,4 @@
 - Create table with bookmarks for each category.
 - Create edit button for bookmarks.
 - Change authentication to use a password and 2-factor authentication by email.
+- Create installation script.
