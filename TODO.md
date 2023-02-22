@@ -4,5 +4,5 @@
 - Define a value for all dropdowns.
 - Apply tags to all files
 - Fix error when linking to files
-- Create installation script.
+- Create docker build file.
 - Sort categories alphabetically by default.
