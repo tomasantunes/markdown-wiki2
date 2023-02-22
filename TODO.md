@@ -4,5 +4,5 @@
 - Define a value for all dropdowns.
 - Apply tags to all files
 - Fix error when linking to files
-- Create edit modal for bookmarks.
 - Create installation script.
+- Sort categories alphabetically by default.
