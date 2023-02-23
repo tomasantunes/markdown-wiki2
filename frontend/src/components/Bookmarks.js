@@ -119,6 +119,9 @@ export default function Bookmarks() {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", bookmarksFile);
+    if (config.IMPORT_BOOKMARKS_CUSTOM_FUNCTION != "") {
+      formData.append("custom_function", config.IMPORT_BOOKMARKS_CUSTOM_FUNCTION);
+    }
     axios.post(config.BACKEND_URL + "/api/upload-bookmarks", formData)
     .then(function(response) {
       if (response.data.status == "OK") {

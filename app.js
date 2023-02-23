@@ -322,9 +322,28 @@ async function saveBookmark(bookmark, parent_id) {
     }
     catch(err) {
       console.log(err);
+      if (err.errno == 1062) {
+        var sql2 = "SELECT id FROM bookmarks WHERE url = ? AND type = 'bookmark';";
+        var result2 = await con2.query(sql2, [bookmark.url]);
+        return {status: "OK", insertId: result2[0][0].id, type: "bookmark"};
+      }
       return {status: "NOK"};
     }
   }
+}
+
+function searchRecursively(arr, key, value) {
+  let result = [];
+  
+  arr.forEach((obj) => {
+    if (obj[key] === value) {
+      result.push(obj);
+    } else if (obj.children) {
+      result = result.concat(searchRecursively(obj.children, key, value));
+    }
+  });
+  console.log(result)
+  return result;
 }
 
 async function saveBookmarksRecursively(bookmarks, parent_id) {
@@ -345,6 +364,22 @@ async function saveBookmarksRecursively(bookmarks, parent_id) {
 async function saveBookmarksToDatabase(bookmarks) {
   await saveBookmarksRecursively(bookmarks, 0);
   return {status: "OK"};
+}
+
+async function saveBookmarksToDatabaseCustom1(bookmarks) {
+  var folder_to_import = searchRecursively(bookmarks, "title", "bookmarks_to_export");
+  if (folder_to_import.length > 0) {
+    folder_to_import = folder_to_import[0];
+    var result = await saveBookmark(folder_to_import, 0);
+    if (result.status == "OK" && result.type == "folder") {
+      var parent_id = result.insertId;
+      await saveBookmarksRecursively(folder_to_import.children, parent_id);
+    }
+    return {status: "OK"};
+  }
+  else {
+    return {status: "NOK"};
+  }
 }
 
 // Dashboard Routes
@@ -1274,6 +1309,12 @@ app.post('/api/upload-bookmarks', function(req, res) {
     return;
   }
   const file = req.files.file;
+  var custom_function = req.body.custom_function;
+  var use_custom_function = false;
+  if (custom_function) {
+    use_custom_function = true;
+  }
+
   const filepath = __dirname + "/bookmarks/" + file.name;
 
   file.mv(filepath, (err) => {
@@ -1288,7 +1329,15 @@ app.post('/api/upload-bookmarks', function(req, res) {
     PythonShell.run('convert-bookmarks.py', options).then(async function (results) {
       var file = editJson(`${__dirname}/bookmarks/bookmarks.json`);
       var data = file.toObject();
-      var result = await saveBookmarksToDatabase(data);
+      var result;
+      if (use_custom_function) {
+        if (custom_function == "custom1") {
+          result = await saveBookmarksToDatabaseCustom1(data);
+        }
+      }
+      else {
+        result = await saveBookmarksToDatabase(data);
+      }
       if (result.status == "OK") {
         res.json({status: "OK", data: "Bookmarks have been uploaded successfully."});
       }

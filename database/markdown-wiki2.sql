@@ -68,7 +68,5 @@ ALTER TABLE files ADD pinned BOOLEAN DEFAULT FALSE;
 ALTER TABLE categories ADD sort_index INT(11);
 ALTER TABLE logins MODIFY is_valid BOOLEAN DEFAULT NULL;
 ALTER TABLE logins ADD pin VARCHAR(128);
-
-
-
-
+ALTER TABLE bookmarks ADD CONSTRAINT unique_bookmark UNIQUE (url);
+ALTER TABLE bookmarks DROP INDEX unique_bookmark;
