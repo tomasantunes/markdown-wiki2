@@ -297,21 +297,27 @@ function nthMostCommon(str, amount) {
     return result;
 }
 
-async function saveBookmark(bookmark, parent_id) {
+async function saveBookmark(bookmark, ignore_folders, parent_id) {
   if (bookmark.type != "bookmark") {
-    var sql = "INSERT INTO bookmarks (title, type, parent_id) VALUES (?, 'folder', ?);";
-    try {
-      var result = await con2.query(sql, [bookmark.title, parent_id]);
-      return {status: "OK", insertId: result[0].insertId, type: "folder"};
-    }
-    catch(err) {
-      console.log(err);
-      if (err.errno == 1062) {
-        var sql2 = "SELECT id FROM bookmarks WHERE title = ? AND type <> 'bookmark' AND parent_id = ?;";
-        var result2 = await con2.query(sql2, [bookmark.title, parent_id]);
-        return {status: "OK", insertId: result2[0][0].id, type: "folder"};
+    if (!ignore_folders) {
+      var sql = "INSERT INTO bookmarks (title, type, parent_id) VALUES (?, 'folder', ?);";
+      try {
+        var result = await con2.query(sql, [bookmark.title, parent_id]);
+        return {status: "OK", insertId: result[0].insertId, type: "folder"};
       }
-      return {status: "NOK"};
+      catch(err) {
+        console.log(err);
+        if (err.errno == 1062) {
+          var sql2 = "SELECT id FROM bookmarks WHERE title = ? AND type <> 'bookmark' AND parent_id = ?;";
+          var result2 = await con2.query(sql2, [bookmark.title, parent_id]);
+          return {status: "OK", insertId: result2[0][0].id, type: "folder"};
+        }
+        return {status: "NOK"};
+      }
+    }
+    else {
+      console.log("A folder has been ignored.");
+      return {status: "OK", type: "bookmark"};
     }
   }
   else if (bookmark.type == "bookmark") {
@@ -342,17 +348,16 @@ function searchRecursively(arr, key, value) {
       result = result.concat(searchRecursively(obj.children, key, value));
     }
   });
-  console.log(result)
   return result;
 }
 
-async function saveBookmarksRecursively(bookmarks, parent_id) {
+async function saveBookmarksRecursively(bookmarks, ignore_folders, parent_id) {
   for (var i in bookmarks) {
     var bookmark = bookmarks[i];
-    var result = await saveBookmark(bookmark, parent_id);
+    var result = await saveBookmark(bookmark, ignore_folders, parent_id);
     if (result.status == "OK") {
       if (result.type == "folder") {
-        await saveBookmarksRecursively(bookmark.children, result.insertId);
+        await saveBookmarksRecursively(bookmark.children, ignore_folders, result.insertId);
       }
     }
     else {
@@ -361,24 +366,45 @@ async function saveBookmarksRecursively(bookmarks, parent_id) {
   }
 }
 
-async function saveBookmarksToDatabase(bookmarks) {
-  await saveBookmarksRecursively(bookmarks, 0);
-  return {status: "OK"};
+async function saveBookmarksToDatabase(bookmarks, import_folder, ignore_folders, target_folder) {
+  var parent_id = 0
+  if (target_folder != "" && target_folder != undefined) {
+    var sql = "SELECT id FROM bookmarks WHERE title = ? AND type = 'folder';";
+    var result = await con2.query(sql, [target_folder]);
+    if (result[0].length > 0) {
+      parent_id = result[0][0].id;
+    }
+  }
+  if (import_folder != "" && import_folder != undefined) {
+    console.log("Before saveToDatabaseFromFolder().");
+    var result = await saveBookmarksToDatabaseFromFolder(bookmarks, import_folder, ignore_folders, parent_id);
+    if (result.status == "OK") {
+      return {status: "OK"};
+    }
+    else {
+      return {status: "NOK", error: result.error};
+    }
+  }
+  else {
+    await saveBookmarksRecursively(bookmarks, ignore_folders, parent_id);
+    return {status: "OK"};
+  }
 }
 
-async function saveBookmarksToDatabaseCustom1(bookmarks) {
-  var folder_to_import = searchRecursively(bookmarks, "title", "bookmarks_to_export");
+async function saveBookmarksToDatabaseFromFolder(bookmarks, import_folder, ignore_folders, parent_id) {
+  var folder_to_import = searchRecursively(bookmarks, "title", import_folder);
   if (folder_to_import.length > 0) {
     folder_to_import = folder_to_import[0];
-    var result = await saveBookmark(folder_to_import, 0);
+    console.log(folder_to_import);
+    var result = await saveBookmark(folder_to_import, ignore_folders, parent_id);
     if (result.status == "OK" && result.type == "folder") {
       var parent_id = result.insertId;
-      await saveBookmarksRecursively(folder_to_import.children, parent_id);
+      await saveBookmarksRecursively(folder_to_import.children, ignore_folders, parent_id);
     }
     return {status: "OK"};
   }
   else {
-    return {status: "NOK"};
+    return {status: "NOK", error: "Folder not found."};
   }
 }
 
@@ -1309,11 +1335,13 @@ app.post('/api/upload-bookmarks', function(req, res) {
     return;
   }
   const file = req.files.file;
-  var custom_function = req.body.custom_function;
-  var use_custom_function = false;
-  if (custom_function) {
-    use_custom_function = true;
-  }
+  var import_folder = req.body.import_folder;
+  var ignore_folders = req.body.ignore_folders == "true";
+  var target_folder = req.body.target_folder;
+
+  console.log(import_folder);
+  console.log(ignore_folders);
+  console.log(target_folder);
 
   const filepath = __dirname + "/bookmarks/" + file.name;
 
@@ -1330,19 +1358,12 @@ app.post('/api/upload-bookmarks', function(req, res) {
       var file = editJson(`${__dirname}/bookmarks/bookmarks.json`);
       var data = file.toObject();
       var result;
-      if (use_custom_function) {
-        if (custom_function == "custom1") {
-          result = await saveBookmarksToDatabaseCustom1(data);
-        }
-      }
-      else {
-        result = await saveBookmarksToDatabase(data);
-      }
+      result = await saveBookmarksToDatabase(data, import_folder, ignore_folders, target_folder);
       if (result.status == "OK") {
         res.json({status: "OK", data: "Bookmarks have been uploaded successfully."});
       }
       else {
-        res.json({status: "NOK", error: "There was an error uploading bookmarks."});
+        res.json({status: "NOK", error: result.error});
       }
     });
   });

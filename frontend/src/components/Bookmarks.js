@@ -32,9 +32,18 @@ export default function Bookmarks() {
     parent_id: ""
   });
   const [editBookmarkSelectedFolder, setEditBookmarkSelectedFolder] = useState();
+  const [enableImportFolder, setEnableImportFolder] = useState(false);
+  const [importFolder, setImportFolder] = useState("");
+  const [ignoreFolders, setIgnoreFolders] = useState(false);
+  const [enableTargetFolder, setEnableTargetFolder] = useState(false);
+  const [targetFolder, setTargetFolder] = useState("");
 
   function changeSelectedFolder(item) {
     setSelectedFolder(item);
+  }
+
+  function changeSelectedTargetFolder(item) {
+    setTargetFolder(item);
   }
 
   function changeBookmarksFile({file}) {
@@ -56,6 +65,26 @@ export default function Bookmarks() {
 
   function changeEditBookmarkTags(e) {
     setEditBookmark({...editBookmark, tags: e.target.value});
+  }
+
+  function changeEnableImportFolder(e) {
+    setEnableImportFolder(e.target.checked);
+  }
+
+  function changeImportFolder(e) {
+    setImportFolder(e.target.value);
+  }
+
+  function changeIgnoreFolders(e) {
+    setIgnoreFolders(e.target.checked);
+  }
+
+  function changeEnableTargetFolder(e) {
+    setEnableTargetFolder(e.target.checked);
+  }
+
+  function changeTargetFolder(e) {
+    setTargetFolder(e.target.value);
   }
 
   function submitEditBookmark(e) {
@@ -116,12 +145,16 @@ export default function Bookmarks() {
   }
 
   function uploadBookmarksFile() {
+    if (ignoreFolders == true && targetFolder == undefined) {
+      MySwal.fire("Target folder cannot be empty when ignoring folders.");
+      return;
+    }
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", bookmarksFile);
-    if (config.IMPORT_BOOKMARKS_CUSTOM_FUNCTION != "") {
-      formData.append("custom_function", config.IMPORT_BOOKMARKS_CUSTOM_FUNCTION);
-    }
+    formData.append("import_folder", importFolder);
+    formData.append("ignore_folders", ignoreFolders);
+    formData.append("target_folder", targetFolder.value);
     axios.post(config.BACKEND_URL + "/api/upload-bookmarks", formData)
     .then(function(response) {
       if (response.data.status == "OK") {
@@ -220,6 +253,12 @@ export default function Bookmarks() {
   }, [page]);
 
   useEffect(() => {
+    if (ignoreFolders == true) {
+      setEnabelTargetFolder(true);
+    }
+  }, [ignoreFolders]);
+
+  useEffect(() => {
     setPage(0);
     loadBookmarks();
   }, [selectedFolder]);
@@ -238,6 +277,21 @@ export default function Bookmarks() {
             
             <div className="upload-bookmarks">
               <h4>Upload Bookmarks(HTML)</h4>
+              <div className="form-control bg-grey upload-bookmarks-control">
+                <p>Import folder</p>
+                <input type="checkbox" className="form-check-input" name="enableImportFolder" checked={enableImportFolder} onChange={changeEnableImportFolder} />
+                {enableImportFolder && <input type="text" className="form-control my-2" name="importFolder" value={importFolder} onChange={changeImportFolder} />}
+              </div>
+              <div className="form-control bg-grey upload-bookmarks-control">
+                <p>Ignore folders</p>
+                <input type="checkbox" className="form-check-input" name="ignoreFolders" checked={ignoreFolders} onChange={changeIgnoreFolders} />
+              </div>
+              <div className="form-control bg-grey upload-bookmarks-control">
+                <p>Target folder</p>
+                <input type="checkbox" className="form-check-input" name="enableTargetFolder" checked={enableTargetFolder} onChange={changeEnableTargetFolder} />
+                {enableTargetFolder && <Select className="my-2" value={targetFolder} options={bookmarkFolders} onChange={changeSelectedTargetFolder} />}
+              </div>
+              
               <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
               <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
               {isUploading && <p>Uploading...</p>}
