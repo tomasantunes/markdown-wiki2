@@ -6,3 +6,4 @@
 - Fix error when linking to files
 - Create docker build file.
 - Sort categories alphabetically by default.
+- Add form to create bookmarks folder.
