@@ -7,3 +7,4 @@
 - Create docker build file.
 - Sort categories alphabetically by default.
 - Add form to create bookmarks folder.
+- Add button to delete bookmarks with duplicate URLs.
