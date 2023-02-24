@@ -45,10 +45,6 @@ export default function Bookmarks() {
     setSelectedFolder(item);
   }
 
-  function changeSelectedTargetFolder(item) {
-    setTargetFolder(item);
-  }
-
   function changeBookmarksFile({file}) {
     setBookmarksFile(file);
   }
