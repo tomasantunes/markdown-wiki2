@@ -361,86 +361,98 @@ export default function Bookmarks() {
         <div className="row full-height">
           <Menu />
           <div className="col-md-10 full-min-height p-5">
-            <h2>Bookmarks</h2>
-            <button className="btn btn-primary btn-delete-all-bookmarks" onClick={deleteAllBookmarks}>Delete All</button>
             <div className="row">
-              <div className="upload-bookmarks col-md-4">
-                <h4>Upload Bookmarks(HTML)</h4>
-                <div className="form-control bg-grey upload-bookmarks-control">
-                  <p>Import folder</p>
-                  <input type="checkbox" className="form-check-input" name="enableImportFolder" checked={enableImportFolder} onChange={changeEnableImportFolder} />
-                  {enableImportFolder && <input type="text" className="form-control my-2" name="importFolder" value={importFolder} onChange={changeImportFolder} />}
-                </div>
-                <div className="form-control bg-grey upload-bookmarks-control">
-                  <p>Ignore folders</p>
-                  <input type="checkbox" className="form-check-input" name="ignoreFolders" checked={ignoreFolders} onChange={changeIgnoreFolders} />
-                </div>
-                <div className="form-control bg-grey upload-bookmarks-control">
-                  <p>Target folder</p>
-                  <input type="checkbox" className="form-check-input" name="enableTargetFolder" checked={enableTargetFolder} onChange={changeEnableTargetFolder} />
-                  {enableTargetFolder && <Select className="my-2" value={targetFolder} options={bookmarkFolders} onChange={changeTargetFolder} />}
-                </div>
+              <div className="col-md-12">
+                <h2>Bookmarks</h2>
+                <button className="btn btn-danger btn-delete-all-bookmarks" onClick={deleteAllBookmarks}>Delete All</button>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-3 p-3">
                 
-                <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
-                <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
-                {isUploading && <p>Uploading...</p>}
+                <div className="upload-bookmarks">
+                  <h4>Upload Bookmarks(HTML)</h4>
+                  <div className="form-control bg-grey upload-bookmarks-control">
+                    <p>Import folder</p>
+                    <input type="checkbox" className="form-check-input" name="enableImportFolder" checked={enableImportFolder} onChange={changeEnableImportFolder} />
+                    {enableImportFolder && <input type="text" className="form-control my-2" name="importFolder" value={importFolder} onChange={changeImportFolder} />}
+                  </div>
+                  <div className="form-control bg-grey upload-bookmarks-control">
+                    <p>Ignore folders</p>
+                    <input type="checkbox" className="form-check-input" name="ignoreFolders" checked={ignoreFolders} onChange={changeIgnoreFolders} />
+                  </div>
+                  <div className="form-control bg-grey upload-bookmarks-control">
+                    <p>Target folder</p>
+                    <input type="checkbox" className="form-check-input" name="enableTargetFolder" checked={enableTargetFolder} onChange={changeEnableTargetFolder} />
+                    {enableTargetFolder && <Select className="my-2" value={targetFolder} options={bookmarkFolders} onChange={changeTargetFolder} />}
+                  </div>
+                  
+                  <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
+                  <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
+                  {isUploading && <p>Uploading...</p>}
+                </div>
               </div>
-
-              <div className="add-bookmark-folder col-md-4">
-                <h4>Add Folder</h4>
-                <p>Title</p>
-                <input type="text" className="form-control my-2" name="folderTitle" value={newFolderTitle} onChange={changeNewFolderTitle} />
-                <p>Parent</p>
-                <Select className="my-2" value={newFolderParent} options={bookmarkFolders} onChange={changeNewFolderParent} />
-                <button className="btn btn-primary btn-add-bookmark-folder" onClick={createBookmarkFolder}>Add</button>
+              <div className="col-md-3 p-3">
+                <div className="add-bookmark-folder">
+                  <h4>Add Folder</h4>
+                  <p>Title</p>
+                  <input type="text" className="form-control my-2" name="folderTitle" value={newFolderTitle} onChange={changeNewFolderTitle} />
+                  <p>Parent</p>
+                  <Select className="my-2" value={newFolderParent} options={bookmarkFolders} onChange={changeNewFolderParent} />
+                  <button className="btn btn-primary btn-add-bookmark-folder" onClick={createBookmarkFolder}>Add</button>
+                </div>
               </div>
-
-              <div className="remove-bookmark-dups col-md-4">
-                <h4>Remove Duplicates</h4>
-                <p>Folder</p>
-                <Select className="my-2" value={removeDupsFolder} options={bookmarkFolders} onChange={changeRemoveDupsFolder} />
-                <button className="btn btn-primary btn-remove-bookmark-dups" onClick={removeBookmarkDups}>Remove</button>
+              <div className="col-md-3 p-3">
+                <div className="remove-bookmark-dups">
+                  <h4>Remove Duplicates</h4>
+                  <p>Folder</p>
+                  <Select className="my-2" value={removeDupsFolder} options={bookmarkFolders} onChange={changeRemoveDupsFolder} />
+                  <button className="btn btn-primary btn-remove-bookmark-dups" onClick={removeBookmarkDups}>Remove</button>
+                </div>
               </div>
-              
             </div>
-            <h3>List Bookmarks</h3>
-            <div>
-              <h4>Select Folder</h4>
-              <Select value={selectedFolder} options={bookmarkFolders} onChange={changeSelectedFolder} />
+            <div className="row">
+              <div className="col-md-12 p-3">
+                <h3>List Bookmarks</h3>
+                <div>
+                  <h4>Select Folder</h4>
+                  <Select value={selectedFolder} options={bookmarkFolders} onChange={changeSelectedFolder} />
+                </div>
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Title</th>
+                      <th>URL</th>
+                      <th>Tags</th>
+                      <th>Options</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookmarks.map((bookmark) => (
+                      <tr key={bookmark.id}>
+                        <td>{bookmark.id}</td>
+                        <td>{bookmark.title}</td>
+                        <td><a href={bookmark.url}>{bookmark.url}</a></td>
+                        <td>{bookmark.tags}</td>
+                        <td><button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button></td>
+                      </tr>
+                      ))}
+                  </tbody>
+                </table>
+                <ReactPaginate
+                  previousLabel={"Previous"}
+                  nextLabel={"Next"}
+                  pageCount={totalPages}
+                  onPageChange={changePage}
+                  containerClassName={"navigationButtons"}
+                  previousLinkClassName={"previousButton"}
+                  nextLinkClassName={"nextButton"}
+                  disabledClassName={"navigationDisabled"}
+                  activeClassName={"navigationActive"}
+                />
+              </div>
             </div>
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Title</th>
-                  <th>URL</th>
-                  <th>Tags</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookmarks.map((bookmark) => (
-                  <tr key={bookmark.id}>
-                    <td>{bookmark.id}</td>
-                    <td>{bookmark.title}</td>
-                    <td><a href={bookmark.url}>{bookmark.url}</a></td>
-                    <td>{bookmark.tags}</td>
-                    <td><button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button></td>
-                  </tr>
-                  ))}
-              </tbody>
-            </table>
-            <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
-              pageCount={totalPages}
-              onPageChange={changePage}
-              containerClassName={"navigationButtons"}
-              previousLinkClassName={"previousButton"}
-              nextLinkClassName={"nextButton"}
-              disabledClassName={"navigationDisabled"}
-              activeClassName={"navigationActive"}
-            />
           </div>
         </div>
       </div>
