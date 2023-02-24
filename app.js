@@ -1369,6 +1369,26 @@ app.post('/api/upload-bookmarks', function(req, res) {
   });
 });
 
+app.post("/api/bookmarks/create-folder", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var title = req.body.title;
+  var parent_id = req.body.parent_id;
+
+  var sql = "INSERT INTO bookmarks (title, parent_id, type) VALUES (?, ?, 'folder');";
+  con.query(sql, [title, parent_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    res.json({status: "OK", data: "Folder has been created successfully."});
+  });
+
+});
+
 app.get("/api/bookmarks/get-json", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});

@@ -294,3 +294,31 @@ ul {
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
+.add-bookmark-folder {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 25px;
+  width: 400px;
+}
+
+.remove-bookmark-dups {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 25px;
+  width: 400px;
+}
+
+.btn-add-bookmark-folder {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.btn-remove-bookmark-dups {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

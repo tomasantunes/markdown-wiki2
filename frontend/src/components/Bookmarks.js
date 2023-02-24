@@ -37,6 +37,9 @@ export default function Bookmarks() {
   const [ignoreFolders, setIgnoreFolders] = useState(false);
   const [enableTargetFolder, setEnableTargetFolder] = useState(false);
   const [targetFolder, setTargetFolder] = useState("");
+  const [newFolderTitle, setNewFolderTitle] = useState("");
+  const [newFolderParent, setNewFolderParent] = useState();
+  const [removeDupsFolder, setRemoveDupsFolder] = useState();
 
   function changeSelectedFolder(item) {
     setSelectedFolder(item);
@@ -85,6 +88,18 @@ export default function Bookmarks() {
 
   function changeTargetFolder(e) {
     setTargetFolder(e.target.value);
+  }
+
+  function changeNewFolderTitle(e) {
+    setNewFolderTitle(e.target.value);
+  }
+
+  function changeNewFolderParent(item) {
+    setNewFolderParent(item);
+  }
+
+  function changeRemoveDupsFolder(item) {
+    setRemoveDupsFolder(item);
   }
 
   function submitEditBookmark(e) {
@@ -141,6 +156,51 @@ export default function Bookmarks() {
     .catch(function(err) {
       console.log(err);
       MySwal.fire("Error loading bookmark: " + err.message);
+    });
+  }
+
+  function removeBookmarkDups() {
+    var data = {
+      folder_id: removeDupsFolder.value
+    };
+
+    axios.post(config.BACKEND_URL + "/api/bookmarks/remove-dups", data)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        MySwal.fire("Duplicates have been removed successfully.").then(function(value) {
+          loadBookmarks();
+        });
+      }
+      else {
+        MySwal.fire("Error removing duplicates: " + response.data.error);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      MySwal.fire("Error removing duplicates: " + err.message);
+    });
+  }
+
+  function createBookmarkFolder() {
+    var data = {
+      title: newFolderTitle,
+      parent_id: newFolderParent.value
+    };
+
+    axios.post(config.BACKEND_URL + "/api/bookmarks/create-folder", data)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        MySwal.fire("Folder has been created successfully.").then(function(value) {
+          loadBookmarkFolders();
+        });
+      }
+      else {
+        MySwal.fire("Error creating folder: " + response.data.error);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      MySwal.fire("Error creating folder: " + err.message);
     });
   }
 
@@ -254,7 +314,7 @@ export default function Bookmarks() {
 
   useEffect(() => {
     if (ignoreFolders == true) {
-      setEnabelTargetFolder(true);
+      setEnableTargetFolder(true);
     }
   }, [ignoreFolders]);
 
@@ -274,28 +334,47 @@ export default function Bookmarks() {
           <Menu />
           <div className="col-md-10 full-min-height p-5">
             <h2>Bookmarks</h2>
-            
-            <div className="upload-bookmarks">
-              <h4>Upload Bookmarks(HTML)</h4>
-              <div className="form-control bg-grey upload-bookmarks-control">
-                <p>Import folder</p>
-                <input type="checkbox" className="form-check-input" name="enableImportFolder" checked={enableImportFolder} onChange={changeEnableImportFolder} />
-                {enableImportFolder && <input type="text" className="form-control my-2" name="importFolder" value={importFolder} onChange={changeImportFolder} />}
+            <div className="row">
+              <div className="upload-bookmarks col-md-4">
+                <h4>Upload Bookmarks(HTML)</h4>
+                <div className="form-control bg-grey upload-bookmarks-control">
+                  <p>Import folder</p>
+                  <input type="checkbox" className="form-check-input" name="enableImportFolder" checked={enableImportFolder} onChange={changeEnableImportFolder} />
+                  {enableImportFolder && <input type="text" className="form-control my-2" name="importFolder" value={importFolder} onChange={changeImportFolder} />}
+                </div>
+                <div className="form-control bg-grey upload-bookmarks-control">
+                  <p>Ignore folders</p>
+                  <input type="checkbox" className="form-check-input" name="ignoreFolders" checked={ignoreFolders} onChange={changeIgnoreFolders} />
+                </div>
+                <div className="form-control bg-grey upload-bookmarks-control">
+                  <p>Target folder</p>
+                  <input type="checkbox" className="form-check-input" name="enableTargetFolder" checked={enableTargetFolder} onChange={changeEnableTargetFolder} />
+                  {enableTargetFolder && <Select className="my-2" value={targetFolder} options={bookmarkFolders} onChange={changeTargetFolder} />}
+                </div>
+                
+                <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
+                <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
+                {isUploading && <p>Uploading...</p>}
               </div>
-              <div className="form-control bg-grey upload-bookmarks-control">
-                <p>Ignore folders</p>
-                <input type="checkbox" className="form-check-input" name="ignoreFolders" checked={ignoreFolders} onChange={changeIgnoreFolders} />
+
+              <div className="add-bookmark-folder col-md-4">
+                <h4>Add Folder</h4>
+                <p>Title</p>
+                <input type="text" className="form-control my-2" name="folderTitle" value={newFolderTitle} onChange={changeNewFolderTitle} />
+                <p>Parent</p>
+                <Select className="my-2" value={newFolderParent} options={bookmarkFolders} onChange={changeNewFolderParent} />
+                <button className="btn btn-primary btn-add-bookmark-folder" onClick={createBookmarkFolder}>Add</button>
               </div>
-              <div className="form-control bg-grey upload-bookmarks-control">
-                <p>Target folder</p>
-                <input type="checkbox" className="form-check-input" name="enableTargetFolder" checked={enableTargetFolder} onChange={changeEnableTargetFolder} />
-                {enableTargetFolder && <Select className="my-2" value={targetFolder} options={bookmarkFolders} onChange={changeSelectedTargetFolder} />}
+
+              <div className="remove-bookmark-dups col-md-4">
+                <h4>Remove Duplicates</h4>
+                <p>Folder</p>
+                <Select className="my-2" value={removeDupsFolder} options={bookmarkFolders} onChange={changeRemoveDupsFolder} />
+                <button className="btn btn-primary btn-remove-bookmark-dups" onClick={removeBookmarkDups}>Remove</button>
               </div>
               
-              <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
-              <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
-              {isUploading && <p>Uploading...</p>}
             </div>
+            <h3>List Bookmarks</h3>
             <div>
               <h4>Select Folder</h4>
               <Select value={selectedFolder} options={bookmarkFolders} onChange={changeSelectedFolder} />
