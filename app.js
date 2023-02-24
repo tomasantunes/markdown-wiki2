@@ -1332,17 +1332,20 @@ app.post("/api/bookmarks/remove-dups", async (req, res) => {
   }
 
   var folder_id = req.body.folder_id;
+  console.log(folder_id);
+  console.log("Removing duplicates...");
 
-  var sql = "SELECT * FROM bookmarks WHERE folder_id = ?";
+  var sql = "SELECT * FROM bookmarks WHERE parent_id = ? AND type = 'bookmark'";;
   var result = await con2.query(sql, [folder_id]);
   for (var i in result[0]) {
-    var sql2 = "SELECT * FROM bookmarks WHERE folder_id <> ? AND url = ?";
+    var sql2 = "SELECT * FROM bookmarks WHERE parent_id <> ? AND url = ? AND type = 'bookmark'";
     var result2 = await con2.query(sql2, [folder_id, result[0][i].url]);
     if (result2[0].length > 1) {
       var sql = "DELETE FROM bookmarks WHERE id = ?";
       con2.query(sql, [result[0][i].id]);
     }
   }
+  res.json({status: "OK", data: "Duplicates have been removed successfully."});
 });
 
 app.post('/api/upload-bookmarks', function(req, res) {

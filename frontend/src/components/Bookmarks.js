@@ -40,6 +40,7 @@ export default function Bookmarks() {
   const [newFolderTitle, setNewFolderTitle] = useState("");
   const [newFolderParent, setNewFolderParent] = useState();
   const [removeDupsFolder, setRemoveDupsFolder] = useState();
+  const [isRemovingDups, setIsRemovingDups] = useState(false);
 
   function changeSelectedFolder(item) {
     setSelectedFolder(item);
@@ -156,6 +157,7 @@ export default function Bookmarks() {
   }
 
   function removeBookmarkDups() {
+    setIsRemovingDups(true);
     var data = {
       folder_id: removeDupsFolder.value
     };
@@ -163,15 +165,18 @@ export default function Bookmarks() {
     axios.post(config.BACKEND_URL + "/api/bookmarks/remove-dups", data)
     .then(function(response) {
       if (response.data.status == "OK") {
+        setIsRemovingDups(false);
         MySwal.fire("Duplicates have been removed successfully.").then(function(value) {
-          loadBookmarks();
+          window.location.reload();
         });
       }
       else {
+        setIsRemovingDups(false);
         MySwal.fire("Error removing duplicates: " + response.data.error);
       }
     })
     .catch(function(err) {
+      setIsRemovingDups(false);
       console.log(err);
       MySwal.fire("Error removing duplicates: " + err.message);
     });
@@ -210,7 +215,9 @@ export default function Bookmarks() {
     formData.append("file", bookmarksFile);
     formData.append("import_folder", importFolder);
     formData.append("ignore_folders", ignoreFolders);
-    formData.append("target_folder", targetFolder.value);
+    if (targetFolder != undefined) {
+      formData.append("target_folder", targetFolder.value);
+    }
     axios.post(config.BACKEND_URL + "/api/upload-bookmarks", formData)
     .then(function(response) {
       if (response.data.status == "OK") {
@@ -416,6 +423,7 @@ export default function Bookmarks() {
                   <p>Folder</p>
                   <Select className="my-2" value={removeDupsFolder} options={bookmarkFolders} onChange={changeRemoveDupsFolder} />
                   <button className="btn btn-primary btn-remove-bookmark-dups" onClick={removeBookmarkDups}>Remove</button>
+                  {isRemovingDups && <p>Removing duplicates...</p>}
                 </div>
               </div>
             </div>
