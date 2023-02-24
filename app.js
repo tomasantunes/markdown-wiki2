@@ -1389,6 +1389,30 @@ app.post("/api/bookmarks/create-folder", (req, res) => {
 
 });
 
+app.post("/api/bookmarks/delete-all", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "DELETE FROM bookmarks;";
+  con.query(sql, [title, parent_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    var sql2 = "ALTER TABLE bookmarks AUTO_INCREMENT = 1;";
+    con.query(sql2, function(err2, result2) {
+      if (err2) {
+        res.json({status: "NOK", error: JSON.stringify(err2)});
+        return;
+      }
+      res.json({status: "OK", data: "Bookmarks have been deleted successfully."});
+    });
+  });
+
+});
+
 app.get("/api/bookmarks/get-json", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});

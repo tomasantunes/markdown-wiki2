@@ -234,6 +234,34 @@ export default function Bookmarks() {
       MySwal.fire("Error uploading bookmarks file: " + err.message);
     })
   }
+
+  function deleteAllBookmarks() {
+    MySwal.fire({
+      title: 'Are you sure you want to delete all bookmarks?',
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: 'Yes',
+      denyButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.post(config.BACKEND_URL + "/api/bookmarks/delete-all")
+        .then(function(response) {
+          if (response.data.status == "OK") {
+            MySwal.fire("All bookmarks have been deleted successfully.").then(function(value) {
+              loadBookmarkFolders();
+            });
+          }
+          else {
+            MySwal.fire("Error deleting bookmarks: " + response.data.error);
+          }
+        })
+        .catch(function(err) {
+          console.log(err);
+          MySwal.fire("Error deleting bookmarks: " + err.message);
+        });
+      }
+    });
+  }
   
   function loadBookmarks() {
     console.log(selectedFolder);
@@ -334,6 +362,7 @@ export default function Bookmarks() {
           <Menu />
           <div className="col-md-10 full-min-height p-5">
             <h2>Bookmarks</h2>
+            <button className="btn btn-primary btn-delete-all-bookmarks" onClick={deleteAllBookmarks}>Delete All</button>
             <div className="row">
               <div className="upload-bookmarks col-md-4">
                 <h4>Upload Bookmarks(HTML)</h4>

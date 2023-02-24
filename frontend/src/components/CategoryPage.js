@@ -466,7 +466,7 @@ export default function CategoryPage() {
     MySwal.fire({
       title: 'Are you sure you want to delete this category? All the files in this category will be deleted.',
       showDenyButton: true,
-      showCancelButton: true,
+      showCancelButton: false,
       confirmButtonText: 'Yes',
       denyButtonText: 'No',
     }).then((result) => {
