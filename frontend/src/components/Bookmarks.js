@@ -86,8 +86,8 @@ export default function Bookmarks() {
     setEnableTargetFolder(e.target.checked);
   }
 
-  function changeTargetFolder(e) {
-    setTargetFolder(e.target.value);
+  function changeTargetFolder(item) {
+    setTargetFolder(item);
   }
 
   function changeNewFolderTitle(e) {
@@ -220,7 +220,7 @@ export default function Bookmarks() {
       if (response.data.status == "OK") {
         setIsUploading(false);
         MySwal.fire("Bookmarks file has been uploaded successfully.").then(function(value) {
-          loadBookmarkFolders();
+          window.location.reload();
         });
       }
       else {
@@ -248,7 +248,7 @@ export default function Bookmarks() {
         .then(function(response) {
           if (response.data.status == "OK") {
             MySwal.fire("All bookmarks have been deleted successfully.").then(function(value) {
-              loadBookmarkFolders();
+              window.location.reload();
             });
           }
           else {
@@ -345,6 +345,18 @@ export default function Bookmarks() {
       setEnableTargetFolder(true);
     }
   }, [ignoreFolders]);
+
+  useEffect(() => {
+    if (!enableImportFolder) {
+      setImportFolder("");
+    }
+  }, [enableImportFolder]);
+
+  useEffect(() => {
+    if (!enableTargetFolder) {
+      setTargetFolder(undefined);
+    }
+  }, [enableTargetFolder]);
 
   useEffect(() => {
     setPage(0);

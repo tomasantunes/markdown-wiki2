@@ -306,7 +306,6 @@ async function saveBookmark(bookmark, ignore_folders, parent_id) {
         return {status: "OK", insertId: result[0].insertId, type: "folder"};
       }
       catch(err) {
-        console.log(err);
         if (err.errno == 1062) {
           var sql2 = "SELECT id FROM bookmarks WHERE title = ? AND type <> 'bookmark' AND parent_id = ?;";
           var result2 = await con2.query(sql2, [bookmark.title, parent_id]);
@@ -317,7 +316,7 @@ async function saveBookmark(bookmark, ignore_folders, parent_id) {
     }
     else {
       console.log("A folder has been ignored.");
-      return {status: "OK", type: "bookmark"};
+      return {status: "OK", type: "ignored_folder"};
     }
   }
   else if (bookmark.type == "bookmark") {
@@ -327,7 +326,6 @@ async function saveBookmark(bookmark, ignore_folders, parent_id) {
       return {status: "OK", type: "bookmark"};
     }
     catch(err) {
-      console.log(err);
       if (err.errno == 1062) {
         var sql2 = "SELECT id FROM bookmarks WHERE url = ? AND type = 'bookmark';";
         var result2 = await con2.query(sql2, [bookmark.url]);
@@ -356,8 +354,12 @@ async function saveBookmarksRecursively(bookmarks, ignore_folders, parent_id) {
     var bookmark = bookmarks[i];
     var result = await saveBookmark(bookmark, ignore_folders, parent_id);
     if (result.status == "OK") {
+      console.log("+1 bookmark");
       if (result.type == "folder") {
         await saveBookmarksRecursively(bookmark.children, ignore_folders, result.insertId);
+      }
+      else if (result.type == "ignored_folder") {
+        await saveBookmarksRecursively(bookmark.children, ignore_folders, parent_id);
       }
     }
     else {
@@ -368,12 +370,8 @@ async function saveBookmarksRecursively(bookmarks, ignore_folders, parent_id) {
 
 async function saveBookmarksToDatabase(bookmarks, import_folder, ignore_folders, target_folder) {
   var parent_id = 0
-  if (target_folder != "" && target_folder != undefined) {
-    var sql = "SELECT id FROM bookmarks WHERE title = ? AND type = 'folder';";
-    var result = await con2.query(sql, [target_folder]);
-    if (result[0].length > 0) {
-      parent_id = result[0][0].id;
-    }
+  if (target_folder != undefined) {
+    parent_id = target_folder;
   }
   if (import_folder != "" && import_folder != undefined) {
     console.log("Before saveToDatabaseFromFolder().");
@@ -399,6 +397,9 @@ async function saveBookmarksToDatabaseFromFolder(bookmarks, import_folder, ignor
     var result = await saveBookmark(folder_to_import, ignore_folders, parent_id);
     if (result.status == "OK" && result.type == "folder") {
       var parent_id = result.insertId;
+      await saveBookmarksRecursively(folder_to_import.children, ignore_folders, parent_id);
+    }
+    else if (result.status == "OK" && result.type == "ignored_folder") {
       await saveBookmarksRecursively(folder_to_import.children, ignore_folders, parent_id);
     }
     return {status: "OK"};
@@ -1396,7 +1397,7 @@ app.post("/api/bookmarks/delete-all", (req, res) => {
   }
 
   var sql = "DELETE FROM bookmarks;";
-  con.query(sql, [title, parent_id], function(err, result) {
+  con.query(sql, function(err, result) {
     if (err) {
       res.json({status: "NOK", error: JSON.stringify(err)});
       return;
