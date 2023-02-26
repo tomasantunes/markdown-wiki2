@@ -44,9 +44,32 @@ var con = {};
 
 var con2 = {};
 
-con2.query('SET GLOBAL connect_timeout=28800')
-con2.query('SET GLOBAL interactive_timeout=28800')
-con2.query('SET GLOBAL wait_timeout=28800')
+function increaseTimeout() {
+  con2.query('SET GLOBAL connect_timeout=28800')
+  con2.query('SET GLOBAL interactive_timeout=28800')
+  con2.query('SET GLOBAL wait_timeout=28800')
+}
+
+function startDatabaseConnection(db_host) {
+  con = mysql.createPool({
+    connectionLimit : 90,
+    connectTimeout: 1000000,
+    host: db_host,
+    user: secretConfig.DB_USER,
+    password: secretConfig.DB_PASSWORD,
+    database: secretConfig.DB_NAME,
+    port: secretConfig.DB_PORT
+  });
+
+  con2 = mysql_async.createPool({
+    connectionLimit : 90,
+    connectTimeout: 1000000,
+    host: db_host,
+    user: secretConfig.DB_USER,
+    password: secretConfig.DB_PASSWORD,
+    database: secretConfig.DB_NAME,
+  });
+}
 
 checkDocker = () => {
   return new Promise((resolve, reject) => {
@@ -66,48 +89,13 @@ checkDocker = () => {
 
 checkDocker().then((addr) => {
   if (addr) {
-      console.log('Docker host is ' + addr);
-
-      con = mysql.createPool({
-        connectionLimit : 90,
-        connectTimeout: 1000000,
-        host: addr,
-        user: secretConfig.DB_USER,
-        password: secretConfig.DB_PASSWORD,
-        database: secretConfig.DB_NAME,
-        port: secretConfig.DB_PORT
-      });
-
-      con2 = mysql_async.createPool({
-        connectionLimit : 90,
-        connectTimeout: 1000000,
-        host: addr,
-        user: secretConfig.DB_USER,
-        password: secretConfig.DB_PASSWORD,
-        database: secretConfig.DB_NAME,
-      });
-
+    console.log('Docker host is ' + addr);
+    startDatabaseConnection(db_host);
+    increaseTimeout();
   } else {
-      console.log('Not in Docker');
-
-      con = mysql.createPool({
-        connectionLimit : 90,
-        connectTimeout: 1000000,
-        host: secretConfig.DB_HOST,
-        user: secretConfig.DB_USER,
-        password: secretConfig.DB_PASSWORD,
-        database: secretConfig.DB_NAME,
-        port: secretConfig.DB_PORT
-      });
-
-      con2 = mysql_async.createPool({
-        connectionLimit : 90,
-        connectTimeout: 1000000,
-        host: secretConfig.DB_HOST,
-        user: secretConfig.DB_USER,
-        password: secretConfig.DB_PASSWORD,
-        database: secretConfig.DB_NAME,
-      });
+    console.log('Not in Docker');
+    startDatabaseConnection(db_host);
+    increaseTimeout();
   }
 }).catch((error) => {
   console.log('Could not find Docker host: ' + error);

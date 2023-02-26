@@ -1,6 +1,6 @@
 FROM mysql
 
 ENV MYSQL_ROOT_PASSWORD 123456
-ADD ../database/markdown-wiki2.sql /docker-entrypoint-initdb.d
+ADD database/markdown-wiki2.sql /docker-entrypoint-initdb.d
 
 EXPOSE 3306
