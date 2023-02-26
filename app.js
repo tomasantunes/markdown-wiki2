@@ -68,6 +68,7 @@ function startDatabaseConnection(db_host) {
     user: secretConfig.DB_USER,
     password: secretConfig.DB_PASSWORD,
     database: secretConfig.DB_NAME,
+    port: secretConfig.DB_PORT
   });
 }
 
