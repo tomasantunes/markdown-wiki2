@@ -15,6 +15,7 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
 
+RUN apt-get install -y iproute2
 RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
 RUN pip3 install bookmarks_parser
@@ -35,8 +36,6 @@ WORKDIR /usr/src/app/markdown-wiki2/frontend
 RUN /bin/bash -c "npm install --legacy-peer-deps"
 RUN /bin/bash -c "npm run build"
 WORKDIR /usr/src/app/markdown-wiki2
-
-RUN apt-get install -y iproute2
 
 CMD ["/bin/bash", "-c", "npm start --host 0.0.0.0 --port 4001;"]
 
