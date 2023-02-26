@@ -544,7 +544,7 @@ app.get("/api/categories/list", (req, res) => {
     return;
   }
 
-  var sql = "SELECT id, parent_id, name, created_at, updated_at, IFNULL(sort_index, 99999999) AS sort_index FROM categories ORDER BY sort_index, id;";
+  var sql = "SELECT id, parent_id, name, created_at, updated_at, IFNULL(sort_index, 99999999) AS sort_index FROM categories ORDER BY sort_index, name, id;";
 
   con.query(sql, [], function(err, result) {
     if (err) {
