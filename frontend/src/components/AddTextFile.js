@@ -154,6 +154,7 @@ export default function AddTextFile() {
   function addCategory(category, categories, level) {
     var prefix = ">>> ".repeat(level);
     var obj = {label: prefix + category.name, value: category.id};
+    categories_to_add.push(obj);
     if (getChildrenCount(category.id, categories) > 0) {
       level += 1;
       var children = getChildren(category.id, categories);
@@ -161,7 +162,6 @@ export default function AddTextFile() {
         addCategory(children[i], categories, level);
       }
     }
-    categories_to_add.push(obj);
   }
 
   function loadCategories() {
