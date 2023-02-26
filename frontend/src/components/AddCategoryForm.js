@@ -95,6 +95,7 @@ export default function AddCategoryForm() {
     .then(function (response) {
       var categories = response['data']['data'];
       categories_to_add = [];
+      categories_to_add.push({label: "Root", value: 1});
       for (var i in categories) {
         var category = categories[i];
         if (category.parent_id == 1) {
