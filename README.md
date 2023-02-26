@@ -28,3 +28,14 @@ Use the following URL to login: localhost:4001/login/[SECRET_TOKEN]
 
 ## How to create database
 Go to PHPMyAdmin and run the SQL file at database/markdownwiki2.sql
+
+## How to run using Docker
+```
+Install Docker
+Install Python 3
+Run the following python script: install/config.py
+docker build -f Dockerfile.application -t markdownwiki2/application .
+docker build -f Dockerfile.database -t markdownwiki2/database .
+docker run -d -p 4001:80 markdownwiki2/application
+docker run -d -p 3307:80 markdownwiki2/database
+```

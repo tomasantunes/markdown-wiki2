@@ -45,6 +45,7 @@ var con = mysql.createPool({
   user: secretConfig.DB_USER,
   password: secretConfig.DB_PASSWORD,
   database: secretConfig.DB_NAME,
+  port: secretConfig.DB_PORT
 });
 
 var con2 = mysql_async.createPool({

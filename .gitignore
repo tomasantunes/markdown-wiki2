@@ -1,9 +1,10 @@
 node_modules
 frontend/node_modules
 secret-config.json
+docker/secret-config.json
+docker/config.json
 old-queries
 python-scripts
-bookmarks
 frontend/src/config.json
 database/mainwiki3.sql
 database/mainwiki3-dump1.sql
