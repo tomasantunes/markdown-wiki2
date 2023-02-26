@@ -90,11 +90,11 @@ checkDocker = () => {
 checkDocker().then((addr) => {
   if (addr) {
     console.log('Docker host is ' + addr);
-    startDatabaseConnection(db_host);
+    startDatabaseConnection(addr);
     increaseTimeout();
   } else {
     console.log('Not in Docker');
-    startDatabaseConnection(db_host);
+    startDatabaseConnection(addr);
     increaseTimeout();
   }
 }).catch((error) => {

@@ -39,7 +39,7 @@ WORKDIR /usr/src/app/markdown-wiki2
 
 RUN /bin/bash -c "npm start"
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/bin/bash", "-c", "nginx -g daemon off;npm start;"]
 
 EXPOSE 80
 
