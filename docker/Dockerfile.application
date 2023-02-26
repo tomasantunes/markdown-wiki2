@@ -19,9 +19,8 @@ RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
 RUN pip3 install bookmarks_parser
 
-RUN apt-get install -y nginx
-
-COPY docker/default /etc/nginx/sites-available/default
+#RUN apt-get install -y nginx
+#COPY docker/default /etc/nginx/sites-available/default
 
 RUN apt-get install -y git
 RUN git clone https://github.com/tomasantunes/markdown-wiki2
@@ -37,11 +36,11 @@ RUN /bin/bash -c "npm install --legacy-peer-deps"
 RUN /bin/bash -c "npm run build"
 WORKDIR /usr/src/app/markdown-wiki2
 
-RUN /bin/bash -c "npm start"
 
-CMD ["/bin/bash", "-c", "nginx -g daemon off;npm start;"]
 
-EXPOSE 80
+CMD ["/bin/bash", "-c", "npm start --host 0.0.0.0 --port 4001;"]
+
+EXPOSE 4001
 
 
 
