@@ -18,12 +18,15 @@ export default function AddMediaFile() {
 
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedTags, setSelectedTags] = useState();
 
   function changeAddMediaFileCategory(item) {
     setAddMediaFile({
       ...addMediaFile,
       "category": item.value
     });
+    setSelectedCategory(item);
   }
 
   function changeAddMediaFileTags(items) {
@@ -36,6 +39,7 @@ export default function AddMediaFile() {
       ...addMediaFile,
       "tags": tags.join(",")
     });
+    setSelectedTags(items);
   }
 
   function changeAddMediaFileFile({file}) {
@@ -143,13 +147,13 @@ export default function AddMediaFile() {
           <div className="form-group py-2">
               <label className="control-label">Category</label>
               <div>
-                  <Select options={categories} onChange={changeAddMediaFileCategory} />
+                  <Select value={selectedCategory} options={categories} onChange={changeAddMediaFileCategory} />
               </div>
           </div>
           <div className="form-group py-2">
               <label className="control-label">Tags</label>
               <div>
-                <Select isMulti options={tags} onChange={changeAddMediaFileTags} />
+                <Select isMulti value={selectedTags} options={tags} onChange={changeAddMediaFileTags} />
               </div>
           </div>
           <div className="form-group">

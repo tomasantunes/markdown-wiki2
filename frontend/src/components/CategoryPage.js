@@ -659,7 +659,7 @@ export default function CategoryPage() {
                 <div className="form-group py-2">
                     <label className="control-label">Category</label>
                     <div>
-                        <Select value={selectedCategory}options={categories} onChange={changeEditFileCategory} />
+                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} />
                     </div>
                 </div>
                 <div className="form-group py-2">

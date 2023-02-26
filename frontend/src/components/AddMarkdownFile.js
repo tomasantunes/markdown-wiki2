@@ -22,6 +22,8 @@ export default function AddTextFile() {
 
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedTags, setSelectedTags] = useState();
 
   function changeNewFileTitle(e) {
     setNewFile({
@@ -49,6 +51,7 @@ export default function AddTextFile() {
       ...newFile,
       "category": item.value
     });
+    setSelectedCategory(item);
   }
 
   function changeNewFileTags(items) {
@@ -61,13 +64,7 @@ export default function AddTextFile() {
       ...newFile,
       "tags": tags_temp.join(",")
     });
-  }
-
-  function changeNewFileExtension(item) {
-    setNewFile({
-      ...newFile,
-      "extension": item.value
-    });
+    setSelectedTags(items);
   }
 
   function submitNewFile(e) {
@@ -168,13 +165,13 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Category</label>
             <div>
-                <Select options={categories} onChange={changeNewFileCategory} />
+                <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} />
             </div>
         </div>
         <div className="form-group py-2">
             <label className="control-label">Tags</label>
             <div>
-              <Select isMulti options={tags} onChange={changeNewFileTags} />
+              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} />
             </div>
         </div>
         <div className="form-group">

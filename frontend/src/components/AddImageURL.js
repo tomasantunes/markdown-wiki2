@@ -16,12 +16,15 @@ export default function AddImageURL() {
 
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedTags, setSelectedTags] = useState();
 
   function changeAddImageURLCategory(item) {
     setAddImageURL({
       ...addImageURL,
       "category": item.value
     });
+    setSelectedCategory(item);
   }
 
   function changeAddImageURLTags(items) {
@@ -34,6 +37,7 @@ export default function AddImageURL() {
       ...addImageURL,
       "tags": tags.join(",")
     });
+    setSelectedTags(items);
   }
 
   function changeAddImageURL(e) {
@@ -135,13 +139,13 @@ export default function AddImageURL() {
           <div className="form-group py-2">
               <label className="control-label">Category</label>
               <div>
-                  <Select options={categories} onChange={changeAddImageURLCategory} />
+                  <Select value={selectedCategory} options={categories} onChange={changeAddImageURLCategory} />
               </div>
           </div>
           <div className="form-group py-2">
               <label className="control-label">Tags</label>
               <div>
-              <Select isMulti options={tags} onChange={changeAddImageURLTags} />
+              <Select isMulti value={selectedTags} options={tags} onChange={changeAddImageURLTags} />
               </div>
           </div>
           <div className="form-group">
