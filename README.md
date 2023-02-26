@@ -34,8 +34,9 @@ Go to PHPMyAdmin and run the SQL file at database/markdownwiki2.sql
 Install Docker
 Install Python 3
 Run the following python script: install/config.py
-docker build -f Dockerfile.application -t markdownwiki2/application .
 docker build -f Dockerfile.database -t markdownwiki2/database .
+docker run -d -p 3307:3306 markdownwiki2/database
+docker build -f Dockerfile.application -t markdownwiki2/application .
 docker run -d -p 4001:80 markdownwiki2/application
-docker run -d -p 3307:80 markdownwiki2/database
+
 ```

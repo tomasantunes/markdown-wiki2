@@ -15,7 +15,9 @@ const crypto = require('crypto');
 var session = require('express-session');
 var editJson = require("edit-json-file");
 const PythonShell = require('python-shell').PythonShell;
-var nodemailer = require('nodemailer'); 
+var nodemailer = require('nodemailer');
+var getDockerHost = require('get-docker-host');
+var isInDocker = require('is-in-docker');
 
 var app = express();
 
@@ -38,28 +40,78 @@ app.use(session({
   saveUninitialized: true
 }));
 
-var con = mysql.createPool({
-  connectionLimit : 90,
-  connectTimeout: 1000000,
-  host: secretConfig.DB_HOST,
-  user: secretConfig.DB_USER,
-  password: secretConfig.DB_PASSWORD,
-  database: secretConfig.DB_NAME,
-  port: secretConfig.DB_PORT
-});
+var con = {};
 
-var con2 = mysql_async.createPool({
-  connectionLimit : 90,
-  connectTimeout: 1000000,
-  host: secretConfig.DB_HOST,
-  user: secretConfig.DB_USER,
-  password: secretConfig.DB_PASSWORD,
-  database: secretConfig.DB_NAME,
-});
+var con2 = {};
 
 con2.query('SET GLOBAL connect_timeout=28800')
 con2.query('SET GLOBAL interactive_timeout=28800')
 con2.query('SET GLOBAL wait_timeout=28800')
+
+checkDocker = () => {
+  return new Promise((resolve, reject) => {
+      if (isInDocker()) {
+          getDockerHost((error, result) => {
+              if (result) {
+                  resolve(result);
+              } else {
+                  reject(error);
+              }
+          });
+      } else {
+          resolve(null);
+      }
+  });
+};
+
+checkDocker().then((addr) => {
+  if (addr) {
+      console.log('Docker host is ' + addr);
+
+      con = mysql.createPool({
+        connectionLimit : 90,
+        connectTimeout: 1000000,
+        host: addr,
+        user: secretConfig.DB_USER,
+        password: secretConfig.DB_PASSWORD,
+        database: secretConfig.DB_NAME,
+        port: secretConfig.DB_PORT
+      });
+
+      con2 = mysql_async.createPool({
+        connectionLimit : 90,
+        connectTimeout: 1000000,
+        host: addr,
+        user: secretConfig.DB_USER,
+        password: secretConfig.DB_PASSWORD,
+        database: secretConfig.DB_NAME,
+      });
+
+  } else {
+      console.log('Not in Docker');
+
+      con = mysql.createPool({
+        connectionLimit : 90,
+        connectTimeout: 1000000,
+        host: secretConfig.DB_HOST,
+        user: secretConfig.DB_USER,
+        password: secretConfig.DB_PASSWORD,
+        database: secretConfig.DB_NAME,
+        port: secretConfig.DB_PORT
+      });
+
+      con2 = mysql_async.createPool({
+        connectionLimit : 90,
+        connectTimeout: 1000000,
+        host: secretConfig.DB_HOST,
+        user: secretConfig.DB_USER,
+        password: secretConfig.DB_PASSWORD,
+        database: secretConfig.DB_NAME,
+      });
+  }
+}).catch((error) => {
+  console.log('Could not find Docker host: ' + error);
+});
 
 // Functions
 function getCategoryId(category_name, cb) {
