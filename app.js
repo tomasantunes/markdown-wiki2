@@ -79,7 +79,8 @@ function startDatabaseConnection(db_host, use_port) {
       host: db_host,
       user: secretConfig.DB_USER,
       password: secretConfig.DB_PASSWORD,
-      database: secretConfig.DB_NAME
+      database: secretConfig.DB_NAME,
+      port: '/var/run/mysqld/mysqld.sock'
     });
 
     con2 = mysql_async.createPool({
@@ -88,7 +89,8 @@ function startDatabaseConnection(db_host, use_port) {
       host: db_host,
       user: secretConfig.DB_USER,
       password: secretConfig.DB_PASSWORD,
-      database: secretConfig.DB_NAME
+      database: secretConfig.DB_NAME,
+      port: '/var/run/mysqld/mysqld.sock'
     });
   }
 }
