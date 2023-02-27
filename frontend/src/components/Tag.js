@@ -247,7 +247,7 @@ export default function CategoryPage() {
     }
     setEditFile({
       ...editFile,
-      "tags": tags.join(",")
+      "tags": tags_temp.join(",")
     });
     setSelectedTags(items);
   }

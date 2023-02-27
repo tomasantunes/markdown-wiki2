@@ -1158,6 +1158,7 @@ app.post("/api/files/edit", (req, res) => {
       console.log(err);
       res.json({status: "NOK", error: err});
     }
+    console.log(tags);
     if (tags == undefined || tags == "") {
       deleteTagsFromFile(id, function(result) {
         console.log("Tags have been deleted.")
@@ -1167,6 +1168,7 @@ app.post("/api/files/edit", (req, res) => {
       var tags_arr = tags.split(",");
       deleteTagsFromFile(id, function(result) {
         for (var i in tags_arr) {
+          console.log(tags_arr[i]);
           getTagId(tags_arr[i], function(result) {
             if (result.status == "OK") {
               assignTagToFile(id, result.data);
@@ -1359,18 +1361,21 @@ app.post("/api/images/edit", (req, res) => {
 
   var sql = "UPDATE files SET title = ?, category_id = ? WHERE id = ?;";
 
-  con.query(sql, [title, category_id, id], function(err, result) {
+  con.query(sql, [title, category_id, id], async function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err});
     }
     if (tags == undefined || tags == "") {
       deleteTagsFromFile(id, function(result) {
-        console.log("Tags have been deleted.")
+        console.log("Tags have been deleted.");
+        res.json({status: "OK", data: "Image has been edited successfully."});
       });
     }
     else {
+      console.log(tags_arr);
       var tags_arr = tags.split(",");
+      /*
       deleteTagsFromFile(id, function(result) {
         for (var i in tags_arr) {
           getTagId(tags_arr[i], function(result) {
@@ -1383,8 +1388,25 @@ app.post("/api/images/edit", (req, res) => {
           });
         }
       });
+      */
+      await con2.query("DELETE FROM files_tags WHERE file_id = ?", [id]);
+      for (var i in tags_arr) {
+        console.log(tags_arr[i]);
+        var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
+        if (result2[0].length > 0) {
+          var tag_id = result2[0][0].id;
+          await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [id, tag_id]);
+        }
+        else {
+          res.json({status: "NOK", error: "Tag not found."});
+          return;
+        }
+        if (i == tags_arr.length - 1) {
+          res.json({status: "OK", data: "Image has been edited successfully."});
+        }
+      }
     }
-    res.json({status: "OK", data: "Images has been edited successfully."});
+    
   });
 });
 
