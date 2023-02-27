@@ -39,16 +39,20 @@ app.use(session({
   saveUninitialized: true
 }));
 
+
+// Global variables
 var environment = secretConfig.ENVIRONMENT;
 var con = {};
 var con2 = {};
 
+// Function that performs a few queries to increase the timeout of the database connection
 function increaseTimeout() {
   con2.query('SET GLOBAL connect_timeout=28800')
   con2.query('SET GLOBAL interactive_timeout=28800')
   con2.query('SET GLOBAL wait_timeout=28800')
 }
 
+// Function that starts the database connection depending on the environment and host
 function startDatabaseConnection(db_host) {
   if (environment == "DOCKER") {
     con = mysql.createPool({
@@ -113,6 +117,7 @@ function startDatabaseConnection(db_host) {
   }
 }
 
+// Function that checks if the application is running in a Docker container through the environment variable and gets the docker host if it is running on Docker.
 checkDocker = () => {
   return new Promise((resolve, reject) => {
       if (secretConfig.ENVIRONMENT == "DOCKER") {
@@ -129,6 +134,7 @@ checkDocker = () => {
   });
 };
 
+// Check if the application is running in a Docker container and start the database connection
 checkDocker().then((addr) => {
   if (addr) {
     console.log('Docker host is ' + addr);
@@ -145,6 +151,8 @@ checkDocker().then((addr) => {
 });
 
 // Functions
+
+// Function get the id of a category by its name
 function getCategoryId(category_name, cb) {
   var sql = "SELECT id FROM categories WHERE name = ?;";
 
@@ -158,6 +166,7 @@ function getCategoryId(category_name, cb) {
   });
 }
 
+// Function that gets the id of a tag by its name
 function getTagId(tag_name, cb) {
   var sql = "SELECT id FROM tags WHERE name = ?;";
 
@@ -171,6 +180,7 @@ function getTagId(tag_name, cb) {
   });
 }
 
+// Function that assigns a tag to file
 function assignTagToFile(file_id, tag_id) {
   var sql = "INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?);";
 
@@ -179,6 +189,7 @@ function assignTagToFile(file_id, tag_id) {
   });
 };
 
+// Function that inserts a new tag in the database
 function insertNewTag(tag_name, cb) {
   var sql = "INSERT INTO tags (name) VALUES (?);";
 
@@ -187,6 +198,7 @@ function insertNewTag(tag_name, cb) {
   });
 }
 
+// Function that inserts a new category in the database
 function insertNewCategory(category_name, parentCategoryId, cb) {
   var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?);";
 
@@ -195,8 +207,9 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
   });
 }
 
+// Function that checks if a file is in a category
 function checkCategory(file_id, category_id, cb) {
-  var sql = "SELECT * FROM files WHERE file_id = ? AND category_id = ?;";
+  var sql = "SELECT * FROM files WHERE id = ? AND category_id = ?;";
   con.query(sql, [file_id, category_id], function(err, result) {
     if (result.length > 0) {
       cb(true);
@@ -207,6 +220,7 @@ function checkCategory(file_id, category_id, cb) {
   })
 }
 
+// Function that checks if a file has a tag
 function checkTag(file_id, tag_id, cb) {
   var sql = "SELECT * FROM files_tags WHERE file_id = ? AND tag_id = ?;";
   con.query(sql, [file_id, tag_id], function(err, result) {
@@ -219,6 +233,7 @@ function checkTag(file_id, tag_id, cb) {
   })
 }
 
+// Function that deletes all tags from a file
 function deleteTagsFromFile(file_id, cb) {
   var sql = "DELETE FROM files_tags WHERE file_id = ?;";
   con.query(sql, [file_id], function(err, result) {
@@ -226,6 +241,7 @@ function deleteTagsFromFile(file_id, cb) {
   });
 }
 
+// Function that downloads an image by URL, saves it in the media-files folder and inserts it in the database
 function downloadImage(imageUrl, category_id, tags, cb) {
   axios
   .get(imageUrl, {
@@ -275,6 +291,7 @@ function downloadImage(imageUrl, category_id, tags, cb) {
   
 }
 
+// Function that receives a string and a number and returns the nth most common words in the string as well as the frequency.
 function nthMostCommon(str, amount) {
 
   const stickyWords =[
@@ -381,6 +398,7 @@ function nthMostCommon(str, amount) {
     return result;
 }
 
+// Function that saves a bookmark in the database depending on whether it is a folder or a bookmark and returns an insert ID. It checks if it's a duplicate and returns the ID of the existing bookmark. It receives a parameter to ignore folders.
 async function saveBookmark(bookmark, ignore_folders, parent_id) {
   if (bookmark.type != "bookmark") {
     if (!ignore_folders) {
@@ -420,6 +438,7 @@ async function saveBookmark(bookmark, ignore_folders, parent_id) {
   }
 }
 
+// Function that searches recursively for a key and a value in a nested array of objects.
 function searchRecursively(arr, key, value) {
   let result = [];
   
@@ -433,6 +452,7 @@ function searchRecursively(arr, key, value) {
   return result;
 }
 
+// Function that saves bookmarks recursively in the database from a nested array of bookmarks.
 async function saveBookmarksRecursively(bookmarks, ignore_folders, parent_id) {
   for (var i in bookmarks) {
     var bookmark = bookmarks[i];
@@ -452,6 +472,8 @@ async function saveBookmarksRecursively(bookmarks, ignore_folders, parent_id) {
   }
 }
 
+
+// Function that saves bookmarks in the database. It receives parameters to import a specific folder, to ignore folders and a target folder.
 async function saveBookmarksToDatabase(bookmarks, import_folder, ignore_folders, target_folder) {
   var parent_id = 0
   if (target_folder != undefined) {
@@ -473,6 +495,7 @@ async function saveBookmarksToDatabase(bookmarks, import_folder, ignore_folders,
   }
 }
 
+// Function that saves bookmarks in the database from a specific folder. It receives parameters to ignore folders and a target folder.
 async function saveBookmarksToDatabaseFromFolder(bookmarks, import_folder, ignore_folders, parent_id) {
   var folder_to_import = searchRecursively(bookmarks, "title", import_folder);
   if (folder_to_import.length > 0) {
@@ -494,6 +517,8 @@ async function saveBookmarksToDatabaseFromFolder(bookmarks, import_folder, ignor
 }
 
 // Dashboard Routes
+
+// This route gets 10 random sentences from all the text files in the database by reading the content of 10 random files and selecting a random line from each file.
 app.get("/api/get-10-random-sentences", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -522,6 +547,8 @@ app.get("/api/get-10-random-sentences", (req, res) => {
   });
 });
 
+
+// This route gets the 50 most common words from the text files in the database
 app.get("/api/get-50-most-common-words", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -546,6 +573,7 @@ app.get("/api/get-50-most-common-words", (req, res) => {
   });
 });
 
+// This route gets the 10 top categories with the most files.
 app.get("/api/get-top10-categories", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -562,6 +590,7 @@ app.get("/api/get-top10-categories", (req, res) => {
   });
 });
 
+// This route gets the 10 top tags with the most files.
 app.get("/api/get-top10-tags", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -578,6 +607,8 @@ app.get("/api/get-top10-tags", (req, res) => {
   });
 });
 
+
+// This route gets the 10 most recent files.
 app.get("/api/get-10-most-recent", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -599,6 +630,7 @@ app.get("/api/get-10-most-recent", (req, res) => {
   });
 });
 
+// This route gets the 10 largest files by reading the length of the content of each file.
 app.get("/api/get-10-largest", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -622,6 +654,8 @@ app.get("/api/get-10-largest", (req, res) => {
 
 
 // Categories CRUD Routes
+
+// This route gets the list of categories. The list is ordered by sort index if it exists, otherwise by name and then by date ascending.
 app.get("/api/categories/list", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -644,6 +678,8 @@ app.get("/api/categories/list", (req, res) => {
   });
 });
 
+
+// This route fetches one category by ID.
 app.get("/api/categories/getone", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -668,6 +704,7 @@ app.get("/api/categories/getone", (req, res) => {
   });
 });
 
+// This route deletes a category by ID and all the files that belong to it.
 app.post("/api/categories/delete", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -694,6 +731,7 @@ app.post("/api/categories/delete", (req, res) => {
   });
 });
 
+// This route inserts a new category and assigns it to a parent category. The top-level categories have a parent ID of 1.
 app.post("/api/categories/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -707,6 +745,7 @@ app.post("/api/categories/insert", (req, res) => {
   });
 });
 
+// This route sets a category's sort index.
 app.post("/api/categories/set-sort-index", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -729,6 +768,8 @@ app.post("/api/categories/set-sort-index", (req, res) => {
 
 
 // Tags CRUD Routes
+
+// This route inserts a new tag.
 app.post("/api/tags/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -746,6 +787,7 @@ app.post("/api/tags/insert", (req, res) => {
   });
 });
 
+// This route lists all the tags.
 app.get("/api/tags/list", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -770,6 +812,8 @@ app.get("/api/tags/list", (req, res) => {
 
 
 // Files Routes
+
+// This route inserts a new text file in the files table and assings the tags on the files_tags table.
 app.post("/api/files/insert", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -807,6 +851,7 @@ app.post("/api/files/insert", (req, res) => {
   });
 });
 
+// This route gets all the text files from a category.
 app.get("/api/files/get-files-from-category", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -832,6 +877,7 @@ app.get("/api/files/get-files-from-category", (req, res) => {
   });
 });
 
+// This route gets all the text files from a tag.
 app.get("/api/files/get-files-from-tag", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -857,6 +903,7 @@ app.get("/api/files/get-files-from-tag", (req, res) => {
   });
 });
 
+// This route gets all the text files that are pinned.
 app.get("/api/files/get-pinned-files", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -881,6 +928,7 @@ app.get("/api/files/get-pinned-files", (req, res) => {
   });
 });
 
+// This route gets all the image files from a category.
 app.get("/api/files/get-image-files-from-category", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -906,6 +954,7 @@ app.get("/api/files/get-image-files-from-category", (req, res) => {
   });
 });
 
+// This route gets all the image files that are pinned.
 app.get("/api/files/get-pinned-images", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -930,6 +979,7 @@ app.get("/api/files/get-pinned-images", (req, res) => {
   });
 });
 
+// This route gets all the image files from a tag.
 app.get("/api/files/get-image-files-from-tag", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -955,6 +1005,7 @@ app.get("/api/files/get-image-files-from-tag", (req, res) => {
   });
 });
 
+// This route gets all the pdf files from a category.
 app.get("/api/files/get-pdf-files-from-category", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -980,6 +1031,7 @@ app.get("/api/files/get-pdf-files-from-category", (req, res) => {
   });
 });
 
+// This route gets all the pdf files that are pinned.
 app.get("/api/files/get-pinned-pdf-files", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1004,6 +1056,7 @@ app.get("/api/files/get-pinned-pdf-files", (req, res) => {
   });
 });
 
+// This route gets all the pdf files from a tag.
 app.get("/api/files/get-pdf-files-from-tag", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1029,6 +1082,7 @@ app.get("/api/files/get-pdf-files-from-tag", (req, res) => {
   });
 });
 
+// This route fetches one file and its tags if any.
 app.get("/api/files/getone", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1072,6 +1126,7 @@ app.get("/api/files/getone", (req, res) => {
   });
 });
 
+// This route searches for file, categories and tags based on a query. It returns an array with each entry's information as well as a type.
 app.get("/api/files/search", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1118,6 +1173,7 @@ app.get("/api/files/search", (req, res) => {
 
 });
 
+// This route deletes a file by ID.
 app.post("/api/files/delete", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1135,8 +1191,7 @@ app.post("/api/files/delete", (req, res) => {
   });
 });
 
-
-
+// This route edits a file.
 app.post("/api/files/edit", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1184,6 +1239,7 @@ app.post("/api/files/edit", (req, res) => {
   });
 });
 
+// This route appends content to a text file.
 app.post("/api/files/append", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1203,6 +1259,7 @@ app.post("/api/files/append", (req, res) => {
   });
 });
 
+// This route pins a file.
 app.post("/api/files/pin", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1221,6 +1278,7 @@ app.post("/api/files/pin", (req, res) => {
   });
 });
 
+// This route unpins a file.
 app.post("/api/files/unpin", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1239,6 +1297,7 @@ app.post("/api/files/unpin", (req, res) => {
   });
 });
 
+// This route allows you to download a text file.
 app.get("/api/download-text-file/:id", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1270,6 +1329,8 @@ app.get("/api/download-text-file/:id", (req, res) => {
 
 
 // Images Routes
+
+// This route inserts an image on the files table and uploads it to the media-files folder.
 app.post('/api/upload-media-file', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1322,6 +1383,7 @@ app.post('/api/upload-media-file', function(req, res) {
   });
 });
 
+// This route inserts an image on the files table a uploads it to the media-files folder from a URL.
 app.post('/api/upload-image-url', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1338,6 +1400,7 @@ app.post('/api/upload-image-url', function(req, res) {
   })
 });
 
+// This route returns a single image by passing the filename to a URL.
 app.get("/api/images/get/:filename", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1348,6 +1411,8 @@ app.get("/api/images/get/:filename", (req, res) => {
   res.sendFile(__dirname + "/media-files/" + filename);
 });
 
+
+// This route allows you to edit an image's information on the database.
 app.post("/api/images/edit", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1410,6 +1475,7 @@ app.post("/api/images/edit", (req, res) => {
   });
 });
 
+// This route returns a single file by passing the filename to a URL. This route is used for files that are not images like PDFs.
 app.get("/api/get-file/:filename", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1422,6 +1488,8 @@ app.get("/api/get-file/:filename", (req, res) => {
 
 
 // Bookmarks Routes
+
+// This route returns a text file with all the bookmarks
 app.get("/api/bookmarks", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1431,6 +1499,7 @@ app.get("/api/bookmarks", (req, res) => {
   res.sendFile(__dirname + "/bookmarks/bookmarks.txt");
 });
 
+// This route removes bookmarks from a folder if they are duplicates in other folders.
 app.post("/api/bookmarks/remove-dups", async (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1454,6 +1523,7 @@ app.post("/api/bookmarks/remove-dups", async (req, res) => {
   res.json({status: "OK", data: "Duplicates have been removed successfully."});
 });
 
+// This route receives a bookmarks HTML file and imports it to the database. It receives parameters for a specific folder to import, whether to ignore folders and a target folder. It uses a python script to convert the HTML file to a JSON file.
 app.post('/api/upload-bookmarks', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1499,6 +1569,7 @@ app.post('/api/upload-bookmarks', function(req, res) {
   });
 });
 
+// This route creates a folder in the bookmarks database.
 app.post("/api/bookmarks/create-folder", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1519,6 +1590,8 @@ app.post("/api/bookmarks/create-folder", (req, res) => {
 
 });
 
+
+// This route deletes all the bookmarks and resets the table's ID.
 app.post("/api/bookmarks/delete-all", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1543,6 +1616,7 @@ app.post("/api/bookmarks/delete-all", (req, res) => {
 
 });
 
+// This route parses the JSON bookmarks file and returns it as an object.
 app.get("/api/bookmarks/get-json", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1553,6 +1627,7 @@ app.get("/api/bookmarks/get-json", (req, res) => {
   res.json({status: "OK", data: data});
 });
 
+// This route returns all the folders in the bookmarks table.
 app.get("/api/bookmarks/get-folders", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1569,6 +1644,8 @@ app.get("/api/bookmarks/get-folders", (req, res) => {
   });
 });
 
+
+// This route fetches a single bookmarks by ID.
 app.get("/api/bookmarks/getone", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1587,6 +1664,7 @@ app.get("/api/bookmarks/getone", (req, res) => {
   });
 });
 
+// This route allows you to edit a bookmark.
 app.post("/api/bookmarks/edit", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1609,6 +1687,7 @@ app.post("/api/bookmarks/edit", (req, res) => {
   });
 });
 
+// This route fetches all the bookmarks from a folder paginated.
 app.get("/api/get-bookmarks-from-folder", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1658,6 +1737,7 @@ app.get("/login/:secret_token", (req, res) => {
 });
 */
 
+// If 2FA is enabled this route checks if an authentication PIN is valid and not expired.
 app.post("/api/check-pin", (req, res) => {
   var login_id = req.body.login_id;
   var pin = req.body.pin;
@@ -1706,6 +1786,7 @@ app.post("/api/check-pin", (req, res) => {
   
 });
 
+// This function sends an email to the user with the authentication PIN.
 function sendPinEmail(pin) {
   var smtpTransport = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -1731,6 +1812,7 @@ function sendPinEmail(pin) {
   });
 }
 
+// This route checks if the user and password are correct and sends an email with the authentication PIN if 2FA is enabled.
 app.post("/api/check-login", (req, res) => {
   var user = req.body.user;
   var pass = req.body.pass;
@@ -1772,6 +1854,7 @@ app.post("/api/check-login", (req, res) => {
 
 
 // Front-End Routes
+// If the user is not logged in he is redirected to the login page. Else we return the index.html file for that route.
 
 app.get('/', (req,res) => {
   console.log(req.session.isLoggedIn);
