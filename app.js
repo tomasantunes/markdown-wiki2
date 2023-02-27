@@ -17,7 +17,6 @@ var editJson = require("edit-json-file");
 const PythonShell = require('python-shell').PythonShell;
 var nodemailer = require('nodemailer');
 var getDockerHost = require('get-docker-host');
-var isDocker = require('./is-docker.js');
 
 var app = express();
 
@@ -40,8 +39,8 @@ app.use(session({
   saveUninitialized: true
 }));
 
+var environment = secretConfig.ENVIRONMENT;
 var con = {};
-
 var con2 = {};
 
 function increaseTimeout() {
@@ -50,8 +49,8 @@ function increaseTimeout() {
   con2.query('SET GLOBAL wait_timeout=28800')
 }
 
-function startDatabaseConnection(db_host, use_port) {
-  if (use_port == true) {
+function startDatabaseConnection(db_host) {
+  if (environment == "DOCKER") {
     con = mysql.createPool({
       connectionLimit : 90,
       connectTimeout: 1000000,
@@ -72,7 +71,7 @@ function startDatabaseConnection(db_host, use_port) {
       port: secretConfig.DB_PORT
     });
   }
-  else {
+  else if (environment == "UBUNTU") {
     con = mysql.createPool({
       connectionLimit : 90,
       connectTimeout: 1000000,
@@ -91,6 +90,25 @@ function startDatabaseConnection(db_host, use_port) {
       password: secretConfig.DB_PASSWORD,
       database: secretConfig.DB_NAME,
       port: '/var/run/mysqld/mysqld.sock'
+    });
+  }
+  else {
+    con = mysql.createPool({
+      connectionLimit : 90,
+      connectTimeout: 1000000,
+      host: db_host,
+      user: secretConfig.DB_USER,
+      password: secretConfig.DB_PASSWORD,
+      database: secretConfig.DB_NAME
+    });
+
+    con2 = mysql_async.createPool({
+      connectionLimit : 90,
+      connectTimeout: 1000000,
+      host: db_host,
+      user: secretConfig.DB_USER,
+      password: secretConfig.DB_PASSWORD,
+      database: secretConfig.DB_NAME
     });
   }
 }
@@ -114,12 +132,12 @@ checkDocker = () => {
 checkDocker().then((addr) => {
   if (addr) {
     console.log('Docker host is ' + addr);
-    startDatabaseConnection(addr, true);
+    startDatabaseConnection(addr);
     increaseTimeout();
   } else {
     console.log('Not in Docker');
     console.log(secretConfig.DB_HOST);
-    startDatabaseConnection(secretConfig.DB_HOST, false);
+    startDatabaseConnection(secretConfig.DB_HOST);
     increaseTimeout();
   }
 }).catch((error) => {

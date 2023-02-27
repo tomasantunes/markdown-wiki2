@@ -17,7 +17,7 @@ USER = input("Choose a username: ")
 PASS = input("Choose a password: ")
 
 with open("secret-config.json", "w", encoding="utf8") as f:
-    f.write('{"SITENAME": "' + SITENAME + '", "SECRET_TOKEN": "' + SECRET_TOKEN + '", "SESSION_KEY": "' + SESSION_KEY + '", "SITE_ID": "' + SITE_ID + '", "USE_2FA": ' + USE_2FA + ', "SITE_EMAIL": "' + SITE_EMAIL + '", "SITE_EMAIL_PASSWORD": "' + SITE_EMAIL_PASSWORD + '", "USER_EMAIL": "' + USER_EMAIL + '", "USER": "' + USER + '", "PASS": "' + PASS + '", "DB_HOST": "localhost", "DB_NAME": "markdownwiki2", "DB_USER": "root", "DB_PASSWORD": "123456", "DB_PORT": "3307"}')
+    f.write('{"SITENAME": "' + SITENAME + '", "SECRET_TOKEN": "' + SECRET_TOKEN + '", "SESSION_KEY": "' + SESSION_KEY + '", "SITE_ID": "' + SITE_ID + '", "USE_2FA": ' + USE_2FA + ', "SITE_EMAIL": "' + SITE_EMAIL + '", "SITE_EMAIL_PASSWORD": "' + SITE_EMAIL_PASSWORD + '", "USER_EMAIL": "' + USER_EMAIL + '", "USER": "' + USER + '", "PASS": "' + PASS + '", "DB_HOST": "localhost", "DB_NAME": "markdownwiki2", "DB_USER": "root", "DB_PASSWORD": "123456", "DB_PORT": "3307", "ENVIRONMENT"; "DOCKER"}')
 
 with open("config.json", "w", encoding="utf8") as f:
     f.write('{"SITENAME": "' + SITENAME + '", "BACKEND_URL": "http://localhost:4001", "FRONTEND_URL": "http://localhost:3000"}')
