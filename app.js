@@ -115,7 +115,7 @@ function startDatabaseConnection(db_host) {
 
 checkDocker = () => {
   return new Promise((resolve, reject) => {
-      if (isDocker()) {
+      if (secretConfig.ENVIRONMENT == "DOCKER") {
           getDockerHost((error, result) => {
               if (result) {
                   resolve(result);
