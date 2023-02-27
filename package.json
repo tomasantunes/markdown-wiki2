@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "engines": {
-    "node": "^14.20.0"
+    "node": "^19.7.0"
   },
   "dependencies": {
     "axios": "^0.27.2",
@@ -26,5 +26,6 @@
     "mysql2": "^2.3.3",
     "nodemailer": "^6.9.1",
     "python-shell": "^5.0.0"
-  }
+  },
+  "type": "module"
 }
