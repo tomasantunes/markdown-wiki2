@@ -236,6 +236,7 @@ export default function CategoryPage() {
       ...editFile,
       "category": item.value
     });
+    setSelectedCategory(item);
   }
 
   function changeEditFileTags(items) {
@@ -248,6 +249,7 @@ export default function CategoryPage() {
       ...editFile,
       "tags": tags.join(",")
     });
+    setSelectedTags(items);
   }
 
   function changeEditFileExtension(item) {
