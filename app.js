@@ -17,7 +17,7 @@ var editJson = require("edit-json-file");
 const PythonShell = require('python-shell').PythonShell;
 var nodemailer = require('nodemailer');
 var getDockerHost = require('get-docker-host');
-var isInDocker = require('is-in-docker');
+var isDocker = require('is-docker');
 
 var app = express();
 
@@ -74,7 +74,7 @@ function startDatabaseConnection(db_host) {
 
 checkDocker = () => {
   return new Promise((resolve, reject) => {
-      if (isInDocker()) {
+      if (isDocker()) {
           getDockerHost((error, result) => {
               if (result) {
                   resolve(result);
