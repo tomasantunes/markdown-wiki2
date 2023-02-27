@@ -20,12 +20,10 @@
     "express-session": "^1.17.3",
     "get-docker-host": "^1.0.3",
     "http-errors": "~1.6.3",
-    "is-docker": "^3.0.0",
     "mime-types": "^2.1.35",
     "morgan": "~1.9.1",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.9.1",
     "python-shell": "^5.0.0"
-  },
-  "type": "module"
+  }
 }

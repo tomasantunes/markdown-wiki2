@@ -17,7 +17,7 @@ var editJson = require("edit-json-file");
 const PythonShell = require('python-shell').PythonShell;
 var nodemailer = require('nodemailer');
 var getDockerHost = require('get-docker-host');
-var isDocker = require('is-docker');
+var isDocker = require('./is-docker.js');
 
 var app = express();
 
