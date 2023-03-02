@@ -100,30 +100,38 @@ export default function CategoryPage() {
       }
     })
     .then(function(response) {
-      setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
-      var extension = extensions.filter(e => {
-        return e.value === response.data.data.extension
-      });
-      setSelectedExtension(extension);
-      if (response.data.data.hasOwnProperty("tags")) {
-        var tags_sel = [];
-        var tags_arr = response.data.data.tags.split(",");
-        for (var i in tags_arr) {
-          var tag = tags.filter(t => {
-            return t.label === tags_arr[i];
-          })[0];
-          tags_sel.push(tag);
+      if (response.data.status == "OK") {
+        setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
+        var extension = extensions.filter(e => {
+          return e.value === response.data.data.extension
+        });
+        setSelectedExtension(extension);
+        if (response.data.data.hasOwnProperty("tags")) {
+          var tags_sel = [];
+          var tags_arr = response.data.data.tags.split(",");
+          for (var i in tags_arr) {
+            var tag = tags.filter(t => {
+              return t.label === tags_arr[i];
+            })[0];
+            tags_sel.push(tag);
+          }
+          setSelectedTags(tags_sel);
         }
-        setSelectedTags(tags_sel);
+        else {
+          setSelectedTags([]);
+        }
+        setEditFile({
+          id: response.data.data.id,
+          title: response.data.data.title,
+          content: "",
+          category: response.data.data.category_id,
+          tags: response.data.data.tags,
+          extension: ""
+        });
       }
-      setEditFile({
-        id: response.data.data.id,
-        title: response.data.data.title,
-        content: "",
-        category: response.data.data.category_id,
-        tags: response.data.data.tags,
-        extension: ""
-      });
+      else {
+        MySwal.fire(response.data.error);
+      }
     })
     .catch(function(err) {
       MySwal.fire(err.message);
