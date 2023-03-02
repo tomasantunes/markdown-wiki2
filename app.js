@@ -1208,7 +1208,7 @@ app.post("/api/files/edit", (req, res) => {
   console.log(category_id);
 
   var sql = "UPDATE files SET title = ?, content = ?, extension = ?, category_id = ? WHERE id = ?;";
-  con.query(sql, [title, content, extension, category_id, id], function(err, result) {
+  con.query(sql, [title, content, extension, category_id, id], async function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err});
@@ -1221,6 +1221,7 @@ app.post("/api/files/edit", (req, res) => {
     }
     else {
       var tags_arr = tags.split(",");
+      /*
       deleteTagsFromFile(id, function(result) {
         for (var i in tags_arr) {
           console.log(tags_arr[i]);
@@ -1234,6 +1235,24 @@ app.post("/api/files/edit", (req, res) => {
           });
         }
       });
+      */
+      await con2.query("DELETE FROM files_tags WHERE file_id = ?", [id]);
+      for (var i in tags_arr) {
+        console.log(tags_arr[i]);
+        var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
+        if (result2[0].length > 0) {
+          var tag_id = result2[0][0].id;
+          await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [id, tag_id]);
+        }
+        else {
+          res.json({status: "NOK", error: "Tag not found."});
+          return;
+        }
+        if (i == tags_arr.length - 1) {
+          res.json({status: "OK", data: "File has been edited successfully."});
+          return;
+        }
+      }
     }
     res.json({status: "OK", data: "File has been edited successfully."});
   });
@@ -1468,10 +1487,11 @@ app.post("/api/images/edit", (req, res) => {
         }
         if (i == tags_arr.length - 1) {
           res.json({status: "OK", data: "Image has been edited successfully."});
+          return;
         }
       }
     }
-    
+    res.json({status: "OK", data: "Image has been edited successfully."});
   });
 });
 
