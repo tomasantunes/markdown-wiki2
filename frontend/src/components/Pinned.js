@@ -54,6 +54,7 @@ export default function Pinned() {
   function showEditFile(e) {
     var id = e.target.value;
     
+    loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
         id: id
@@ -102,6 +103,7 @@ export default function Pinned() {
   function showEditImage(e) {
     var id = e.target.value;
 
+    loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
         id: id

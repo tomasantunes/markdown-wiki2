@@ -55,6 +55,7 @@ export default function CategoryPage() {
   function showEditFile(e) {
     var id = e.target.value;
     
+    loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
         id: id
@@ -102,6 +103,7 @@ export default function CategoryPage() {
   function showEditImage(e) {
     var id = e.target.value;
 
+    loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
         id: id
