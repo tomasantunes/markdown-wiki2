@@ -99,6 +99,7 @@ export default function CategoryPage() {
         tags: response.data.data.tags,
         extension: response.data.data.extension
       });
+      $(".editFileModal").modal("show");
     })
     .catch(function(err) {
       MySwal.fire(err.message);
@@ -138,11 +139,20 @@ export default function CategoryPage() {
         tags: response.data.data.tags,
         extension: ""
       });
+      $(".editImageModal").modal("show");
     })
     .catch(function(err) {
       MySwal.fire(err.message);
     })
 
+  }
+
+  function closeEditImageModal() {
+    $(".editImageModal").modal("hide");
+  }
+
+  function closeEditFileModal() {
+    $(".editFileModal").modal("hide");
   }
 
   function showAppendToFile(e) {
@@ -605,7 +615,7 @@ export default function CategoryPage() {
                     </div>
                     <div className="col-md-4 text-end">
                       {image['pinned'] == 0 ? <button class="btn btn-primary pin-btn" value={image['id']} onClick={pinFile}>Pin</button> : <button class="btn btn-secondary pin-btn" value={image['id']} onClick={unpinFile}>Unpin</button>}
-                      <button class="btn btn-primary edit-btn" value={image['id']} onClick={showEditImage} data-bs-toggle="modal" data-bs-target=".editImageModal">Edit</button>
+                      <button class="btn btn-primary edit-btn" value={image['id']} onClick={showEditImage}>Edit</button>
                       <button class="btn btn-danger delete-btn" value={image['id']} onClick={deleteFile}>Delete</button>
                     </div>
                   </div>
@@ -622,7 +632,7 @@ export default function CategoryPage() {
                   </div>
                   <div className="col-md-4 text-end">
                     {file['pinned'] == 0 ? <button class="btn btn-primary pin-btn" value={file['id']} onClick={pinFile}>Pin</button> : <button class="btn btn-secondary pin-btn" value={file['id']} onClick={unpinFile}>Unpin</button>}
-                    <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile} data-bs-toggle="modal" data-bs-target=".editFileModal">Edit</button>
+                    <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile}>Edit</button>
                     <button class="btn btn-primary append-btn" value={file['id']} onClick={showAppendToFile} data-bs-toggle="modal" data-bs-target=".appendModal">Append</button>
                     <a class="btn btn-secondary download-btn" value={file['id']} href={"/api/download-text-file/" + file['id']}>Download</a>
                     <button class="btn btn-danger delete-btn" value={file['id']} onClick={deleteFile}>Delete</button>
@@ -660,7 +670,7 @@ export default function CategoryPage() {
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Edit File</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" onClick={closeEditFileModal} aria-label="Close"></button>
             </div>
             <div class="modal-body">
             <form onSubmit={submitEditFile}>
@@ -700,7 +710,7 @@ export default function CategoryPage() {
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" onClick={closeEditFileModal}>Close</button>
             </div>
           </div>
         </div>
@@ -711,7 +721,7 @@ export default function CategoryPage() {
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Edit Image</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" onClick={closeEditImageModal} aria-label="Close"></button>
             </div>
             <div class="modal-body">
             <form onSubmit={submitEditImage}>
@@ -741,7 +751,7 @@ export default function CategoryPage() {
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" onClick={closeEditImageModal}>Close</button>
             </div>
           </div>
         </div>
