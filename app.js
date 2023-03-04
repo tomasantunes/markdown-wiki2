@@ -96,14 +96,15 @@ function startDatabaseConnection(db_host) {
       port: '/var/run/mysqld/mysqld.sock'
     });
   }
-  else {
+  else if (environment == "WINDOWS") {
     con = mysql.createPool({
       connectionLimit : 90,
       connectTimeout: 1000000,
       host: db_host,
       user: secretConfig.DB_USER,
       password: secretConfig.DB_PASSWORD,
-      database: secretConfig.DB_NAME
+      database: secretConfig.DB_NAME,
+      port: 3306
     });
 
     con2 = mysql_async.createPool({
@@ -112,7 +113,8 @@ function startDatabaseConnection(db_host) {
       host: db_host,
       user: secretConfig.DB_USER,
       password: secretConfig.DB_PASSWORD,
-      database: secretConfig.DB_NAME
+      database: secretConfig.DB_NAME,
+      port: 3306
     });
   }
 }
