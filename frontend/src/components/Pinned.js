@@ -54,37 +54,46 @@ export default function Pinned() {
   function showEditFile(e) {
     var id = e.target.value;
     
+    loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
         id: id
       }
     })
     .then(function(response) {
-      setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
-      var extension = extensions.filter(e => {
-        return e.value === response.data.data.extension
-      });
-      setSelectedExtension(extension);
-      if (response.data.data.hasOwnProperty("tags")) {
-        var tags_sel = [];
-        var tags_arr = response.data.data.tags.split(",");
-        for (var i in tags_arr) {
-          var tag = tags.filter(t => {
-            return t.label === tags_arr[i];
-          })[0];
-          tags_sel.push(tag);
+      if (response.data.status == "OK") {
+        setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
+        var extension = extensions.filter(e => {
+          return e.value === response.data.data.extension
+        });
+        setSelectedExtension(extension);
+        if (response.data.data.hasOwnProperty("tags")) {
+          var tags_sel = [];
+          var tags_arr = response.data.data.tags.split(",");
+          for (var i in tags_arr) {
+            var tag = tags.filter(t => {
+              return t.label === tags_arr[i];
+            })[0];
+            tags_sel.push(tag);
+          }
+          setSelectedTags(tags_sel);
         }
-        setSelectedTags(tags_sel);
+        else {
+          setSelectedTags([]);
+        }
+        setEditFile({
+          id: response.data.data.id,
+          title: response.data.data.title,
+          content: response.data.data.content,
+          category: response.data.data.category_id,
+          tags: response.data.data.tags,
+          pinned: response.data.data.pinned,
+          extension: response.data.data.extension
+        });
       }
-      setEditFile({
-        id: response.data.data.id,
-        title: response.data.data.title,
-        content: response.data.data.content,
-        category: response.data.data.category_id,
-        tags: response.data.data.tags,
-        pinned: response.data.data.pinned,
-        extension: response.data.data.extension
-      });
+      else {
+        MySwal.fire(response.data.error);
+      }
     })
     .catch(function(err) {
       MySwal.fire(err.message);
@@ -94,36 +103,45 @@ export default function Pinned() {
   function showEditImage(e) {
     var id = e.target.value;
 
+    loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
         id: id
       }
     })
     .then(function(response) {
-      setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
-      var extension = extensions.filter(e => {
-        return e.value === response.data.data.extension
-      });
-      setSelectedExtension(extension);
-      if (response.data.data.hasOwnProperty("tags")) {
-        var tags_sel = [];
-        var tags_arr = response.data.data.tags.split(",");
-        for (var i in tags_arr) {
-          var tag = tags.filter(t => {
-            return t.label === tags_arr[i];
-          })[0];
-          tags_sel.push(tag);
+      if (response.data.status == "OK") {
+        setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
+        var extension = extensions.filter(e => {
+          return e.value === response.data.data.extension
+        });
+        setSelectedExtension(extension);
+        if (response.data.data.hasOwnProperty("tags")) {
+          var tags_sel = [];
+          var tags_arr = response.data.data.tags.split(",");
+          for (var i in tags_arr) {
+            var tag = tags.filter(t => {
+              return t.label === tags_arr[i];
+            })[0];
+            tags_sel.push(tag);
+          }
+          setSelectedTags(tags_sel);
         }
-        setSelectedTags(tags_sel);
+        else {
+          setSelectedTags([]);
+        }
+        setEditFile({
+          id: response.data.data.id,
+          title: response.data.data.title,
+          content: "",
+          category: response.data.data.category_id,
+          tags: response.data.data.tags,
+          extension: ""
+        });
       }
-      setEditFile({
-        id: response.data.data.id,
-        title: response.data.data.title,
-        content: "",
-        category: response.data.data.category_id,
-        tags: response.data.data.tags,
-        extension: ""
-      });
+      else {
+        MySwal.fire(response.data.error);
+      }
     })
     .catch(function(err) {
       MySwal.fire(err.message);
@@ -236,6 +254,7 @@ export default function Pinned() {
       ...editFile,
       "category": item.value
     });
+    setSelectedCategory(item);
   }
 
   function changeEditFileTags(items) {
@@ -246,8 +265,9 @@ export default function Pinned() {
     }
     setEditFile({
       ...editFile,
-      "tags": tags.join(",")
+      "tags": tags_temp.join(",")
     });
+    setSelectedTags(items);
   }
 
   function pinFile(e) {
