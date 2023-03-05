@@ -796,7 +796,7 @@ app.get("/api/tags/list", (req, res) => {
     return;
   }
 
-  var sql = "SELECT * FROM tags;";
+  var sql = "SELECT * FROM tags ORDER BY name ASC;";
 
   con.query(sql, [], function(err, result) {
     if (err) {
