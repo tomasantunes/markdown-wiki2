@@ -106,7 +106,7 @@ header {
   border-left: 0.32em solid transparent;
 }
 
-.dropdown {
+.dropdown-ml {
   position: absolute;
   right: 0;
   left: 100%;
@@ -123,11 +123,11 @@ header {
   display: none;
 }
 
-.dropdown.show {
+.dropdown-ml.show {
   display: block;
 }
 
-.dropdown .dropdown-submenu {
+.dropdown-ml .dropdown-submenu {
   position: absolute;
   left: 100%;
   top: -7px;
@@ -142,7 +142,7 @@ header {
   padding: 0;
 }
 
-.files li {
+.files li.file-entry {
   padding: 25px;
   border-radius: 25px;
   margin-bottom: 25px;
@@ -154,7 +154,7 @@ header {
   padding: 0;
 }
 
-.image-files li {
+.image-files li.file-entry {
   padding: 25px;
   border-radius: 25px;
   margin-bottom: 25px;
@@ -165,17 +165,17 @@ header {
   max-width: 100%;
 }
 
-ul {
+.file-content ul {
   list-style-type: disc;
 }
 
-.files ul li {
+.file-content ul li {
   margin-bottom: 0;
   padding: 0;
   border: none;
 }
 
-.files ol li {
+.file-content ol li {
   margin-bottom: 0;
   padding: 0;
   border: none;

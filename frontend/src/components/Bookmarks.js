@@ -13,7 +13,8 @@ const MySwal = withReactContent(Swal);
 window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
-const bootstrap = require('bootstrap');
+window.bootstrap = require('bootstrap');
+const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
 export default function Bookmarks() {
   const [bookmarkFolders, setBookmarkFolders] = useState([]);

@@ -19,7 +19,6 @@ export default function CategoryPage() {
   const navigate = useNavigate();
 
   function loadFiles() {
-    console.log("Loading files");
     axios.get(config.BACKEND_URL + "/api/files/get-files-from-category", {
       params: {
         id: id
@@ -93,7 +92,6 @@ export default function CategoryPage() {
     })
     .then(function(response) {
       if (response.data.status == "OK") {
-        console.log(response.data.data);
         setCategory(response.data.data);
       }
       else {

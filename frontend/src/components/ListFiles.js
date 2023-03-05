@@ -16,7 +16,8 @@ const MySwal = withReactContent(Swal);
 window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
-const bootstrap = require('bootstrap');
+window.bootstrap = require('bootstrap');
+const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
 export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, files, setFiles, imageFiles, setImageFiles, pdfFiles, setPdfFiles, deleteCategory, category}) {
   const {id} = useParams();
@@ -60,8 +61,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   var categories_to_add = [];
   const navigate = useNavigate();
 
-  function showEditFile(e) {
-    var id = e.target.value;
+  function showEditFile(id) {
 
     loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
@@ -117,9 +117,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
     })
   }
 
-  function showEditImage(e) {
-    var id = e.target.value;
-
+  function showEditImage(id) {
     loadTags();
     axios.get(config.BACKEND_URL + "/api/files/getone", {
       params: {
@@ -133,7 +131,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
           return e.value === response.data.data.extension
         });
         setSelectedExtension(extension);
-        console.log(response.data.data);
         if (response.data.data.hasOwnProperty("tags")) {
           var tags_sel = [];
           var tags_arr = response.data.data.tags.split(",");
@@ -184,17 +181,15 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
     $(".editFileModal").modal("hide");
   }
 
-  function showAppendToFile(e) {
-    var id = e.target.value;
-    
+  function showAppendToFile(id) {
     setAppendToFile({
       id: id,
       content: "",
     });
   }
 
-  function deleteFile(e) {
-    axios.post(config.BACKEND_URL + "/api/files/delete", {id: e.target.value})
+  function deleteFile(id) {
+    axios.post(config.BACKEND_URL + "/api/files/delete", {id: id})
     .then(function(response) {
       MySwal.fire("File has been deleted.")
       .then(function(value) {
@@ -290,8 +285,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
         sorted = [...files].sort((a, b) => a["content"].length - b["content"].length).reverse();
         break;
     }
-    console.log(files);
-    console.log(sorted);
     setFiles(sorted);
   }
 
@@ -402,7 +395,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   }
 
   function loadCategories() {
-    console.log("Loading categories recursively...");
     setCategories([]);
     axios.get(config.BACKEND_URL + '/api/categories/list')
     .then(function (response) {
@@ -482,7 +474,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   }, [location.hash]);
 
   useEffect(() => {
-    console.log(firstLoadFilesDone);
     if (!firstLoadFilesDone && files.length > 0) {
       scrollToFile();
       setFirstLoadFilesDone(true);
@@ -525,15 +516,22 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
             </ul>
             <ul className="image-files">
               {imageFiles.map((image) => 
-                <li key={image['id']} id={image['id']}>
+                <li key={image['id']} id={image['id']} className="file-entry">
                   <div className="row">
                     <div className="col-md-8">
                       <h3>{image['title']}</h3>
                     </div>
                     <div className="col-md-4 text-end">
-                      {image['pinned'] == 0 ? <button class="btn btn-primary pin-btn" value={image['id']} onClick={pinFile}>Pin</button> : <button class="btn btn-secondary pin-btn" value={image['id']} onClick={unpinFile}>Unpin</button>}
-                      <button class="btn btn-primary edit-btn" value={image['id']} onClick={showEditImage}>Edit</button>
-                      <button class="btn btn-danger delete-btn" value={image['id']} onClick={deleteFile}>Delete</button>
+                      <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                          {image['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(image['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(image['id'])}>Unpin</a></li>}
+                          <li><a class="dropdown-item" href="#" onClick={() => showEditImage(image['id'])}>Edit</a></li>
+                          <li><a class="dropdown-item" href="#" onClick={() => deleteFile(image['id'])}>Delete</a></li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                   <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
@@ -542,36 +540,45 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
             </ul>
             <ul className="files">
             {files.map((file) => 
-              <li key={file['id']} id={file['id']}>
+              <li key={file['id']} id={file['id']} className="file-entry">
                 <div className="row">
                   <div className="col-md-8">
                     <h3>{file['title']}</h3>
                   </div>
                   <div className="col-md-4 text-end">
-                    {file['pinned'] == 0 ? <button class="btn btn-primary pin-btn" value={file['id']} onClick={pinFile}>Pin</button> : <button class="btn btn-secondary pin-btn" value={file['id']} onClick={unpinFile}>Unpin</button>}
-                    <button class="btn btn-primary edit-btn" value={file['id']} onClick={showEditFile}>Edit</button>
-                    <button class="btn btn-primary append-btn" value={file['id']} onClick={showAppendToFile} data-bs-toggle="modal" data-bs-target=".appendModal">Append</button>
-                    <a class="btn btn-secondary download-btn" value={file['id']} href={"/api/download-text-file/" + file['id']}>Download</a>
-                    <button class="btn btn-danger delete-btn" value={file['id']} onClick={deleteFile}>Delete</button>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Actions
+                      </button>
+                      <ul class="dropdown-menu">
+                        {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
+                        <li><a class="dropdown-item" href="#" onClick={() => showEditFile(file['id'])}>Edit</a></li>
+                        <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
+                        <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
+                        <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>
+                      </ul>
+                    </div>
+                    
                   </div>
                 </div>
-                {file['extension'] == "md" &&
-                    <ReactMarkdown>{file['content']}</ReactMarkdown>
-                }
-                {file['extension'] == "txt" &&
-                  <p>{file['content']}</p>
-                }
-                {file['extension'] == "csv" &&
-                  <CsvToHtmlTable
-                    data={file['content']}
-                    csvDelimiter=","
-                    tableClassName="table table-striped table-hover"
-                  />
-                }
-                {file['extension'] == "json" &&
-                  <p>{JSON.stringify(JSON.parse(file['content']), null, 2)}</p>
-                }
-                
+                <div className="file-content">
+                  {file['extension'] == "md" &&
+                      <ReactMarkdown>{file['content']}</ReactMarkdown>
+                  }
+                  {file['extension'] == "txt" &&
+                    <p>{file['content']}</p>
+                  }
+                  {file['extension'] == "csv" &&
+                    <CsvToHtmlTable
+                      data={file['content']}
+                      csvDelimiter=","
+                      tableClassName="table table-striped table-hover"
+                    />
+                  }
+                  {file['extension'] == "json" &&
+                    <p>{JSON.stringify(JSON.parse(file['content']), null, 2)}</p>
+                  }
+                </div>
               </li>
             )}
             </ul>

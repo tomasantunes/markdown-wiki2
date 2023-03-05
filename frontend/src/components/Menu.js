@@ -2,6 +2,13 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import MenuItems from "./MenuItems";
+import $ from 'jquery';
+
+window.jQuery = $;
+window.$ = $;
+global.jQuery = $;
+window.bootstrap = require('bootstrap');
+const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
 const Menu = () => {
   const menuItemsInitialState = [
