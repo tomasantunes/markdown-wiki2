@@ -42,6 +42,7 @@ export default function Bookmarks() {
   const [newFolderParent, setNewFolderParent] = useState();
   const [removeDupsFolder, setRemoveDupsFolder] = useState();
   const [isRemovingDups, setIsRemovingDups] = useState(false);
+  const [currentTab, setCurrentTab] = useState("list");
 
   function changeSelectedFolder(item) {
     setSelectedFolder(item);
@@ -384,6 +385,23 @@ export default function Bookmarks() {
               </div>
             </div>
             <div className="row">
+
+              <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <a class={(currentTab == "list") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("list")}>List</a>
+                </li>
+                <li class="nav-item">
+                  <a class={(currentTab == "import") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("import")}>Import</a>
+                </li>
+                <li class="nav-item">
+                  <a class={(currentTab == "add-folder") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("add-folder")}>Add Folder</a>
+                </li>
+                <li class="nav-item">
+                  <a class={(currentTab == "remove-dups") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("remove-dups")}>Remove Duplicates</a>
+                </li>
+              </ul>
+
+              {currentTab == "import" &&
               <div className="col-md-3 p-3">
                 
                 <div className="upload-bookmarks">
@@ -408,6 +426,8 @@ export default function Bookmarks() {
                   {isUploading && <p>Uploading...</p>}
                 </div>
               </div>
+              }
+              {currentTab == "add-folder" &&
               <div className="col-md-3 p-3">
                 <div className="add-bookmark-folder">
                   <h4>Add Folder</h4>
@@ -418,6 +438,8 @@ export default function Bookmarks() {
                   <button className="btn btn-primary btn-add-bookmark-folder" onClick={createBookmarkFolder}>Add</button>
                 </div>
               </div>
+              }
+              {currentTab == "remove-dups" &&
               <div className="col-md-3 p-3">
                 <div className="remove-bookmark-dups">
                   <h4>Remove Duplicates</h4>
@@ -427,7 +449,9 @@ export default function Bookmarks() {
                   {isRemovingDups && <p>Removing duplicates...</p>}
                 </div>
               </div>
+              }
             </div>
+            {currentTab == "list" &&
             <div className="row">
               <div className="col-md-12 p-3">
                 <h3>List Bookmarks</h3>
@@ -470,6 +494,7 @@ export default function Bookmarks() {
                 />
               </div>
             </div>
+            }
           </div>
         </div>
       </div>
