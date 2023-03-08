@@ -9,3 +9,4 @@
 - Fix wrong category name showing up when you change category.
 - Remove button to set sort index on pages that are not a category.
 - Create a button at the bottom of the tag selector to add a new tag.
+- Create a button at the bottom of the category selector to add a new category.
