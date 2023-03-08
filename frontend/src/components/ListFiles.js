@@ -55,7 +55,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   const [selectedCategory, setSelectedCategory] = useState({});
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedExtension, setSelectedExtension] = useState({});
-  const [firstLoadFilesDone, setFirstLoadFilesDone] = useState(false);
   const [sortIndex, setSortIndex] = useState();
   const [selectedSortOrder, setSelectedSortOrder] = useState({value: "date-asc", label: "Date Ascending"});
   var categories_to_add = [];
@@ -472,13 +471,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   useEffect(() => {
     scrollToFile();
   }, [location.hash]);
-
-  useEffect(() => {
-    if (!firstLoadFilesDone && files.length > 0) {
-      scrollToFile();
-      setFirstLoadFilesDone(true);
-    }
-  }, [files]);
 
   useEffect(() =>{
     loadCategories();
