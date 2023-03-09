@@ -1874,6 +1874,16 @@ app.post("/api/check-login", (req, res) => {
   });
 });
 
+app.post("/api/logout", (req, res) => {
+  if (req.session.isLoggedIn) {
+    req.session.isLoggedIn = false;
+    res.json({status: "OK", data: "You have logged out successfully."});
+  }
+  else {
+    res.json({status: "NOK", error: "You can't logout because you are not logged in."});
+  }
+});
+
 
 // Front-End Routes
 // If the user is not logged in he is redirected to the login page. Else we return the index.html file for that route.

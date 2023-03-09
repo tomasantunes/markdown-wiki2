@@ -218,6 +218,15 @@ header {
   background-color: #0B5ED7 !important;
 }
 
+.logout-btn {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.menu-buttons {
+  text-align: left;
+}
+
 /* Pagination */
 .navigationButtons {
 	width: 80%;

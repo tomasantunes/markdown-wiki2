@@ -3,7 +3,11 @@ import axios from 'axios';
 import config from '../config.json';
 import MenuItems from "./MenuItems";
 import $ from 'jquery';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import {useNavigate} from 'react-router-dom';
 
+const MySwal = withReactContent(Swal);
 window.jQuery = $;
 window.$ = $;
 global.jQuery = $;
@@ -22,6 +26,7 @@ const Menu = () => {
   ];
 
   const [menuItems, setMenuItems] = useState(menuItemsInitialState);
+  const navigate = useNavigate();
 
   function getChildren(parent_id, categories) {
     var children = [];
@@ -78,6 +83,22 @@ const Menu = () => {
     });
   }
 
+  function logout() {
+    axios.post(config.BACKEND_URL + '/api/logout')
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        console.log("You have logged out successfully.");
+        navigate("/login");
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
+
   /*
   function loadCategoriesOld() {
     setMenuItems(menuItemsInitialState);
@@ -127,8 +148,13 @@ const Menu = () => {
   }, []);
   return (
     <div className="left-sidebar col-md-2 full-min-height">
+      <h2 className="brand">{config['SITENAME']}</h2>
+      <div className="menu-buttons">
+        <div className="logout-btn" onClick={logout}>
+          <i class="fa-solid fa-right-from-bracket fa-lg"></i>
+        </div>
+      </div>
       <ul className="menus">
-        <h2 className="brand">{config['SITENAME']}</h2>
         {menuItems.map((menu, index) => {
           const depthLevel = 0;
           return <MenuItems items={menu} key={index} depthLevel={depthLevel} />;
