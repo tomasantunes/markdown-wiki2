@@ -167,7 +167,7 @@ export default function AddTextFile() {
   }, []);
 
   return (
-    <>
+    <div className="bg-grey p-5 rounded">
       <h1>Add Markdown File</h1>
       <form onSubmit={submitNewFile}>
         <div className="form-group py-2">
@@ -200,6 +200,6 @@ export default function AddTextFile() {
             </div>
         </div>
       </form>
-    </>
+    </div>
   )
 }

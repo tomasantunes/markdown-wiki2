@@ -4,7 +4,6 @@ import config from '../config.json';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import AddMarkdownFile from './AddMarkdownFile';
 
 const MySwal = withReactContent(Swal);
 
@@ -91,44 +90,6 @@ export default function AddTextFile() {
     });
   }
 
-  /*
-  function loadCategoriesOld() {
-    setCategories([]);
-    axios.get(config.BACKEND_URL + "/api/categories/list")
-    .then(function(response) {
-      if (response.data.status == "OK") {
-        var categories = response['data']['data'];
-        var categories_to_add = [];
-        for (var i in categories) {
-          var menuItem = categories[i];
-          if (menuItem.parent_id == 1) {
-            var obj = {label: menuItem.name, value: menuItem.id};
-            categories_to_add.push(obj);
-            for (var j in categories) {
-              var menuItem2 = categories[j];
-              if (menuItem2.parent_id == obj.value) {
-                var obj2 = {label: ">>> " + menuItem2.name, value: menuItem2.id};
-                categories_to_add.push(obj2);
-                for (var k in categories) {
-                  var menuItem3 = categories[k];
-                  if (menuItem3.parent_id == obj2.value) {
-                    var obj3 = {label: ">>> >>> " + menuItem3.name, value: menuItem3.id};
-                    categories_to_add.push(obj3);
-                  }
-                }
-              }
-            }
-          }
-        }
-        setCategories(categories_to_add);
-      }
-    })
-    .catch(function(err) {
-      console.log(err.message);
-    }); 
-  }
-  */
-
   function getChildren(parent_id, categories) {
     var children = [];
     for (var i in categories) {
@@ -208,46 +169,43 @@ export default function AddTextFile() {
   }, []);
 
   return (
-    <div className="col-md-4 full-min-height p-5">
-      <div className="bg-grey p-5">
-        <h1>Add Text File</h1>
-        <form onSubmit={submitNewFile}>
-          <div className="form-group py-2">
-              <label className="control-label">Title</label>
-              <div>
-                  <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Content</label>
-              <div>
-                  <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Category</label>
-              <div>
-                  <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Tags</label>
-              <div>
-                <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-            <label className="control-label">Extension</label>
-            <Select options={extensions} onChange={changeNewFileExtension} />
-          </div>
-          <div className="form-group">
-              <div style={{textAlign: "right"}}>
-                  <button type="submit" className="btn btn-primary">Submit</button>
-              </div>
-          </div>
-        </form>
-        <AddMarkdownFile />
-      </div>
+    <div className="bg-grey p-5 rounded">
+      <h1>Add Text File</h1>
+      <form onSubmit={submitNewFile}>
+        <div className="form-group py-2">
+            <label className="control-label">Title</label>
+            <div>
+                <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Content</label>
+            <div>
+                <textarea className="form-control input-lg" name="content" value={newFile.content} onChange={changeNewFileContent} rows={15}></textarea>
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Category</label>
+            <div>
+                <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Tags</label>
+            <div>
+              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+          <label className="control-label">Extension</label>
+          <Select options={extensions} onChange={changeNewFileExtension} />
+        </div>
+        <div className="form-group">
+            <div style={{textAlign: "right"}}>
+                <button type="submit" className="btn btn-primary">Submit</button>
+            </div>
+        </div>
+      </form>
     </div>
   )
 }

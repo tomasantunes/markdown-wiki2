@@ -680,6 +680,7 @@ app.get("/api/categories/list", (req, res) => {
   });
 });
 
+// This route gets the list of subcategories of a given category by ID.
 app.get("/api/categories/get-subcategories", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1376,7 +1377,7 @@ app.get("/api/download-text-file/:id", (req, res) => {
 
 // Images Routes
 
-// This route inserts an image on the files table and uploads it to the media-files folder.
+// This route inserts an image or a PDF on the files table and uploads it to the media-files folder.
 app.post('/api/upload-media-file', function(req, res) {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
@@ -1388,6 +1389,11 @@ app.post('/api/upload-media-file', function(req, res) {
     return;
   }
   console.log(req.files);
+  var extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".jfif", ".pdf"];
+  if (!extensions.includes(path.extname(file.name).toLowerCase())) {
+    res.json({status: "NOK", error: "Invalid file extension."});
+    return;
+  }
   var category_id = req.body.category;
   var tags = req.body.tags;
   const file = req.files.file;
@@ -1899,6 +1905,7 @@ app.post("/api/check-login", (req, res) => {
   });
 });
 
+// This route logs the user out.
 app.post("/api/logout", (req, res) => {
   if (req.session.isLoggedIn) {
     req.session.isLoggedIn = false;

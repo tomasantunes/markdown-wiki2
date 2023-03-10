@@ -150,7 +150,7 @@ export default function AddImageURL() {
   }, []);
 
   return (
-    <>
+    <div className="bg-grey p-5 rounded">
       <h1>Add Image URL</h1>
       <form onSubmit={submitNewImageURL}>
           <div className="form-group py-2">
@@ -174,6 +174,6 @@ export default function AddImageURL() {
               </div>
           </div>
       </form>
-    </>
+    </div>
   )
 }

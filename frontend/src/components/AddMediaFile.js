@@ -3,7 +3,6 @@ import axios from 'axios';
 import config from '../config.json';
 import FileUploader from './FileUploader';
 import Select from 'react-select';
-import AddImageURL from './AddImageURL';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -157,33 +156,31 @@ export default function AddMediaFile() {
   }, []);
 
   return (
-    <div className="col-md-4 full-min-height p-5">
-      <div className="bg-grey p-5">
-        <h1>Add Media File</h1>
-        <form onSubmit={submitNewFile}>
-          <div className="form-group py-2">
-              <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => MySwal.fire(error)} />
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Category</label>
-              <div>
-                  <Select value={selectedCategory} options={categories} onChange={changeAddMediaFileCategory} />
-              </div>
-          </div>
-          <div className="form-group py-2">
-              <label className="control-label">Tags</label>
-              <div>
-                <Select isMulti value={selectedTags} options={tags} onChange={changeAddMediaFileTags} />
-              </div>
-          </div>
-          <div className="form-group">
-              <div style={{textAlign: "right"}}>
-                  <button type="submit" className="btn btn-primary">Submit</button>
-              </div>
-          </div>
-        </form>
-        <AddImageURL />
-      </div>
+    <div className="bg-grey p-5 rounded">
+      <h1>Add Media File</h1>
+      <p>Supported file types: JPG, JPEG, PNG, GIF, JFIF, WEBP, PDF</p>
+      <form onSubmit={submitNewFile}>
+        <div className="form-group py-2">
+            <FileUploader onFileSelectSuccess={(file) => changeAddMediaFileFile({file})} onFileSelectError={({ error}) => MySwal.fire(error)} />
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Category</label>
+            <div>
+                <Select value={selectedCategory} options={categories} onChange={changeAddMediaFileCategory} />
+            </div>
+        </div>
+        <div className="form-group py-2">
+            <label className="control-label">Tags</label>
+            <div>
+              <Select isMulti value={selectedTags} options={tags} onChange={changeAddMediaFileTags} />
+            </div>
+        </div>
+        <div className="form-group">
+            <div style={{textAlign: "right"}}>
+                <button type="submit" className="btn btn-primary">Submit</button>
+            </div>
+        </div>
+      </form>
     </div>
   )
 }
