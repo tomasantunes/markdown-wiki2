@@ -57,6 +57,8 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   const [selectedExtension, setSelectedExtension] = useState({});
   const [sortIndex, setSortIndex] = useState();
   const [selectedSortOrder, setSelectedSortOrder] = useState({value: "date-asc", label: "Date Ascending"});
+  const [currentTab, setCurrentTab] = useState("files");
+  const [subcategories, setSubcategories] = useState([]);
   var categories_to_add = [];
   const navigate = useNavigate();
 
@@ -468,12 +470,33 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
     }
   }
 
+  function loadSubcategories() {
+    setSubcategories([]);
+    axios.get(config.BACKEND_URL + "/api/categories/get-subcategories", {
+      params: {
+        id: id
+      }
+    })
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        setSubcategories(response.data.data);
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
+
   useEffect(() => {
     scrollToFile();
   }, [location.hash]);
 
   useEffect(() =>{
     loadCategories();
+    loadSubcategories();
     loadTags();
     $(".modal").on("focus", function(event) { event.preventDefault(); })
   },[])
@@ -485,34 +508,41 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
           <div className="col-md-8 p-5">
             <h2>{category != undefined && category['name']}</h2>
             {deleteCategory != undefined && <button className="btn btn-danger btn-delete-category" onClick={deleteCategory}>Delete</button>}
-            <button className="btn btn-primary btn-set-sort-index" data-bs-toggle="modal" data-bs-target=".setSortIndexModal">Set Sort Index</button>
-            <div style={{width: "200px", margin: "5px"}}>
-              <Select value={selectedSortOrder} options={sortOrders} onChange={changeSortOrder}  />
-            </div>
-            <h3>Index</h3>
-            <ul className="index">
-              {imageFiles.map((image) => 
-                <li key={image['id']}>
-                  <Link to={{ pathname: "/categories/" + id, hash: "#" + image['id'] }}>{image['title']}</Link>
-                </li>
-              )}
-              {pdfFiles.map((pdf) => 
-                <li key={pdf['id']}>
-                  <a href={"/api/get-file/" + path.basename(pdf['path'])}>{pdf['title']}</a>
-                </li>
-              )}
-              {files.map((file) => 
-                <li key={file['id']}>
-                  <Link to={{ pathname: "/categories/" + id, hash: "#" + file['id'] }}>{file['title']}</Link>
-                </li>
-              )}
+            {category != undefined && <button className="btn btn-primary btn-set-sort-index" data-bs-toggle="modal" data-bs-target=".setSortIndexModal">Set Sort Index</button>}
+
+            <ul class="nav nav-tabs my-3">
+              <li class="nav-item">
+                <a class={(currentTab == "files") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("files")}>Files</a>
+              </li>
+              <li class="nav-item">
+                <a class={(currentTab == "images") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("images")}>Images</a>
+              </li>
+              <li class="nav-item">
+                <a class={(currentTab == "pdfs") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("pdfs")}>PDFs</a>
+              </li>
+              <li class="nav-item">
+                <a class={(currentTab == "folders") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("folders")}>Folders</a>
+              </li>
             </ul>
-            <ul className="image-files">
-              {imageFiles.map((image) => 
-                <li key={image['id']} id={image['id']} className="file-entry">
+            
+            {currentTab == "files" && (
+              <>
+              <div style={{width: "200px", margin: "5px"}}>
+                <Select value={selectedSortOrder} options={sortOrders} onChange={changeSortOrder}  />
+              </div>
+              <ul className="index">
+                {files.map((file) => 
+                  <li key={file['id']}>
+                    <Link to={{ pathname: "/categories/" + id, hash: "#" + file['id'] }}>{file['title']}</Link>
+                  </li>
+                )}
+              </ul>
+              <ul className="files">
+              {files.map((file) => 
+                <li key={file['id']} id={file['id']} className="file-entry">
                   <div className="row">
                     <div className="col-md-8">
-                      <h3>{image['title']}</h3>
+                      <h3>{file['title']}</h3>
                     </div>
                     <div className="col-md-4 text-end">
                       <div class="dropdown">
@@ -520,64 +550,100 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                           Actions
                         </button>
                         <ul class="dropdown-menu">
-                          {image['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(image['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(image['id'])}>Unpin</a></li>}
-                          <li><a class="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); showEditImage(image['id'])}}>Edit</a></li>
-                          <li><a class="dropdown-item" href="#" onClick={() => deleteFile(image['id'])}>Delete</a></li>
+                          {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
+                          <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showEditFile(file['id'])}}>Edit</a></li>
+                          <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
+                          <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
+                          <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>
                         </ul>
                       </div>
+                      
                     </div>
                   </div>
-                  <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
+                  <div className="file-content">
+                    {file['extension'] == "md" &&
+                        <ReactMarkdown>{file['content']}</ReactMarkdown>
+                    }
+                    {file['extension'] == "txt" &&
+                      <p>{file['content']}</p>
+                    }
+                    {file['extension'] == "csv" &&
+                      <CsvToHtmlTable
+                        data={file['content']}
+                        csvDelimiter=","
+                        tableClassName="table table-striped table-hover"
+                      />
+                    }
+                    {file['extension'] == "json" &&
+                      <p>{JSON.stringify(JSON.parse(file['content']), null, 2)}</p>
+                    }
+                  </div>
                 </li>
               )}
-            </ul>
-            <ul className="files">
-            {files.map((file) => 
-              <li key={file['id']} id={file['id']} className="file-entry">
-                <div className="row">
-                  <div className="col-md-8">
-                    <h3>{file['title']}</h3>
-                  </div>
-                  <div className="col-md-4 text-end">
-                    <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Actions
-                      </button>
-                      <ul class="dropdown-menu">
-                        {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
-                        <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showEditFile(file['id'])}}>Edit</a></li>
-                        <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
-                        <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
-                        <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>
-                      </ul>
-                    </div>
-                    
-                  </div>
-                </div>
-                <div className="file-content">
-                  {file['extension'] == "md" &&
-                      <ReactMarkdown>{file['content']}</ReactMarkdown>
-                  }
-                  {file['extension'] == "txt" &&
-                    <p>{file['content']}</p>
-                  }
-                  {file['extension'] == "csv" &&
-                    <CsvToHtmlTable
-                      data={file['content']}
-                      csvDelimiter=","
-                      tableClassName="table table-striped table-hover"
-                    />
-                  }
-                  {file['extension'] == "json" &&
-                    <p>{JSON.stringify(JSON.parse(file['content']), null, 2)}</p>
-                  }
-                </div>
-              </li>
+              
+              </ul>
+              {files.length < 1 &&
+                <h3>There are no files to display.</h3>
+              }
+              </>
             )}
-            </ul>
-            {files.length < 1 &&
-              <h3>There are no files to display.</h3>
-            }
+            {currentTab == "images" && (
+              <>
+                <ul className="index">
+                  {imageFiles.map((image) => 
+                    <li key={image['id']}>
+                      <Link to={{ pathname: "/categories/" + id, hash: "#" + image['id'] }}>{image['title']}</Link>
+                    </li>
+                  )}
+                </ul>
+                <ul className="image-files">
+                  {imageFiles.map((image) => 
+                    <li key={image['id']} id={image['id']} className="file-entry">
+                      <div className="row">
+                        <div className="col-md-8">
+                          <h3>{image['title']}</h3>
+                        </div>
+                        <div className="col-md-4 text-end">
+                          <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                              {image['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(image['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(image['id'])}>Unpin</a></li>}
+                              <li><a class="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); showEditImage(image['id'])}}>Edit</a></li>
+                              <li><a class="dropdown-item" href="#" onClick={() => deleteFile(image['id'])}>Delete</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
+                    </li>
+                  )}
+                </ul>
+              </>
+            )}
+            {currentTab == "pdfs" && (
+              <>
+                <ul className="index">
+                  {pdfFiles.map((pdf) => 
+                    <li key={pdf['id']}>
+                      <a href={"/api/get-file/" + path.basename(pdf['path'])}>{pdf['title']}</a>
+                    </li>
+                  )}
+                </ul>
+              </>
+            )}
+            {currentTab == "folders" && (
+              <>
+                <ul className="index">
+                  {subcategories.map((f) => 
+                    <li key={f['id']}>
+                      <a href={"/categories/" + f['id']}>{f['name']}</a>
+                    </li>
+                  )}
+                </ul>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -651,7 +717,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                 <div className="form-group py-2">
                     <label className="control-label">Category</label>
                     <div>
-                        <Select value={selectedCategory}options={categories} onChange={changeEditFileCategory} />
+                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} />
                     </div>
                 </div>
                 <div className="form-group py-2">

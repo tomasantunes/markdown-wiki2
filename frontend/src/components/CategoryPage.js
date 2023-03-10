@@ -133,6 +133,10 @@ export default function CategoryPage() {
 
   useEffect(() => {
     loadCategoryInfo();
+  }, [id]);
+
+  useEffect(() => {
+    loadCategoryInfo();
   }, []);
   
   return (

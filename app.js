@@ -680,6 +680,31 @@ app.get("/api/categories/list", (req, res) => {
   });
 });
 
+app.get("/api/categories/get-subcategories", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.query.id;
+
+  var sql = "SELECT id, parent_id, name, created_at, updated_at, IFNULL(sort_index, 99999999) AS sort_index FROM categories WHERE parent_id = ? ORDER BY sort_index, name, id;";
+
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: result});
+    }
+    else {
+      res.json({status: "OK", data: []});
+    }
+  });
+
+});
+
 
 // This route fetches one category by ID.
 app.get("/api/categories/getone", (req, res) => {
