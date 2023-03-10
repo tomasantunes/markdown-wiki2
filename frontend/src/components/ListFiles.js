@@ -475,6 +475,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   useEffect(() =>{
     loadCategories();
     loadTags();
+    $(".modal").on("focus", function(event) { event.preventDefault(); })
   },[])
   return (
     <>
@@ -520,7 +521,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                         </button>
                         <ul class="dropdown-menu">
                           {image['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(image['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(image['id'])}>Unpin</a></li>}
-                          <li><a class="dropdown-item" href="#" onClick={() => showEditImage(image['id'])}>Edit</a></li>
+                          <li><a class="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); showEditImage(image['id'])}}>Edit</a></li>
                           <li><a class="dropdown-item" href="#" onClick={() => deleteFile(image['id'])}>Delete</a></li>
                         </ul>
                       </div>
@@ -544,7 +545,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                       </button>
                       <ul class="dropdown-menu">
                         {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
-                        <li><a class="dropdown-item" href="#" onClick={() => showEditFile(file['id'])}>Edit</a></li>
+                        <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showEditFile(file['id'])}}>Edit</a></li>
                         <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
                         <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
                         <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>

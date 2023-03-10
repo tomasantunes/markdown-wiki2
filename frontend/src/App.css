@@ -334,12 +334,3 @@ header {
   margin-top: 5px;
   margin-bottom: 5px;
 }
-
-body.modal-open {
-  position: inherit;
-  overflow: visible;
-}
-
-body.modal-open .modal {
-  overflow: hidden;
-}
