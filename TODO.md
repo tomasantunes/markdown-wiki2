@@ -3,7 +3,6 @@
 - Apply tags to all files
 - Fix error when linking to files
 - Create search feature for bookmarks.
-- Split ListFiles page into tabs for different file types.
 - Split Add file page into tabs.
 - Fix wrong category name showing up when you change category.
 - Remove button to set sort index on pages that are not a category.
