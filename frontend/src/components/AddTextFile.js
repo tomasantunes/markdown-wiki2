@@ -4,8 +4,16 @@ import config from '../config.json';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import AddCategoryModal from './AddCategoryModal';
+import CategoriesSelectMenu from './CategoriesSelectMenu';
+import $ from 'jquery';
 
 const MySwal = withReactContent(Swal);
+window.jQuery = $;
+window.$ = $;
+global.jQuery = $;
+window.bootstrap = require('bootstrap');
+const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
 export default function AddTextFile() {
   const extensions = [
@@ -169,6 +177,7 @@ export default function AddTextFile() {
   }, []);
 
   return (
+    <>
     <div className="bg-grey p-5 rounded">
       <h1>Add Text File</h1>
       <form onSubmit={submitNewFile}>
@@ -187,7 +196,7 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Category</label>
             <div>
-                <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} />
+                <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} components={{ Menu: CategoriesSelectMenu }} />
             </div>
         </div>
         <div className="form-group py-2">
@@ -207,5 +216,7 @@ export default function AddTextFile() {
         </div>
       </form>
     </div>
+    <AddCategoryModal />
+    </>
   )
 }

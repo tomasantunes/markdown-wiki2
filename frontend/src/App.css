@@ -338,3 +338,8 @@ header {
 .rounded {
   border-radius: 10px;
 }
+
+.customReactSelectMenu {
+  z-index: 9999;
+  background-color: white;
+}
