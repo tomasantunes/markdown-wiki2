@@ -5,7 +5,9 @@ import Select from 'react-select';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import AddCategoryModal from './AddCategoryModal';
+import AddTagModal from './AddTagModal';
 import CategoriesSelectMenu from './CategoriesSelectMenu';
+import TagSelectMenu from './TagSelectMenu';
 import $ from 'jquery';
 
 const MySwal = withReactContent(Swal);
@@ -202,7 +204,7 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Tags</label>
             <div>
-              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} />
+              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags}  components={{ Menu: TagSelectMenu }}/>
             </div>
         </div>
         <div className="form-group py-2">
@@ -216,6 +218,7 @@ export default function AddTextFile() {
         </div>
       </form>
     </div>
+    <AddCategoryModal />
     <AddCategoryModal />
     </>
   )
