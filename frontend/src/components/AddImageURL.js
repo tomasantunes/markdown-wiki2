@@ -65,7 +65,15 @@ export default function AddImageURL() {
       .post(config.BACKEND_URL + "/api/upload-image-url", addImageURL)
       .then((response) => {
         if (response.data.status == "OK") {
-          MySwal.fire("Image has been added successfully.");
+          MySwal.fire("Image has been added successfully.").then(function(value) {
+            setAddImageURL({
+              imageUrl: "",
+              category: "",
+              tags: ""
+            });
+            setSelectedCategory({});
+            setSelectedTags([]);
+          });
         }
         else {
           console.log(response.data.error);

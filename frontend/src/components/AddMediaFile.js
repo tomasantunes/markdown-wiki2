@@ -71,7 +71,15 @@ export default function AddMediaFile() {
       .post(config.BACKEND_URL + "/api/upload-media-file", formData)
       .then((response) => {
         if (response.data.status == "OK") {
-          MySwal.fire("File has been uploaded successfully.");
+          MySwal.fire("File has been uploaded successfully.").then(function(value) {
+            setAddMediaFile({
+              file: "",
+              category: "",
+              tags: ""
+            });
+            setSelectedCategory({});
+            setSelectedTags([]);
+          });
         }
         else {
           console.log(response.data.error);

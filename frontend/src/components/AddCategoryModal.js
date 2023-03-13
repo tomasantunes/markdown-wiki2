@@ -59,6 +59,7 @@ export default function AddCategoryModal() {
             "parentCategory": "",
             "category": ""
         });
+        setSelectedParentCategory({});
       });
     })
     .catch(function (error) {

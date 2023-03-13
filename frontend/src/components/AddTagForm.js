@@ -28,7 +28,9 @@ export default function AddTagForm() {
 
       axios.post(config.BACKEND_URL + '/api/tags/insert', newTag)
       .then(function (response) {
-        MySwal.fire("A new tag has been inserted successfully.")
+        MySwal.fire("A new tag has been inserted successfully.").then(function(value) {
+          window.location.reload();
+        });
       })
       .catch(function (error) {
         console.log(error);

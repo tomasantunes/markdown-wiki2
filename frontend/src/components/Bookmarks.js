@@ -194,6 +194,8 @@ export default function Bookmarks() {
     .then(function(response) {
       if (response.data.status == "OK") {
         MySwal.fire("Folder has been created successfully.").then(function(value) {
+          setNewFolderTitle("");
+          setNewFolderParent({});
           loadBookmarkFolders();
         });
       }

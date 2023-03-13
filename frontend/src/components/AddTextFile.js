@@ -89,7 +89,17 @@ export default function AddTextFile() {
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
       if (response.data.status == "OK") {
-        MySwal.fire("A new file has been inserted.");
+        MySwal.fire("A new file has been inserted.").then(function() {
+          setNewFile({
+            "title": "",
+            "content": "",
+            "extension": "",
+            "category": "",
+            "tags": ""
+          });
+          setSelectedCategory({});
+          setSelectedTags([]);
+        })
       }
       else {
         MySwal.fire(response.data.error);
