@@ -4,6 +4,10 @@ import config from '../config.json';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import AddCategoryModal from './AddCategoryModal';
+import AddTagModal from './AddTagModal';
+import CategoriesSelectMenu from './CategoriesSelectMenu';
+import TagSelectMenu from './TagSelectMenu';
 
 const MySwal = withReactContent(Swal);
 
@@ -150,6 +154,7 @@ export default function AddImageURL() {
   }, []);
 
   return (
+    <>
     <div className="bg-grey p-5 rounded">
       <h1>Add Image URL</h1>
       <form onSubmit={submitNewImageURL}>
@@ -159,13 +164,13 @@ export default function AddImageURL() {
           <div className="form-group py-2">
               <label className="control-label">Category</label>
               <div>
-                  <Select value={selectedCategory} options={categories} onChange={changeAddImageURLCategory} />
+                  <Select value={selectedCategory} options={categories} onChange={changeAddImageURLCategory}  components={{ Menu: CategoriesSelectMenu }} />
               </div>
           </div>
           <div className="form-group py-2">
               <label className="control-label">Tags</label>
               <div>
-              <Select isMulti value={selectedTags} options={tags} onChange={changeAddImageURLTags} />
+              <Select isMulti value={selectedTags} options={tags} onChange={changeAddImageURLTags} components={{ Menu: TagSelectMenu }} />
               </div>
           </div>
           <div className="form-group">
@@ -175,5 +180,8 @@ export default function AddImageURL() {
           </div>
       </form>
     </div>
+    <AddCategoryModal />
+    <AddTagModal />
+    </>
   )
 }

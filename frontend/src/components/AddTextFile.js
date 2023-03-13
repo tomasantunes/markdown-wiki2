@@ -204,7 +204,7 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Tags</label>
             <div>
-              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags}  components={{ Menu: TagSelectMenu }}/>
+              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} components={{ Menu: TagSelectMenu }} />
             </div>
         </div>
         <div className="form-group py-2">
@@ -219,7 +219,7 @@ export default function AddTextFile() {
       </form>
     </div>
     <AddCategoryModal />
-    <AddCategoryModal />
+    <AddTagModal />
     </>
   )
 }

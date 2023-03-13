@@ -7,6 +7,10 @@ import withReactContent from 'sweetalert2-react-content';
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
+import AddCategoryModal from './AddCategoryModal';
+import AddTagModal from './AddTagModal';
+import CategoriesSelectMenu from './CategoriesSelectMenu';
+import TagSelectMenu from './TagSelectMenu';
 
 const MySwal = withReactContent(Swal);
 const mdParser = new MarkdownIt();
@@ -167,6 +171,7 @@ export default function AddTextFile() {
   }, []);
 
   return (
+    <>
     <div className="bg-grey p-5 rounded">
       <h1>Add Markdown File</h1>
       <form onSubmit={submitNewFile}>
@@ -185,13 +190,13 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Category</label>
             <div>
-                <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} />
+                <Select value={selectedCategory} options={categories} onChange={changeNewFileCategory} components={{ Menu: CategoriesSelectMenu }} />
             </div>
         </div>
         <div className="form-group py-2">
             <label className="control-label">Tags</label>
             <div>
-              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} />
+              <Select isMulti value={selectedTags} options={tags} onChange={changeNewFileTags} components={{ Menu: TagSelectMenu }} />
             </div>
         </div>
         <div className="form-group">
@@ -201,5 +206,8 @@ export default function AddTextFile() {
         </div>
       </form>
     </div>
+    <AddCategoryModal />
+    <AddTagModal />
+    </>
   )
 }

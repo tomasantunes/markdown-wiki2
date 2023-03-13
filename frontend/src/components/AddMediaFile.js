@@ -5,6 +5,10 @@ import FileUploader from './FileUploader';
 import Select from 'react-select';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import AddCategoryModal from './AddCategoryModal';
+import AddTagModal from './AddTagModal';
+import CategoriesSelectMenu from './CategoriesSelectMenu';
+import TagSelectMenu from './TagSelectMenu';
 
 const MySwal = withReactContent(Swal);
 
@@ -156,6 +160,7 @@ export default function AddMediaFile() {
   }, []);
 
   return (
+    <>
     <div className="bg-grey p-5 rounded">
       <h1>Add Media File</h1>
       <p>Supported file types: JPG, JPEG, PNG, GIF, JFIF, WEBP, PDF</p>
@@ -166,13 +171,13 @@ export default function AddMediaFile() {
         <div className="form-group py-2">
             <label className="control-label">Category</label>
             <div>
-                <Select value={selectedCategory} options={categories} onChange={changeAddMediaFileCategory} />
+                <Select value={selectedCategory} options={categories} onChange={changeAddMediaFileCategory} components={{ Menu: CategoriesSelectMenu }}/>
             </div>
         </div>
         <div className="form-group py-2">
             <label className="control-label">Tags</label>
             <div>
-              <Select isMulti value={selectedTags} options={tags} onChange={changeAddMediaFileTags} />
+              <Select isMulti value={selectedTags} options={tags} onChange={changeAddMediaFileTags} components={{ Menu: TagSelectMenu }}/>
             </div>
         </div>
         <div className="form-group">
@@ -182,5 +187,8 @@ export default function AddMediaFile() {
         </div>
       </form>
     </div>
+    <AddCategoryModal />
+    <AddTagModal />
+    </>
   )
 }
