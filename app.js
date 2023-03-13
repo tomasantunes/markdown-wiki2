@@ -1768,6 +1768,24 @@ app.get("/api/get-bookmarks-from-folder", (req, res) => {
   });
 });
 
+app.get("/api/bookmarks/search", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var query = req.query.query;
+
+  var sql = "SELECT * FROM bookmarks WHERE title LIKE ? OR url LIKE ? OR tags LIKE ?;";
+  con.query(sql, [`%${query}%`, `%${query}%`, `%${query}%`], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    res.json({status: "OK", data: result});
+  });
+});
+
 // Authentication Routes
 
 /*

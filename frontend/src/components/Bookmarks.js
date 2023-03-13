@@ -42,7 +42,39 @@ export default function Bookmarks() {
   const [newFolderParent, setNewFolderParent] = useState();
   const [removeDupsFolder, setRemoveDupsFolder] = useState();
   const [isRemovingDups, setIsRemovingDups] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [results, setResults] = useState([]);
   const [currentTab, setCurrentTab] = useState("list");
+
+  function changeSearchQuery(e) {
+    setSearchQuery(e.target.value);
+  }
+
+  function submitSearch(e) {
+    e.preventDefault();
+    if (searchQuery.trim() == "") {
+      MySwal.fire("Search query cannot be empty.");
+      return;
+    }
+    setResults([]);
+    axios.get(config.BACKEND_URL + "/api/bookmarks/search", {
+      params: {
+        query: searchQuery
+      }
+    })
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        console.log("Search has been successful.");
+        setResults(response.data.data);
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
 
   function changeSelectedFolder(item) {
     setSelectedFolder(item);
@@ -401,6 +433,9 @@ export default function Bookmarks() {
                 <li class="nav-item">
                   <a class={(currentTab == "remove-dups") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("remove-dups")}>Remove Duplicates</a>
                 </li>
+                <li class="nav-item">
+                  <a class={(currentTab == "search") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("search")}>Search</a>
+                </li>
               </ul>
 
               {currentTab == "import" &&
@@ -496,6 +531,51 @@ export default function Bookmarks() {
                 />
               </div>
             </div>
+            }
+            {currentTab == "search" &&
+              <div className="row">
+                <div className="col-md-12 p-3">
+                  <div className="bg-grey p-5">
+                    <form onSubmit={submitSearch}>
+                        <div class="mb-3">
+                          <input type="text" class="form-control" value={searchQuery} onChange={changeSearchQuery} />
+                        </div>
+                        <div class="d-flex justify-content-end">
+                          <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Title</th>
+                          <th>URL</th>
+                          <th>Tags</th>
+                          <th>Options</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        
+                        {results.map((bookmark) => {
+                          return (
+                            <tr key={bookmark.id}>
+                              <td>{bookmark.id}</td>
+                              <td>{bookmark.title}</td>
+                              <td><a href={bookmark.url}>{bookmark.url}</a></td>
+                              <td>{bookmark.tags}</td>
+                              <td><button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button></td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    {results.length < 1 &&
+                      <h3>There are no results to display.</h3>
+                    }
+                  </div>
+                </div>
+              </div>
             }
           </div>
         </div>
