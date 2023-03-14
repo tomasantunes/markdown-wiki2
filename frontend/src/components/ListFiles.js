@@ -546,7 +546,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                 <li key={file['id']} id={file['id']} className="file-entry">
                   <div className="row">
                     <div className="col-md-8">
-                      <h3>{file['title']}</h3>
+                      <h3><a href={"/file/" + image['id']}>{file['title']}</a></h3>
                     </div>
                     <div className="col-md-4 text-end">
                       <div class="dropdown">
@@ -605,7 +605,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                     <li key={image['id']} id={image['id']} className="file-entry">
                       <div className="row">
                         <div className="col-md-8">
-                          <h3>{image['title']}</h3>
+                          <h3><a href={"/file/" + image['id']}>{image['title']}</a></h3>
                         </div>
                         <div className="col-md-4 text-end">
                           <div class="dropdown">
