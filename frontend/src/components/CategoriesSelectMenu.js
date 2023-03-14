@@ -15,8 +15,23 @@ const CategoriesSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
           <div className="p-3">
             <button
                 className="btn btn-info btn-sm btn-block"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  if ($('.editFileModal').hasClass('show')) {
+                    $('.editFileModal').on('hidden.bs.modal', function () {
+                      $('.addCategoryModal').modal('show');
+                    });
+                    $('.editFileModal').modal('hide');
+                  }
+                  else if ($('.editImageModal').hasClass('show')) {
+                    $('.editImageModal').on('hidden.bs.modal', function () {
+                      $('.addCategoryModal').modal('show');
+                    });
+                    $('.editImageModal').modal('hide');
+                  }
+                  else {
                     $('.addCategoryModal').modal('show');
+                  }
                 }}
             >
               Add New

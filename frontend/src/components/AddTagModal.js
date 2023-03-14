@@ -47,7 +47,7 @@ export default function AddTagModal() {
   }
 
   return (
-    <div class="modal addCategoryModal" tabindex="-1">
+    <div class="modal addTagModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
