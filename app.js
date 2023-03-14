@@ -2014,6 +2014,16 @@ app.get('/categories/:id', (req,res) => {
   }
 });
 
+app.get('/file/:id', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
 app.get('/tag/:id', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
