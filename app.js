@@ -1389,6 +1389,7 @@ app.post('/api/upload-media-file', function(req, res) {
     return;
   }
   console.log(req.files);
+  const file = req.files.file;
   var extensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".jfif", ".pdf"];
   if (!extensions.includes(path.extname(file.name).toLowerCase())) {
     res.json({status: "NOK", error: "Invalid file extension."});
@@ -1396,7 +1397,6 @@ app.post('/api/upload-media-file', function(req, res) {
   }
   var category_id = req.body.category;
   var tags = req.body.tags;
-  const file = req.files.file;
   var new_filename = crypto.randomBytes(16).toString('hex');
   const filepath = __dirname + "/media-files/" + new_filename + path.extname(file.name);
   const filepath2 = "media-files/" + new_filename + path.extname(file.name);
