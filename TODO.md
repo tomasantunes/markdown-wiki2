@@ -7,3 +7,4 @@
 - Put list of tags on Add Tag page.
 - Add button to edit category name.
 - Increase size of AddMediaFile.js and AddImageURL.js
+- Increase size of forms on Bookmarks.js
