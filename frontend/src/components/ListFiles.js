@@ -546,7 +546,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                 <li key={file['id']} id={file['id']} className="file-entry">
                   <div className="row">
                     <div className="col-md-8">
-                      <h3><a href={"/file/" + image['id']}>{file['title']}</a></h3>
+                      <h3><a href={"/file/" + file['id']}>{file['title']}</a></h3>
                     </div>
                     <div className="col-md-4 text-end">
                       <div class="dropdown">
