@@ -34,7 +34,7 @@ export default function AddCategoryForm() {
   function submitNewCategory(e) {
     e.preventDefault();
 
-    if (newCategory.category.trim() == "" || newCategory.parentCategory.trim() == "") {
+    if (newCategory.category.trim() == "" || newCategory.parentCategory == "") {
       MySwal.fire("Fields cannot be empty.");
       return;
     }
