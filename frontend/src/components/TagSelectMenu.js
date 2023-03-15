@@ -23,6 +23,7 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                       $('.addTagModal').modal('show');
                     });
                     $('.editFileModal').modal('hide');
+                    $('.editFileModal').off('hidden.bs.modal');
                   }
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
@@ -30,6 +31,7 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                       $('.addTagModal').modal('show');
                     });
                     $('.editImageModal').modal('hide');
+                    $('.editImageModal').off('hidden.bs.modal');
                   }
                   else {
                     $('.addTagModal').modal('show');

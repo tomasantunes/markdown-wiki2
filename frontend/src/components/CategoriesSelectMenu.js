@@ -22,12 +22,14 @@ const CategoriesSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                       $('.addCategoryModal').modal('show');
                     });
                     $('.editFileModal').modal('hide');
+                    $('.editFileModal').off('hidden.bs.modal');
                   }
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
                       $('.addCategoryModal').modal('show');
                     });
                     $('.editImageModal').modal('hide');
+                    $('.editImageModal').off('hidden.bs.modal');
                   }
                   else {
                     $('.addCategoryModal').modal('show');
