@@ -20,16 +20,16 @@ const CategoriesSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                   if ($('.editFileModal').hasClass('show')) {
                     $('.editFileModal').on('hidden.bs.modal', function () {
                       $('.addCategoryModal').modal('show');
+                      $('.editFileModal').off('hidden.bs.modal');
                     });
                     $('.editFileModal').modal('hide');
-                    $('.editFileModal').off('hidden.bs.modal');
                   }
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
                       $('.addCategoryModal').modal('show');
+                      $('.editImageModal').off('hidden.bs.modal');
                     });
                     $('.editImageModal').modal('hide');
-                    $('.editImageModal').off('hidden.bs.modal');
                   }
                   else {
                     $('.addCategoryModal').modal('show');

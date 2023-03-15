@@ -21,17 +21,18 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                     $('.editFileModal').on('hidden.bs.modal', function () {
                       console.log("hidden.bs.modal");
                       $('.addTagModal').modal('show');
+                      $('.editFileModal').off('hidden.bs.modal');
                     });
                     $('.editFileModal').modal('hide');
-                    $('.editFileModal').off('hidden.bs.modal');
                   }
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
                       console.log("hidden.bs.modal");
                       $('.addTagModal').modal('show');
+                      $('.editImageModal').off('hidden.bs.modal');
                     });
                     $('.editImageModal').modal('hide');
-                    $('.editImageModal').off('hidden.bs.modal');
+                    
                   }
                   else {
                     $('.addTagModal').modal('show');
