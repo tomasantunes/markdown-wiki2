@@ -4,3 +4,4 @@
 - Increase margin on logout button
 - Create a component for files.
 - Fix error when clicking the homepage.
+- Put list of tags on Add Tag page.
