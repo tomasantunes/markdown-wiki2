@@ -32,9 +32,9 @@ export default function AddTagModal() {
       return;
     }
 
-    axios.post(config.BACKEND_URL + '/api/tags/insert', newTag)
+    axios.post(config.BACKEND_URL + '/api/tags/insert', {tag: newTag})
     .then(function (response) {
-      MySwal.fire("New category has been added.")
+      MySwal.fire("New tag has been added.")
       .then((value) => {
         $('.addTagModal').modal('hide');
         setNewTag("");
