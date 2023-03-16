@@ -833,7 +833,7 @@ app.get("/api/tags/list", (req, res) => {
       res.json({status: "OK", data: result});
     }
     else {
-      res.json({status: "NOK", error: "There are no categories."});
+      res.json({status: "NOK", error: "There are no tags."});
     }
   });
 });
