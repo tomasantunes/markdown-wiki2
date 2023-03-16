@@ -439,7 +439,7 @@ export default function Bookmarks() {
               </ul>
 
               {currentTab == "import" &&
-              <div className="col-md-3 p-3">
+              <div className="col-md-6 p-3">
                 
                 <div className="upload-bookmarks">
                   <h4>Upload Bookmarks(HTML)</h4>
@@ -465,7 +465,7 @@ export default function Bookmarks() {
               </div>
               }
               {currentTab == "add-folder" &&
-              <div className="col-md-3 p-3">
+              <div className="col-md-6 p-3">
                 <div className="add-bookmark-folder">
                   <h4>Add Folder</h4>
                   <p>Title</p>
@@ -477,7 +477,7 @@ export default function Bookmarks() {
               </div>
               }
               {currentTab == "remove-dups" &&
-              <div className="col-md-3 p-3">
+              <div className="col-md-6 p-3">
                 <div className="remove-bookmark-dups">
                   <h4>Remove Duplicates</h4>
                   <p>Folder</p>
