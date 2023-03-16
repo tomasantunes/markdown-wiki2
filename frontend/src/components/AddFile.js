@@ -39,8 +39,8 @@ export default function AddFile() {
             }
             
             <div className="row">
-              <div className="col-md-4"></div>
-              <div className="col-md-4">
+              <div className="col-md-2"></div>
+              <div className="col-md-6">
                 {currentTab == "add-media-file" &&
                 <AddMediaFile />
                 }
