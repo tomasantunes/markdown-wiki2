@@ -23,8 +23,7 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-export default function File() {
-  const {id} = useParams();
+export default function File({id}) {
   const [file, setFile] = useState();
   const [image, setImage] = useState();
   const [editFile, setEditFile] = useState({
@@ -424,81 +423,74 @@ export default function File() {
   }, []);
   return (
     <>
-      <div className="container-fluid full-height">
-        <div className="row full-height">
-          <Menu />
-          <div className="col-md-8 p-5">
-            {file != undefined && (
-              <>
-                <div className="file-entry">
-                  <div className="row">
-                    <div className="col-md-8">
-                      <h3>{file['title']}</h3>
-                    </div>
-                    <div className="col-md-4 text-end">
-                      <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
-                          <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showEditFile(file['id'])}}>Edit</a></li>
-                          <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
-                          <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
-                          <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>
-                        </ul>
-                      </div>
-                      
-                    </div>
-                  </div>
-                  <div className="file-content">
-                    {file['extension'] == "md" &&
-                        <ReactMarkdown>{file['content']}</ReactMarkdown>
-                    }
-                    {file['extension'] == "txt" &&
-                      <p>{file['content']}</p>
-                    }
-                    {file['extension'] == "csv" &&
-                      <CsvToHtmlTable
-                        data={file['content']}
-                        csvDelimiter=","
-                        tableClassName="table table-striped table-hover"
-                      />
-                    }
-                    {file['extension'] == "json" &&
-                      <p>{JSON.stringify(JSON.parse(file['content']), null, 2)}</p>
-                    }
-                  </div>
+      {file != undefined && (
+        <>
+          <div className="file-entry">
+            <div className="row">
+              <div className="col-md-8">
+                <h3><a href={"/files/" + file['id']}>{file['title']}</a></h3>
+              </div>
+              <div className="col-md-4 text-end">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions
+                  </button>
+                  <ul class="dropdown-menu">
+                    {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
+                    <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showEditFile(file['id'])}}>Edit</a></li>
+                    <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
+                    <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
+                    <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>
+                  </ul>
                 </div>
-              </>
-            )}
-            {image != undefined && (
-              <>
-                <div className="file-entry">
-                    <div className="row">
-                    <div className="col-md-8">
-                        <h3>{image['title']}</h3>
-                    </div>
-                    <div className="col-md-4 text-end">
-                        <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                            {image['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(image['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(image['id'])}>Unpin</a></li>}
-                            <li><a class="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); showEditImage(image['id'])}}>Edit</a></li>
-                            <li><a class="dropdown-item" href="#" onClick={() => deleteFile(image['id'])}>Delete</a></li>
-                        </ul>
-                        </div>
-                    </div>
-                    </div>
-                    <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
-                </div>
-              </>
-            )}
+                
+              </div>
+            </div>
+            <div className="file-content">
+              {file['extension'] == "md" &&
+                  <ReactMarkdown>{file['content']}</ReactMarkdown>
+              }
+              {file['extension'] == "txt" &&
+                <p>{file['content']}</p>
+              }
+              {file['extension'] == "csv" &&
+                <CsvToHtmlTable
+                  data={file['content']}
+                  csvDelimiter=","
+                  tableClassName="table table-striped table-hover"
+                />
+              }
+              {file['extension'] == "json" &&
+                <p>{JSON.stringify(JSON.parse(file['content']), null, 2)}</p>
+              }
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
+      {image != undefined && (
+        <>
+          <div className="file-entry">
+              <div className="row">
+              <div className="col-md-8">
+                  <h3><a href={"/files/" + image['id']}>{image['title']}</a></h3>
+              </div>
+              <div className="col-md-4 text-end">
+                  <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Actions
+                  </button>
+                  <ul class="dropdown-menu">
+                      {image['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(image['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(image['id'])}>Unpin</a></li>}
+                      <li><a class="dropdown-item" href="#" onClick={(e) => { e.preventDefault(); showEditImage(image['id'])}}>Edit</a></li>
+                      <li><a class="dropdown-item" href="#" onClick={() => deleteFile(image['id'])}>Delete</a></li>
+                  </ul>
+                  </div>
+              </div>
+              </div>
+              <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
+          </div>
+        </>
+      )}
 
       <div class="modal editFileModal" tabindex="-1">
         <div class="modal-dialog">

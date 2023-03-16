@@ -15,7 +15,7 @@ import Tag from './components/Tag';
 import SearchPage from './components/SearchPage';
 import Pinned from './components/Pinned';
 import Login from './components/Login';
-import File from './components/File';
+import FilePage from './components/FilePage';
 import config from './config.json';
 
 
@@ -33,7 +33,7 @@ function App() {
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/add-tag" element={<AddTag />} />
         <Route path="/categories/:id" element={<CategoryPage />}/>
-        <Route path="/file/:id" element={<File />}/>
+        <Route path="/file/:id" element={<FilePage />}/>
         <Route path="/tag/:id" element={<Tag />}/>
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/pinned" element={<Pinned />} />
