@@ -1651,7 +1651,28 @@ app.post("/api/bookmarks/create-folder", (req, res) => {
     }
     res.json({status: "OK", data: "Folder has been created successfully."});
   });
+});
 
+// This route creates a new bookmark in the bookmarks database.
+app.post("/api/bookmarks/create-bookmark", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var title = req.body.title;
+  var parent_id = req.body.parent_id;
+  var url = req.body.url;
+  var tags = req.body.tags;
+
+  var sql = "INSERT INTO bookmarks (title, parent_id, url, tags, type) VALUES (?, ?, ?, ?, 'bookmark');";
+  con.query(sql, [title, parent_id, url, tags], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    res.json({status: "OK", data: "Bookmark has been created successfully."});
+  });
 });
 
 

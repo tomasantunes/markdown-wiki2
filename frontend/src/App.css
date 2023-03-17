@@ -273,6 +273,14 @@ header {
   padding: 25px;
 }
 
+.add-bookmark {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 25px;
+}
+
 .remove-bookmark-dups {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -295,6 +303,11 @@ header {
 }
 
 .btn-add-bookmark-folder {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.btn-add-bookmark {
   margin-top: 5px;
   margin-bottom: 5px;
 }

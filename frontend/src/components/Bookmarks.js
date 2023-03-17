@@ -25,6 +25,12 @@ export default function Bookmarks() {
   const [page, setPage] = useState(0);
   const bookmarksPerPage = 10;
   const [totalPages, setTotalPages] = useState(0);
+  const [newBookmark, setNewBookmark] = useState({
+    title: "",
+    url: "",
+    tags: "",
+    parent_id: ""
+  });
   const [editBookmark, setEditBookmark] = useState({
     id: "",
     title: "",
@@ -32,6 +38,7 @@ export default function Bookmarks() {
     tags: "",
     parent_id: ""
   });
+  const [newBookmarkParent, setNewBookmarkParent] = useState("");
   const [editBookmarkSelectedFolder, setEditBookmarkSelectedFolder] = useState();
   const [enableImportFolder, setEnableImportFolder] = useState(false);
   const [importFolder, setImportFolder] = useState("");
@@ -45,6 +52,52 @@ export default function Bookmarks() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [currentTab, setCurrentTab] = useState("list");
+
+  function changeNewBookmarkParent(item) {
+    setNewBookmark({...newBookmark, parent_id: item.value});
+    setNewBookmarkParent(item);
+  }
+
+  function changeNewBookmarkTags(e) {
+    setNewBookmark({...newBookmark, tags: e.target.value});
+  }
+
+  function changeNewBookmarkTitle(e) {
+    setNewBookmark({...newBookmark, title: e.target.value});
+  }
+
+  function changeNewBookmarkUrl(e) {
+    setNewBookmark({...newBookmark, url: e.target.value});
+  }
+
+  function createBookmark(e) {
+    e.preventDefault();
+    if (newBookmark.title.trim() == "" || newBookmark.url.trim() == "" || newBookmark.parent_id.toString() == "") {
+      MySwal.fire("Fields cannot be empty.");
+      return;
+    }
+
+    axios.post(config.BACKEND_URL + "/api/bookmarks/create-bookmark", newBookmark)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        console.log("Bookmark has been created.");
+        MySwal.fire("Bookmark has been created.");
+        setNewBookmark({
+          title: "",
+          url: "",
+          tags: "",
+          parent_id: ""
+        });
+        setNewBookmarkParent("");
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
 
   function changeSearchQuery(e) {
     setSearchQuery(e.target.value);
@@ -303,8 +356,6 @@ export default function Bookmarks() {
   }
   
   function loadBookmarks() {
-    console.log(selectedFolder);
-    console.log(selectedFolder != undefined);
     if (selectedFolder != undefined) {
       axios.get(config.BACKEND_URL + "/api/get-bookmarks-from-folder", {
         params: {
@@ -356,6 +407,7 @@ export default function Bookmarks() {
         if (response.data.data.length > 0) {
           var folders1 = response.data.data;
           var folders_to_add = [];
+          folders_to_add.push({value: 0, label: "Root"});
           var folder1 = {id: 0};
           var children = getChildrenFolders(folder1, folders1, -1);
           folders_to_add = folders_to_add.concat(children);
@@ -374,6 +426,8 @@ export default function Bookmarks() {
       MySwal.fire(err.message);
     })
   }
+
+
   
   useEffect(() => {
     loadBookmarks();
@@ -428,6 +482,9 @@ export default function Bookmarks() {
                   <a class={(currentTab == "import") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("import")}>Import</a>
                 </li>
                 <li class="nav-item">
+                  <a class={(currentTab == "add-bookmark") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("add-bookmark")}>Add Bookmark</a>
+                </li>
+                <li class="nav-item">
                   <a class={(currentTab == "add-folder") ? "nav-link active" : "nav-link"} href="#" onClick={() => setCurrentTab("add-folder")}>Add Folder</a>
                 </li>
                 <li class="nav-item">
@@ -461,6 +518,22 @@ export default function Bookmarks() {
                   <FileUploader onFileSelectSuccess={(file) => changeBookmarksFile({file})} onFileSelectError={({error}) => MySwal.fire(error)} />
                   <button className="btn btn-primary btn-upload-bookmarks" onClick={uploadBookmarksFile}>Upload</button>
                   {isUploading && <p>Uploading...</p>}
+                </div>
+              </div>
+              }
+              {currentTab == "add-bookmark" &&
+              <div className="col-md-6 p-3">
+                <div className="add-bookmark">
+                  <h4>Add Bookmark</h4>
+                  <p>Title</p>
+                  <input type="text" className="form-control my-2" name="bookmarkTitle" value={newBookmark.title} onChange={changeNewBookmarkTitle} />
+                  <p>URL</p>
+                  <input type="text" className="form-control my-2" name="bookmarkUrl" value={newBookmark.url} onChange={changeNewBookmarkUrl} />
+                  <p>Tags</p>
+                  <input type="text" className="form-control my-2" name="bookmarkTags" value={newBookmark.tags} onChange={changeNewBookmarkTags} />
+                  <p>Parent</p>
+                  <Select className="my-2" value={newBookmarkParent} options={bookmarkFolders} onChange={changeNewBookmarkParent} />
+                  <button className="btn btn-primary btn-add-bookmark" onClick={createBookmark}>Add</button>
                 </div>
               </div>
               }
