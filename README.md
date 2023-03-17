@@ -7,7 +7,7 @@ NodeJS web application to create a wiki
 | ![MarkdownWiki2 Screenshot 2](https://i.imgur.com/Tuwmrs3.png) |
 |-|
 
-| ![MarkdownWiki2 Screenshot 3](https://i.imgur.com/rks1mPa.png) |
+| ![MarkdownWiki2 Screenshot 3](https://i.imgur.com/ZseWUlL.png) |
 |-|
 
 ## How to build
