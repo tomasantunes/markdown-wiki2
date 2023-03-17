@@ -623,12 +623,7 @@ app.get("/api/get-10-most-recent", (req, res) => {
       console.log(err.message);
       res.json({status: "NOK", error: err.message});
     }
-    if (result.length > 0) {
-      res.json({status: "OK", data: result});
-    }
-    else {
-      res.json({status: "NOK", error: "There are no files."});
-    }
+    res.json({status: "OK", data: result});
   });
 });
 
@@ -645,12 +640,7 @@ app.get("/api/get-10-largest", (req, res) => {
       console.log(err.message);
       res.json({status: "NOK", error: err.message});
     }
-    if (result.length > 0) {
-      res.json({status: "OK", data: result});
-    }
-    else {
-      res.json({status: "NOK", error: "There are no files."});
-    }
+    res.json({status: "OK", data: result});
   });
 });
 

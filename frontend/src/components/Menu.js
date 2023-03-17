@@ -99,50 +99,6 @@ const Menu = () => {
     });
   }
 
-  /*
-  function loadCategoriesOld() {
-    setMenuItems(menuItemsInitialState);
-    axios.get(config.BACKEND_URL + '/api/categories/list')
-    .then(function (response) {
-      var categories = response['data']['data'];
-      var categories_to_add = [];
-      for (var i in categories) {
-        var menuItem = categories[i];
-        if (menuItem.parent_id == 1) {
-          var obj = {title: menuItem.name, link: "/categories/" + menuItem.id, id: menuItem.id};
-          for (var j in categories) {
-            var menuItem2 = categories[j];
-            if (menuItem2.parent_id == obj.id) {
-              var obj2 = {title: menuItem2.name, link: "/categories/" + menuItem2.id, id: menuItem2.id};
-              if (!obj.hasOwnProperty('submenu')) {
-                obj['submenu'] = [];
-              }
-              obj.submenu.push(obj2);
-              for (var k in categories) {
-                var menuItem3 = categories[k];
-                if (menuItem3.parent_id == obj2.id) {
-                  var obj3 = {title: menuItem3.name, link: "/categories/" + menuItem3.id, id: menuItem3.id};
-                  if (!obj2.hasOwnProperty('submenu')) {
-                    obj2['submenu'] = [];
-                  }
-                  obj2.submenu.push(obj3);
-                }
-              }
-            }
-          }
-          categories_to_add.push(obj);
-        }
-      }
-      setMenuItems(
-        menuItems => [...menuItems, ...categories_to_add]
-      );
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  }
-  */
-
   useEffect(() => {
     loadCategories();
   }, []);

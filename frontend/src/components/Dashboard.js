@@ -3,6 +3,10 @@ import axios from 'axios';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
 import ReactWordcloud from 'react-wordcloud';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function Dashboard() {
   const [list10RandomSentences, setList10RandomSentences] = useState([]);
@@ -47,7 +51,7 @@ export default function Dashboard() {
           setListTop10Tags(response.data.data);
         }
         else {
-          alert(response.data.error);
+          MySwal.fire(response.data.error);
         }
       })
       .catch((error) => {
@@ -63,7 +67,7 @@ export default function Dashboard() {
           setList10MostRecent(response.data.data);
         }
         else {
-          alert(response.data.error);
+          MySwal.fire(response.data.error);
         }
       })
       .catch((error) => {
@@ -79,7 +83,7 @@ export default function Dashboard() {
           setList10Largest(response.data.data);
         }
         else {
-          alert(response.data.error);
+          MySwal.fire(response.data.error);
         }
       })
       .catch((error) => {
