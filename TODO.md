@@ -1,4 +1,4 @@
 # TODO
 
 - Apply tags to all files
-- Add button to edit category name.
+- Create form to add single bookmark.
