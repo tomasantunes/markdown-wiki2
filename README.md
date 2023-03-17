@@ -29,7 +29,6 @@ Create a config.json file by copying and renaming the file markdown-wiki2-fronte
 Create a sessions.json file by copying and renaming the file sessions-base.json
 npm start
 Go to localhost:4001
-Use the following URL to login: localhost:4001/login/[SECRET_TOKEN] 
 ```
 
 ## How to create database
