@@ -63,6 +63,7 @@ export default function File({id}) {
       }
     })
     .then(function(response) {
+      console.log(response.data);
       if (response.data.status == "OK") {
         setSelectedCategory({value:response.data.data.category_id, label: response.data.data.category_name});
         var extension = extensions.filter(e => {
@@ -91,19 +92,11 @@ export default function File({id}) {
           tags: response.data.data.tags,
           extension: response.data.data.extension
         });
+        $("#editFileModal" + id).modal("show");
       }
       else {
         MySwal.fire(response.data.error);
       }
-      setEditFile({
-        id: response.data.data.id,
-        title: response.data.data.title,
-        content: response.data.data.content,
-        category: response.data.data.category_id,
-        tags: response.data.data.tags,
-        extension: response.data.data.extension
-      });
-      $(".editFileModal").modal("show");
     })
     .catch(function(err) {
       MySwal.fire(err.message);
@@ -146,19 +139,11 @@ export default function File({id}) {
           tags: response.data.data.tags,
           extension: ""
         });
+        $("#editImageModal" + id).modal("show");
       }
       else {
         MySwal.fire(response.data.error);
       }
-      setEditFile({
-        id: response.data.data.id,
-        title: response.data.data.title,
-        content: "",
-        category: response.data.data.category_id,
-        tags: response.data.data.tags,
-        extension: ""
-      });
-      $(".editImageModal").modal("show");
     })
     .catch(function(err) {
       MySwal.fire(err.message);
@@ -167,11 +152,11 @@ export default function File({id}) {
   }
 
   function closeEditImageModal() {
-    $(".editImageModal").modal("hide");
+    $("#editImageModal" + id).modal("hide");
   }
 
   function closeEditFileModal() {
-    $(".editFileModal").modal("hide");
+    $("#editFileModal" + id).modal("hide");
   }
 
   function showAppendToFile(id) {
@@ -201,7 +186,7 @@ export default function File({id}) {
       if (response.data.status == "OK") {
         MySwal.fire("File has been edited sucessfully.")
         .then(function(value) {
-          $(".editFileModal").modal("hide");
+          $("#editFileModal" + id).modal("hide");
           loadFile();
         });
       }
@@ -221,7 +206,7 @@ export default function File({id}) {
       if (response.data.status == "OK") {
         MySwal.fire("File has been edited sucessfully.")
         .then(function(value) {
-          $(".editImageModal").modal("hide");
+          $("#editImageModal" + id).modal("hide");
           loadFile();
         });
       }
@@ -280,6 +265,13 @@ export default function File({id}) {
     setSelectedCategory(item);
   }
 
+  function changeEditFileExtension(item) {
+    setEditFile({
+      ...editFile,
+      "extension": item.value
+    });
+  }
+
   function changeEditFileTags(items) {
     var tags_temp = [];
     for (var i in items) {
@@ -312,13 +304,6 @@ export default function File({id}) {
     })
     .catch(function(err) {
       MySwal.fire(err.message);
-    });
-  }
-
-  function changeEditFileExtension(item) {
-    setEditFile({
-      ...editFile,
-      "extension": item.value
     });
   }
 
@@ -419,7 +404,6 @@ export default function File({id}) {
     loadCategories();
     loadTags();
     loadFile();
-    $(".modal").on("focus", function(event) { event.preventDefault(); })
   }, []);
   return (
     <>
@@ -492,7 +476,7 @@ export default function File({id}) {
         </>
       )}
 
-      <div class="modal editFileModal" tabindex="-1">
+      <div class="modal editFileModal" id={"editFileModal" + id} tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -540,7 +524,7 @@ export default function File({id}) {
         </div>
       </div>
 
-      <div class="modal editImageModal" tabindex="-1">
+      <div class="modal editImageModal" id={"editImageModal" + id} tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -578,7 +562,7 @@ export default function File({id}) {
         </div>
       </div>
 
-      <div class="modal appendModal" tabindex="-1">
+      <div class="modal appendModal"  id={"appendModal" + id}tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">

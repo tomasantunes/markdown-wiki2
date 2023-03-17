@@ -124,38 +124,70 @@ export default function Dashboard() {
   return (
     <div className="col-md-10 full-min-height p-5">
       <h2>Dashboard</h2>
-      <h3>10 Random Sentences</h3>
-      <ul className="list-10-random-sentence">
-        {list10RandomSentences.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-      <h3>Top 10 Categories</h3>
-      <ol className="list-top10-categories">
-        {listTop10Categories.map((item, index) => (
-          <li key={index}>{item.name}</li>
-        ))}
-      </ol>
-      <h3>Top 10 Tags</h3>
-      <ol className="list-top10-tags">
-        {listTop10Tags.map((item, index) => (
-          <li key={index}>{item.name}</li>
-        ))}
-      </ol>
-      <h3>10 Most Recent Files</h3>
-      <ul className="list-10-most-recent">
-        {list10MostRecent.map((item, index) => (
-          <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
-        ))}
-      </ul>
-      <h3>Top 10 Largest Files</h3>
-      <ol className="list-top10-largest-files">
-        {list10Largest.map((item, index) => (
-          <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
-        ))}
-      </ol>
-      <h3>Top 50 Most Common Words</h3>
-      <ReactWordcloud words={list50MostCommonWords} size={wordCloudSize} options={wordCloudOptions} />
+      <div className="row">
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>10 Random Sentences</h3>
+            <ul className="list-10-random-sentence">
+              {list10RandomSentences.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>Top 10 Categories</h3>
+            <ol className="list-top10-categories">
+              {listTop10Categories.map((item, index) => (
+                <li key={index}>{item.name}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>Top 10 Tags</h3>
+            <ol className="list-top10-tags">
+              {listTop10Tags.map((item, index) => (
+                <li key={index}>{item.name}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>10 Most Recent Files</h3>
+            <ul className="list-10-most-recent">
+              {list10MostRecent.map((item, index) => (
+                <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>Top 10 Largest Files</h3>
+            <ol className="list-top10-largest-files">
+              {list10Largest.map((item, index) => (
+                <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
+              ))}
+            </ol>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>Top 50 Most Common Words</h3>
+            <div style={{backgroundColor: "white"}}>
+              <ReactWordcloud words={list50MostCommonWords} size={wordCloudSize} options={wordCloudOptions} />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
