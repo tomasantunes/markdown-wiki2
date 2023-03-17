@@ -18,7 +18,7 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, files, setFiles, imageFiles, setImageFiles, pdfFiles, setPdfFiles, deleteCategory, category}) {
+export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, files, setFiles, imageFiles, setImageFiles, pdfFiles, setPdfFiles, deleteCategory, category, setCategory}) {
   const {id} = useParams();
   const location = useLocation();
   const sortOrders = [
@@ -34,6 +34,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
   const [selectedSortOrder, setSelectedSortOrder] = useState({value: "date-asc", label: "Date Ascending"});
   const [currentTab, setCurrentTab] = useState("files");
   const [subcategories, setSubcategories] = useState([]);
+  const [editCategoryName, setEditCategoryName] = useState("");
   const navigate = useNavigate();
 
   function changeSortIndex(e) {
@@ -90,6 +91,44 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
     });
   }
 
+  function submitEditCategoryName(e) {
+    e.preventDefault();
+    var data = {
+      id: id,
+      name: editCategoryName
+    };
+
+    axios.post(config.BACKEND_URL + "/api/categories/edit-name", data)
+    .then(function(response) {
+      if (response.data.status == "OK") {
+        MySwal.fire(response.data.data)
+        .then(function(value) {
+          $(".editCategoryNameModal").modal("hide");
+          window.location.reload();
+        });
+      }
+      else {
+        MySwal.fire(response.data.error);
+      }
+    })
+    .catch(function(err) {
+      MySwal.fire(err.message);
+    });
+  }
+
+  function changeEditCategoryName(e) {
+    setEditCategoryName(e.target.value);
+  }
+
+  function showEditCategoryName() {
+    setEditCategoryName(category.name);
+    $(".editCategoryNameModal").modal("show");
+  }
+
+  function closeEditCategoryName() {
+    $(".editCategoryNameModal").modal("hide");
+  }
+
   useEffect(() => {
     loadImageFiles();
     loadFiles();
@@ -141,6 +180,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
             <h2>{category != undefined && category['name']}</h2>
             {deleteCategory != undefined && <button className="btn btn-danger btn-delete-category" onClick={deleteCategory}>Delete</button>}
             {category != undefined && <button className="btn btn-primary btn-set-sort-index" data-bs-toggle="modal" data-bs-target=".setSortIndexModal">Set Sort Index</button>}
+            {category != undefined && <button className="btn btn-primary btn-edit-category-name" onClick={showEditCategoryName}>Edit Category Name</button>}
 
             <ul class="nav nav-tabs my-3">
               <li class="nav-item">
@@ -248,8 +288,30 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                 </div>
               </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal editCategoryNameModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Category Name</h5>
+              <button type="button" class="btn-close" onClick={closeEditCategoryName} aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form onSubmit={submitEditCategoryName}>
+                <div className="form-group py-2">
+                    <label className="control-label">Name</label>
+                    <div>
+                        <input type="text" className="form-control input-lg" name="editCategoryName" value={editCategoryName} onChange={changeEditCategoryName} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div style={{textAlign: "right"}}>
+                        <button type="submit" className="btn btn-primary">Save</button>
+                    </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>

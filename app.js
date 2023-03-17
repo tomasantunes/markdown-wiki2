@@ -794,6 +794,27 @@ app.post("/api/categories/set-sort-index", (req, res) => {
   });
 });
 
+// This route lets you edit a category's name by ID.
+app.post("/api/categories/edit-name", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+  var name = req.body.name;
+
+  var sql = "UPDATE categories SET name = ? WHERE id = ?;";
+
+  con.query(sql, [name, id], function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    res.json({status: "OK", data: "The category's name has been updated."});
+  });
+});
+
 
 // Tags CRUD Routes
 

@@ -140,6 +140,6 @@ export default function CategoryPage() {
   }, []);
   
   return (
-    <ListFiles loadFiles={loadFiles} loadImageFiles={loadImageFiles} loadPDFFiles={loadPDFFiles} files={files} imageFiles={imageFiles} pdfFiles={pdfFiles} setFiles={setFiles} setImageFiles={setImageFiles} setPdfFiles={setPdfFiles} deleteCategory={deleteCategory} category={category} />
+    <ListFiles loadFiles={loadFiles} loadImageFiles={loadImageFiles} loadPDFFiles={loadPDFFiles} files={files} imageFiles={imageFiles} pdfFiles={pdfFiles} setFiles={setFiles} setImageFiles={setImageFiles} setPdfFiles={setPdfFiles} deleteCategory={deleteCategory} category={category} setCategory={setCategory} />
   );
 }

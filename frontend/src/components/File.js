@@ -536,9 +536,6 @@ export default function File({id}) {
                 </div>
               </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" onClick={closeEditFileModal}>Close</button>
-            </div>
           </div>
         </div>
       </div>
@@ -577,9 +574,6 @@ export default function File({id}) {
                 </div>
               </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" onClick={closeEditImageModal}>Close</button>
-            </div>
           </div>
         </div>
       </div>
@@ -605,9 +599,6 @@ export default function File({id}) {
                     </div>
                 </div>
               </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>

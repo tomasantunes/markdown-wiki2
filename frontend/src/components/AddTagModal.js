@@ -69,9 +69,6 @@ export default function AddTagModal() {
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onClick={close}>Close</button>
-          </div>
         </div>
       </div>
     </div>
