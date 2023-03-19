@@ -159,11 +159,16 @@ export default function File({id}) {
     $("#editFileModal" + id).modal("hide");
   }
 
+  function closeAppendModal() {
+    $("#appendModal" + id).modal("hide");
+  }
+
   function showAppendToFile(id) {
     setAppendToFile({
       id: id,
       content: "",
     });
+    $("#appendModal" + id).modal('show');
   }
 
   function deleteFile(id) {
@@ -422,7 +427,7 @@ export default function File({id}) {
                   <ul class="dropdown-menu">
                     {file['pinned'] == 0 ? <li><a class="dropdown-item" href="#" onClick={() => pinFile(file['id'])}>Pin</a></li> : <li><a class="dropdown-item" href="#" onClick={() => unpinFile(file['id'])}>Unpin</a></li>}
                     <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showEditFile(file['id'])}}>Edit</a></li>
-                    <li><a class="dropdown-item" href="#" onClick={() => showAppendToFile(file['id'])} data-bs-toggle="modal" data-bs-target=".appendModal">Append</a></li>
+                    <li><a class="dropdown-item" href="#" onClick={(e) => {e.preventDefault(); showAppendToFile(file['id'])}}>Append</a></li>
                     <li><a class="dropdown-item" href={"/api/download-text-file/" + file['id']}>Download</a></li>
                     <li><a class="dropdown-item" href="#" onClick={() => deleteFile(file['id'])}>Delete</a></li>
                   </ul>
@@ -562,12 +567,12 @@ export default function File({id}) {
         </div>
       </div>
 
-      <div class="modal appendModal"  id={"appendModal" + id}tabindex="-1">
+      <div class="modal appendModal"  id={"appendModal" + id} tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Append To File</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" onClick={closeAppendModal} aria-label="Close"></button>
             </div>
             <div class="modal-body">
             <form onSubmit={submitAppendToFile}>
