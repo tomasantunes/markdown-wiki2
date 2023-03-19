@@ -135,14 +135,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
     loadPDFFiles();
   }, [id]);
 
-  function scrollToFile() {
-    const hash = location.hash
-    const el = hash && document.getElementById(hash.substr(1))
-    if (el) {    
-        el.scrollIntoView({behavior: "smooth"})
-    }
-  }
-
   function loadSubcategories() {
     setSubcategories([]);
     axios.get(config.BACKEND_URL + "/api/categories/get-subcategories", {
@@ -162,10 +154,6 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
       MySwal.fire(err.message);
     });
   }
-
-  useEffect(() => {
-    scrollToFile();
-  }, [location.hash]);
 
   useEffect(() =>{
     loadSubcategories();
@@ -205,7 +193,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
               <ul className="index">
                 {files.map((file) => 
                   <li key={file['id']}>
-                    <Link to={{ pathname: "/categories/" + id, hash: "#" + file['id'] }}>{file['title']}</Link>
+                    <Link to={"/file/" + file['id']}>{file['title']}</Link>
                   </li>
                 )}
               </ul>
@@ -227,7 +215,7 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
                 <ul className="index">
                   {imageFiles.map((image) => 
                     <li key={image['id']}>
-                      <Link to={{ pathname: "/categories/" + id, hash: "#" + image['id'] }}>{image['title']}</Link>
+                      <Link to={"/file/" + image['id']}>{image['title']}</Link>
                     </li>
                   )}
                 </ul>

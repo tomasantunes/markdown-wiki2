@@ -162,7 +162,7 @@ export default function Dashboard() {
             <h3>10 Most Recent Files</h3>
             <ul className="list-10-most-recent">
               {list10MostRecent.map((item, index) => (
-                <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
+                <li key={index}><Link to={"/file/" + item.id}>{item.title}</Link></li>
               ))}
             </ul>
           </div>
@@ -174,7 +174,7 @@ export default function Dashboard() {
             <h3>Top 10 Largest Files</h3>
             <ol className="list-top10-largest-files">
               {list10Largest.map((item, index) => (
-                <li key={index}><Link to={"/categories/" + item.category_id + "#" + item.id}>{item.title}</Link></li>
+                <li key={index}><Link to={"/file/" + item.id}>{item.title}</Link></li>
               ))}
             </ol>
           </div>
