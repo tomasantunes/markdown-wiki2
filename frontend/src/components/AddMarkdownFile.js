@@ -28,19 +28,13 @@ export default function AddTextFile() {
   const [tags, setTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedTags, setSelectedTags] = useState();
+  const mdEditor = React.useRef(null);
   var categories_to_add = [];
 
   function changeNewFileTitle(e) {
     setNewFile({
       ...newFile,
       "title": e.target.value
-    });
-  }
-
-  function changeNewFileContent(e) {
-    setNewFile({
-      ...newFile,
-      "content": e.target.value
     });
   }
 
@@ -91,6 +85,7 @@ export default function AddTextFile() {
           });
           setSelectedCategory({});
           setSelectedTags([]);
+          mdEditor.current.setText("");
         });
       }
       else {
@@ -194,7 +189,7 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Content</label>
             <div>
-                <MdEditor style={{ height: '500px' }} renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
+                <MdEditor ref={mdEditor} style={{ height: '500px' }} renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
             </div>
         </div>
         <div className="form-group py-2">
