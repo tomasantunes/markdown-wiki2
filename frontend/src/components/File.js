@@ -505,13 +505,13 @@ export default function File({id}) {
                 <div className="form-group py-2">
                     <label className="control-label">Category</label>
                     <div>
-                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} components={{ Menu: CategoriesSelectMenu }}/>
+                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} id={id} components={{ Menu: CategoriesSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group py-2">
                     <label className="control-label">Tags</label>
                     <div>
-                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} components={{ Menu: TagSelectMenu }}/>
+                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} id={id} components={{ Menu: TagSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group py-2">
@@ -547,13 +547,13 @@ export default function File({id}) {
                 <div className="form-group py-2">
                     <label className="control-label">Category</label>
                     <div>
-                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} components={{ Menu: CategoriesSelectMenu }}/>
+                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} id={id} components={{ Menu: CategoriesSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group py-2">
                     <label className="control-label">Tags</label>
                     <div>
-                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} components={{ Menu: TagSelectMenu }}/>
+                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} id={id} components={{ Menu: TagSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group">

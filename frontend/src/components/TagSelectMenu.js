@@ -8,8 +8,8 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
-  !isDisabled ? (
+const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children, selectProps, id }) => {
+  return !isDisabled ? (
       <div ref={innerRef} {...innerProps} className="customReactSelectMenu">
           {children}
           <div className="p-3">
@@ -20,7 +20,7 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                   if ($('.editFileModal').hasClass('show')) {
                     $('.editFileModal').on('hidden.bs.modal', function () {
                       console.log("hidden.bs.modal");
-                      $('.addTagModal').modal('show');
+                      $('#addTagModal' + selectProps.id).modal('show');
                       $('.editFileModal').off('hidden.bs.modal');
                     });
                     $('.editFileModal').modal('hide');
@@ -28,14 +28,14 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
                       console.log("hidden.bs.modal");
-                      $('.addTagModal').modal('show');
+                      $('#addTagModal' + selectProps.id).modal('show');
                       $('.editImageModal').off('hidden.bs.modal');
                     });
                     $('.editImageModal').modal('hide');
                     
                   }
                   else {
-                    $('.addTagModal').modal('show');
+                    $('#addTagModal' + selectProps.id).modal('show');
                   }
                 }}
             >
@@ -44,5 +44,6 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
           </div>
       </div>
   ) : null;
+}
 
 export default TagSelectMenu;
