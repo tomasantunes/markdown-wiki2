@@ -174,7 +174,8 @@ export default function File({id}) {
     .then(function(response) {
       MySwal.fire("File has been deleted.")
       .then(function(value) {
-        loadFile();
+        navigate("/categories/" + file.category_id);
+        window.location.reload();
       });
     })
     .catch(function(err) {
@@ -415,7 +416,7 @@ export default function File({id}) {
           <div className="file-entry">
             <div className="row">
               <div className="col-md-8">
-                <h3><a href={"/files/" + file['id']}>{file['title']}</a></h3>
+                <h3><a href={"/file/" + file['id']}>{file['title']}</a></h3>
               </div>
               <div className="col-md-4 text-end">
                 <div class="dropdown">
@@ -459,7 +460,7 @@ export default function File({id}) {
           <div className="file-entry">
               <div className="row">
               <div className="col-md-8">
-                  <h3><a href={"/files/" + image['id']}>{image['title']}</a></h3>
+                  <h3><a href={"/file/" + image['id']}>{image['title']}</a></h3>
               </div>
               <div className="col-md-4 text-end">
                   <div class="dropdown">
