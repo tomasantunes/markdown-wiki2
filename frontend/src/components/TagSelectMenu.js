@@ -8,7 +8,7 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children, selectProps, id }) => {
+const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children }) => {
   return !isDisabled ? (
       <div ref={innerRef} {...innerProps} className="customReactSelectMenu">
           {children}
@@ -20,7 +20,7 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children, selectProps
                   if ($('.editFileModal').hasClass('show')) {
                     $('.editFileModal').on('hidden.bs.modal', function () {
                       console.log("hidden.bs.modal");
-                      $('#addTagModal' + selectProps.id).modal('show');
+                      $('.addTagModal').modal('show');
                       $('.editFileModal').off('hidden.bs.modal');
                     });
                     $('.editFileModal').modal('hide');
@@ -28,14 +28,14 @@ const TagSelectMenu = ({ innerRef, innerProps, isDisabled, children, selectProps
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
                       console.log("hidden.bs.modal");
-                      $('#addTagModal' + selectProps.id).modal('show');
+                      $('.addTagModal').modal('show');
                       $('.editImageModal').off('hidden.bs.modal');
                     });
                     $('.editImageModal').modal('hide');
                     
                   }
                   else {
-                    $('#addTagModal' + selectProps.id).modal('show');
+                    $('.addTagModal').modal('show');
                   }
                 }}
             >

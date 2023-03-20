@@ -11,8 +11,6 @@ import path from 'path-browserify';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import AddCategoryModal from './AddCategoryModal';
-import AddTagModal from './AddTagModal';
 import CategoriesSelectMenu from './CategoriesSelectMenu';
 import TagSelectMenu from './TagSelectMenu';
 
@@ -505,13 +503,13 @@ export default function File({id}) {
                 <div className="form-group py-2">
                     <label className="control-label">Category</label>
                     <div>
-                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} id={id} components={{ Menu: CategoriesSelectMenu }}/>
+                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} components={{ Menu: CategoriesSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group py-2">
                     <label className="control-label">Tags</label>
                     <div>
-                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} id={id} components={{ Menu: TagSelectMenu }}/>
+                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} components={{ Menu: TagSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group py-2">
@@ -547,13 +545,13 @@ export default function File({id}) {
                 <div className="form-group py-2">
                     <label className="control-label">Category</label>
                     <div>
-                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} id={id} components={{ Menu: CategoriesSelectMenu }}/>
+                        <Select value={selectedCategory} options={categories} onChange={changeEditFileCategory} components={{ Menu: CategoriesSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group py-2">
                     <label className="control-label">Tags</label>
                     <div>
-                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} id={id} components={{ Menu: TagSelectMenu }}/>
+                      <Select isMulti value={selectedTags} options={tags} onChange={changeEditFileTags} components={{ Menu: TagSelectMenu }}/>
                     </div>
                 </div>
                 <div className="form-group">
@@ -592,8 +590,6 @@ export default function File({id}) {
           </div>
         </div>
       </div>
-      <AddCategoryModal id={id} />
-      <AddTagModal id={id} />
     </>
   )
 }

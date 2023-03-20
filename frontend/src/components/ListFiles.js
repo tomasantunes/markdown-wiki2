@@ -10,6 +10,8 @@ import $ from 'jquery';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import File from './File';
+import AddCategoryModal from './AddCategoryModal';
+import AddTagModal from './AddTagModal';
 
 const MySwal = withReactContent(Swal);
 window.jQuery = $;
@@ -304,6 +306,8 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
           </div>
         </div>
       </div>
+      <AddCategoryModal />
+      <AddTagModal />
     </>
   )
 }

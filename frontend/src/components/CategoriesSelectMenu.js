@@ -8,7 +8,7 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-const CategoriesSelectMenu = ({ innerRef, innerProps, isDisabled, children, selectProps }) =>
+const CategoriesSelectMenu = ({ innerRef, innerProps, isDisabled, children }) =>
   !isDisabled ? (
       <div ref={innerRef} {...innerProps} className="customReactSelectMenu">
           {children}
@@ -19,20 +19,20 @@ const CategoriesSelectMenu = ({ innerRef, innerProps, isDisabled, children, sele
                   e.preventDefault();
                   if ($('.editFileModal').hasClass('show')) {
                     $('.editFileModal').on('hidden.bs.modal', function () {
-                      $('#addCategoryModal' + selectProps.id).modal('show');
+                      $('.addCategoryModal').modal('show');
                       $('.editFileModal').off('hidden.bs.modal');
                     });
                     $('.editFileModal').modal('hide');
                   }
                   else if ($('.editImageModal').hasClass('show')) {
                     $('.editImageModal').on('hidden.bs.modal', function () {
-                      $('#addCategoryModal' + selectProps.id).modal('show');
+                      $('.addCategoryModal').modal('show');
                       $('.editImageModal').off('hidden.bs.modal');
                     });
                     $('.editImageModal').modal('hide');
                   }
                   else {
-                    $('#addCategoryModal' + selectProps.id).modal('show');
+                    $('.addCategoryModal').modal('show');
                   }
                 }}
             >
