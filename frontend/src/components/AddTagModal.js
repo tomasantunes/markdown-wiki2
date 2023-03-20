@@ -13,7 +13,7 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-export default function AddTagModal() {
+export default function AddTagModal({id}) {
   const [newTag, setNewTag] = useState("");
 
   function close() {
@@ -47,7 +47,7 @@ export default function AddTagModal() {
   }
 
   return (
-    <div class="modal addTagModal" tabindex="-1">
+    <div class="modal addTagModal" id={"addTagModal" + id} tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">

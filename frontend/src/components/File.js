@@ -592,8 +592,8 @@ export default function File({id}) {
           </div>
         </div>
       </div>
-      <AddCategoryModal />
-      <AddTagModal />
+      <AddCategoryModal id={id} />
+      <AddTagModal id={id} />
     </>
   )
 }

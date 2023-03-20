@@ -13,7 +13,7 @@ global.jQuery = $;
 window.bootstrap = require('bootstrap');
 const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
-export default function AddCategoryModal() {
+export default function AddCategoryModal({id}) {
   const [categories, setCategories] = useState([]);
   const [selectedParentCategory, setSelectedParentCategory] = useState();
   const [newCategory, setNewCategory] = useState({
@@ -23,7 +23,7 @@ export default function AddCategoryModal() {
   var categories_to_add = [];
 
   function close() {
-    $('.addCategoryModal').modal('hide');
+    $('#addCategoryModal' + id).modal('hide');
   }
 
   function changeNewCategoryParentCategory(item) {
@@ -54,7 +54,7 @@ export default function AddCategoryModal() {
       console.log(response['data']);
       MySwal.fire("New category has been added.")
       .then((value) => {
-        $('.addCategoryModal').modal('hide');
+        $('#addCategoryModal' + id).modal('hide');
         setNewCategory({
             "parentCategory": "",
             "category": ""
@@ -129,7 +129,7 @@ export default function AddCategoryModal() {
   }, []);
 
   return (
-    <div class="modal addCategoryModal" tabindex="-1">
+    <div class="modal addCategoryModal" id={"addCategoryModal" + id} tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
