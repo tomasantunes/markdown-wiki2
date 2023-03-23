@@ -261,27 +261,39 @@ function downloadImage(imageUrl, category_id, tags, cb) {
 
       var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
 
-      con.query(sql, [new_filename, filepath2, ext, category_id], function(err, result) {
+      con.query(sql, [new_filename, filepath2, ext, category_id], async function(err, result) {
         if (err) {
           console.log(err);
           return;
         }
 
         var file_id = result.insertId;
-
-        if (tags != "" && tags != undefined) {
+        if (tags == undefined || tags == "") {
+          deleteTagsFromFile(id, function(result) {
+            console.log("Tags have been deleted.")
+          });
+        }
+        else {
           var tags_arr = tags.split(",");
+          await con2.query("DELETE FROM files_tags WHERE file_id = ?", [file_id]);
           for (var i in tags_arr) {
-            getTagId(tags_arr[i], function(result) {
-              if (result.status == "OK") {
-                assignTagToFile(file_id, result.data);
-              }
-              else {
-                console.log("Tag not found.");
-              }
-            });
+            console.log(tags_arr[i]);
+            var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
+            if (result2[0].length > 0) {
+              var tag_id = result2[0][0].id;
+              await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
+            }
+            else {
+              cb({status: "NOK", error: "Tag not found."});
+              return;
+            }
+            if (i == tags_arr.length - 1) {
+              cb({status: "OK", data: "A file has been inserted successfully."});
+              return;
+            }
           }
         }
+        
         cb({status: "OK", data: "A file has been inserted successfully."});
       });
     });
@@ -866,24 +878,35 @@ app.post("/api/files/insert", (req, res) => {
   var tags = req.body.tags;
 
   var sql = "INSERT INTO files (title, content, extension, category_id) VALUES (?, ?, ?, ?);";
-  con.query(sql, [title, content, extension, category_id], function(err, result) {
+  con.query(sql, [title, content, extension, category_id], async function(err, result) {
     if (err) {
         console.log(err);
         return;
     }
     var file_id = result.insertId;
-    if (tags != "" && tags != undefined) {
+    if (tags == undefined || tags == "") {
+      deleteTagsFromFile(id, function(result) {
+        console.log("Tags have been deleted.")
+      });
+    }
+    else {
       var tags_arr = tags.split(",");
+      await con2.query("DELETE FROM files_tags WHERE file_id = ?", [file_id]);
       for (var i in tags_arr) {
-        getTagId(tags_arr[i], function(result) {
-          if (result.status == "OK") {
-            assignTagToFile(file_id, result.data);
-          }
-          else {
-            res.json({status: "NOK", error: "Tag not found."});
-            return;
-          }
-        });
+        console.log(tags_arr[i]);
+        var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
+        if (result2[0].length > 0) {
+          var tag_id = result2[0][0].id;
+          await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
+        }
+        else {
+          res.json({status: "NOK", error: "Tag not found."});
+          return;
+        }
+        if (i == tags_arr.length - 1) {
+          res.json({status: "OK", data: "File has been edited successfully."});
+          return;
+        }
       }
     }
     res.json({status: "OK", data: "A file has been inserted successfully."});
@@ -1277,21 +1300,6 @@ app.post("/api/files/edit", (req, res) => {
     }
     else {
       var tags_arr = tags.split(",");
-      /*
-      deleteTagsFromFile(id, function(result) {
-        for (var i in tags_arr) {
-          console.log(tags_arr[i]);
-          getTagId(tags_arr[i], function(result) {
-            if (result.status == "OK") {
-              assignTagToFile(id, result.data);
-            }
-            else {
-              res.json({status: "NOK", error: "Tag not found."});
-            }
-          });
-        }
-      });
-      */
       await con2.query("DELETE FROM files_tags WHERE file_id = ?", [id]);
       for (var i in tags_arr) {
         console.log(tags_arr[i]);
@@ -1436,7 +1444,7 @@ app.post('/api/upload-media-file', function(req, res) {
 
     var sql = "INSERT INTO files (title, path, extension, category_id) VALUES (?, ?, ?, ?)";
 
-    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath2, path.extname(file.name).replace(".", ""), category_id], function(err, result) {
+    con.query(sql, [path.basename(file.name, path.extname(file.name)), filepath2, path.extname(file.name).replace(".", ""), category_id], async function(err, result) {
       if (err) {
         console.log(err);
         return;
@@ -1444,18 +1452,27 @@ app.post('/api/upload-media-file', function(req, res) {
 
       var file_id = result.insertId;
 
-      if (tags != "" && tags != undefined) {
-        var tags_arr = tags.split(",");
+      if (tags == undefined || tags == "") {
+        deleteTagsFromFile(id, function(result) {
+          console.log("Tags have been deleted.")
+        });
+      }
+      else {
+        await con2.query("DELETE FROM files_tags WHERE file_id = ?", [file_id]);
         for (var i in tags_arr) {
-          getTagId(tags_arr[i], function(result) {
-            if (result.status == "OK") {
-              assignTagToFile(file_id, result.data);
-            }
-            else {
-              console.log("Tag not found.");
-            }
-            
-          });
+          var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
+          if (result2[0].length > 0) {
+            var tag_id = result2[0][0].id;
+            await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
+          }
+          else {
+            res.json({status: "NOK", error: "Tag not found."});
+            return;
+          }
+          if (i == tags_arr.length - 1) {
+            res.json({status: "OK", data: "A file has been inserted successfully."});
+            return;
+          }
         }
       }
       res.json({status: "OK", data: "A file has been inserted successfully."});
