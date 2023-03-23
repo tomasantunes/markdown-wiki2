@@ -2,6 +2,8 @@ import React from 'react';
 import File from './File';
 import Menu from './Menu';
 import { useParams } from 'react-router-dom';
+import AddCategoryModal from './AddCategoryModal';
+import AddTagModal from './AddTagModal';
 
 export default function FilePage() {
   const { id } = useParams();
@@ -16,6 +18,8 @@ export default function FilePage() {
           </div>
         </div>
       </div>
+      <AddCategoryModal />
+      <AddTagModal />
     </>
   )
 }
