@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [listTop10Tags, setListTop10Tags] = useState([]);
   const [list10MostRecent, setList10MostRecent] = useState([]);
   const [list10Largest, setList10Largest] = useState([]);
+  const [listFilesWithoutTags, setListFilesWithoutTags] = useState([]);
   const [list50MostCommonWords, setList50MostCommonWords] = useState([]);
   const wordCloudSize = [600, 400];
   const wordCloudOptions = {
@@ -91,6 +92,22 @@ export default function Dashboard() {
       });
   }
 
+  function loadFilesWithoutTags() {
+    axios
+      .get(config.BACKEND_URL + "/api/files/get-files-without-tags")
+      .then((response) => {
+        if (response.data.status == "OK") {
+          setListFilesWithoutTags(response.data.data);
+        }
+        else {
+          MySwal.fire(response.data.error);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   function load50MostCommonWords() {
     axios
       .get(config.BACKEND_URL + "/api/get-50-most-common-words")
@@ -119,6 +136,7 @@ export default function Dashboard() {
     loadTop10Tags();
     load10MostRecent();
     load10Largest();
+    loadFilesWithoutTags();
     load50MostCommonWords();
   }, []);
   return (
@@ -185,6 +203,18 @@ export default function Dashboard() {
             <div style={{backgroundColor: "white"}}>
               <ReactWordcloud words={list50MostCommonWords} size={wordCloudSize} options={wordCloudOptions} />
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-6">
+          <div className="bg-grey p-3 mb-3 rounded">
+            <h3>Files Without Tags</h3>
+            <ol className="list-files-without-tags">
+              {listFilesWithoutTags.map((item, index) => (
+                <li key={index}><Link to={"/file/" + item.id}>{item.title}</Link></li>
+              ))}
+            </ol>
           </div>
         </div>
       </div>

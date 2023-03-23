@@ -890,6 +890,23 @@ app.post("/api/files/insert", (req, res) => {
   });
 });
 
+app.get("/api/files/get-files-without-tags", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT f.* FROM files f WHERE NOT EXISTS (SELECT ft.file_id FROM files_tags ft WHERE ft.file_id = f.id)";
+
+  con.query(sql, function(err, result) {
+    if (err) {
+      console.log(err.message);
+      res.json({status: "NOK", error: err.message});
+    }
+    res.json({status: "OK", data: result});
+  });
+});
+
 // This route gets all the text files from a category.
 app.get("/api/files/get-files-from-category", (req, res) => {
   if (!req.session.isLoggedIn) {
