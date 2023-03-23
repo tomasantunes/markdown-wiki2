@@ -9,8 +9,14 @@ import AddCategoryModal from './AddCategoryModal';
 import AddTagModal from './AddTagModal';
 import CategoriesSelectMenu from './CategoriesSelectMenu';
 import TagSelectMenu from './TagSelectMenu';
+import $ from 'jquery';
 
 const MySwal = withReactContent(Swal);
+window.jQuery = $;
+window.$ = $;
+global.jQuery = $;
+window.bootstrap = require('bootstrap');
+const bootstrap5DropdownMlHack = require('../bootstrap5-dropdown-ml-hack');
 
 export default function AddMediaFile() {
   const [addMediaFile, setAddMediaFile] = useState({
@@ -79,6 +85,7 @@ export default function AddMediaFile() {
             });
             setSelectedCategory({});
             setSelectedTags([]);
+            $("input[type=file]").val('');
           });
         }
         else {
