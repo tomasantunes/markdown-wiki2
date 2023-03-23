@@ -1458,6 +1458,7 @@ app.post('/api/upload-media-file', function(req, res) {
         });
       }
       else {
+        var tags_arr = tags.split(",");
         await con2.query("DELETE FROM files_tags WHERE file_id = ?", [file_id]);
         for (var i in tags_arr) {
           var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
@@ -1535,22 +1536,7 @@ app.post("/api/images/edit", (req, res) => {
       });
     }
     else {
-      console.log(tags_arr);
       var tags_arr = tags.split(",");
-      /*
-      deleteTagsFromFile(id, function(result) {
-        for (var i in tags_arr) {
-          getTagId(tags_arr[i], function(result) {
-            if (result.status == "OK") {
-              assignTagToFile(id, result.data);
-            }
-            else {
-              res.json({status: "NOK", error: "Tag not found."});
-            }
-          });
-        }
-      });
-      */
       await con2.query("DELETE FROM files_tags WHERE file_id = ?", [id]);
       for (var i in tags_arr) {
         console.log(tags_arr[i]);
