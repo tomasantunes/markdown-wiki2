@@ -47,7 +47,7 @@ export default function AddMediaFile() {
     }
     setAddMediaFile({
       ...addMediaFile,
-      "tags": tags.join(",")
+      "tags": tags_temp.join(",")
     });
     setSelectedTags(items);
   }

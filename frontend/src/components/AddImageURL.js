@@ -40,7 +40,7 @@ export default function AddImageURL() {
     }
     setAddImageURL({
       ...addImageURL,
-      "tags": tags.join(",")
+      "tags": tags_temp.join(",")
     });
     setSelectedTags(items);
   }
