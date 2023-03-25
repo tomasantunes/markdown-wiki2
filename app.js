@@ -1930,7 +1930,7 @@ function sendPinEmail(pin) {
       if(error){
           console.log(error);
       }else{
-          res.redirect('/');
+          console.log("Email has been sent successfully.");
       }
   });
 }
