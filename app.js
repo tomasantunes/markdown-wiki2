@@ -750,13 +750,27 @@ app.post("/api/categories/delete", (req, res) => {
       console.log(err.message);
       res.json({status: "NOK", error: err.message});
     }
-    var sql2 = "DELETE FROM files f INNER JOIN files_tags ft ON f.id = ft.file_id WHERE f.category_id = ?;";
+    var sql2 = "SELECT id FROM files WHERE category_id = ?;";
     con.query(sql2, [id], function(err2, result2) {
       if (err) {
         console.log(err.message);
         res.json({status: "NOK", error: err2.message});
       }
-      res.json({status: "OK", data: "This category has been deleted."});
+      var sql3 = "DELETE FROM files WHERE id IN (?)";
+      con.query(sql3, [result2.map(x => x.id)], function(err3, result3) {
+        if (err) {
+          console.log(err.message);
+          res.json({status: "NOK", error: err3.message});
+        }
+        var sql4 = "DELETE FROM files_tags WHERE file_id IN (?)";
+        con.query(sql4, [result2.map(x => x.id)], function(err4, result4) {
+          if (err) {
+            console.log(err.message);
+            res.json({status: "NOK", error: err4.message});
+          }
+          res.json({status: "OK", data: "This category has been deleted."});
+        });
+      });
     });
   });
 });
