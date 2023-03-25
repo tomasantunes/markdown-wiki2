@@ -482,7 +482,7 @@ export default function File({id}) {
 
       <div class="modal editFileModal" id={"editFileModal" + id} tabindex="-1">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <div class="modal-content px-5">
             <div class="modal-header">
               <h5 class="modal-title">Edit File</h5>
               <button type="button" class="btn-close" onClick={closeEditFileModal} aria-label="Close"></button>
@@ -530,7 +530,7 @@ export default function File({id}) {
 
       <div class="modal editImageModal" id={"editImageModal" + id} tabindex="-1">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <div class="modal-content px-5">
             <div class="modal-header">
               <h5 class="modal-title">Edit Image</h5>
               <button type="button" class="btn-close" onClick={closeEditImageModal} aria-label="Close"></button>
@@ -568,7 +568,7 @@ export default function File({id}) {
 
       <div class="modal appendModal"  id={"appendModal" + id} tabindex="-1">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <div class="modal-content px-5">
             <div class="modal-header">
               <h5 class="modal-title">Append To File</h5>
               <button type="button" class="btn-close" onClick={closeAppendModal} aria-label="Close"></button>
