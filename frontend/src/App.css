@@ -322,6 +322,14 @@ header {
   margin-bottom: 5px;
 }
 
+.btn-edit-bookmark {
+  margin: 5px;
+}
+
+.btn-delete-bookmark {
+  margin: 5px;
+}
+
 /* Login */
 
 .login-box {

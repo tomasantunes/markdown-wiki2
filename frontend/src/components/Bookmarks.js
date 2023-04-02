@@ -612,8 +612,8 @@ export default function Bookmarks() {
                         <td><a href={bookmark.url}>{bookmark.url}</a></td>
                         <td>{bookmark.tags}</td>
                         <td>
-                          <button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button>
-                          <button className="btn btn-danger" onClick={deleteBookmark} value={bookmark.id}>Delete</button>
+                          <button className="btn btn-primary btn-edit-bookmark" onClick={showEditBookmark} value={bookmark.id}>Edit</button>
+                          <button className="btn btn-danger btn-delete-bookmark" onClick={deleteBookmark} value={bookmark.id}>Delete</button>
                         </td>
                       </tr>
                       ))}
