@@ -211,7 +211,7 @@ function insertNewCategory(category_name, parentCategoryId, cb) {
 
 // Function that checks if a file is in a category
 function checkCategory(file_id, category_id, cb) {
-  var sql = "SELECT * FROM files WHERE id = ? AND category_id = ?;";
+  var sql = "SELECT * FROM files WHERE id = ? ANDf category_id = ?;";
   con.query(sql, [file_id, category_id], function(err, result) {
     if (result.length > 0) {
       cb(true);
@@ -1619,6 +1619,24 @@ app.post("/api/bookmarks/remove-dups", async (req, res) => {
     }
   }
   res.json({status: "OK", data: "Duplicates have been removed successfully."});
+});
+
+app.post("/api/bookmarks/delete", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+
+  var sql = "DELETE FROM bookmarks WHERE id = ?";
+  con.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err.message});
+    }
+    res.json({status: "OK", data: "Bookmark has been deleted successfully."})
+  });
 });
 
 // This route receives a bookmarks HTML file and imports it to the database. It receives parameters for a specific folder to import, whether to ignore folders and a target folder. It uses a python script to convert the HTML file to a JSON file.

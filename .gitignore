@@ -10,4 +10,5 @@ database/mainwiki3.sql
 database/mainwiki3-dump1.sql
 database/mainwiki3-dump2.sql
 database/mainwiki3-dump3.sql
+database/mainwiki3-dump4.sql
 sessions.json

@@ -243,6 +243,31 @@ export default function Bookmarks() {
     });
   }
 
+  function deleteBookmark(e) {
+    MySwal.fire({
+      title: "Are you sure?",
+      showConfirmButton: true,
+      showCancelButton: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.post(config.BACKEND_URL + "/api/bookmarks/delete", {id: e.target.value})
+        .then(function(response) {
+          if (response.data.status == "OK") {
+            MySwal.fire("Bookmark has been deleted.").then(function(value) {
+              loadBookmarks();
+            });
+          }
+          else {
+            MySwal.fire("Error: " + response.data.error);
+          }
+        })
+        .catch(function(err) {
+          MySwal.fire("Error: " + err.message);
+        })
+      }
+    })
+  }
+
   function removeBookmarkDups() {
     setIsRemovingDups(true);
     var data = {
@@ -586,7 +611,10 @@ export default function Bookmarks() {
                         <td>{bookmark.title}</td>
                         <td><a href={bookmark.url}>{bookmark.url}</a></td>
                         <td>{bookmark.tags}</td>
-                        <td><button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button></td>
+                        <td>
+                          <button className="btn btn-primary" onClick={showEditBookmark} value={bookmark.id}>Edit</button>
+                          <button className="btn btn-danger" onClick={deleteBookmark} value={bookmark.id}>Delete</button>
+                        </td>
                       </tr>
                       ))}
                   </tbody>
