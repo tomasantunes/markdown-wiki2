@@ -75,14 +75,14 @@ export default function AddTextFile() {
     axios.post(config.BACKEND_URL + '/api/files/insert', newFile)
     .then(function (response) {
       if (response.data.status == "OK") {
+        setNewFile({
+          "title": "",
+          "content": "",
+          "extension": "md",
+          "category": "",
+          "tags": ""
+        });
         MySwal.fire("A new file has been inserted.").then(function(value) {
-          setNewFile({
-            "title": "",
-            "content": "",
-            "extension": "md",
-            "category": "",
-            "tags": ""
-          });
           setSelectedCategory({});
           setSelectedTags([]);
           mdEditor.current.setText("");
@@ -188,7 +188,7 @@ export default function AddTextFile() {
         <div className="form-group py-2">
             <label className="control-label">Title</label>
             <div>
-                <input type="text" className="form-control input-lg" name="content" value={newFile.title} onChange={changeNewFileTitle} />
+                <input type="text" className="form-control input-lg" name="title" value={newFile.title} onChange={changeNewFileTitle} />
             </div>
         </div>
         <div className="form-group py-2">
