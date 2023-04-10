@@ -157,6 +157,10 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
     });
   }
 
+  function reload() {
+    loadSubcategories();
+  }
+
   useEffect(() =>{
     loadSubcategories();
     $(".modal").on("focus", function(event) { event.preventDefault(); })
@@ -306,8 +310,8 @@ export default function ListFiles({loadFiles, loadImageFiles, loadPDFFiles, file
           </div>
         </div>
       </div>
-      <AddCategoryModal />
-      <AddTagModal />
+      <AddCategoryModal reload={reload} />
+      <AddTagModal reload={reload} />
     </>
   )
 }

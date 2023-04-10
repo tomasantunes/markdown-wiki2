@@ -183,6 +183,11 @@ export default function AddTextFile() {
     }); 
   }
 
+  function reload() {
+    loadCategories();
+    loadTags();
+  }
+
   useEffect(() => {
     loadCategories();
     loadTags();
@@ -228,8 +233,8 @@ export default function AddTextFile() {
         </div>
       </form>
     </div>
-    <AddCategoryModal />
-    <AddTagModal />
+    <AddCategoryModal reload={reload} />
+    <AddTagModal reload={reload} />
     </>
   )
 }

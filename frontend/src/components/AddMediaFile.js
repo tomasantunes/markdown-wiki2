@@ -169,6 +169,11 @@ export default function AddMediaFile() {
     }); 
   }
 
+  function reload() {
+    loadCategories();
+    loadTags();
+  }
+
   useEffect(() => {
     loadCategories();
     loadTags();
@@ -202,8 +207,8 @@ export default function AddMediaFile() {
         </div>
       </form>
     </div>
-    <AddCategoryModal />
-    <AddTagModal />
+    <AddCategoryModal reload={reload} />
+    <AddTagModal reload={reload} />
     </>
   )
 }

@@ -156,6 +156,11 @@ export default function AddImageURL() {
     }); 
   }
 
+  function reload() {
+    loadCategories();
+    loadTags();
+  }
+
   useEffect(() => {
     loadCategories();
     loadTags();
@@ -188,8 +193,8 @@ export default function AddImageURL() {
           </div>
       </form>
     </div>
-    <AddCategoryModal />
-    <AddTagModal />
+    <AddCategoryModal reload={reload} />
+    <AddTagModal reload={reload} />
     </>
   )
 }
