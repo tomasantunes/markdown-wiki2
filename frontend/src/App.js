@@ -13,6 +13,7 @@ import CategoryPage from './components/CategoryPage';
 import Bookmarks from './components/Bookmarks';
 import Tag from './components/Tag';
 import SearchPage from './components/SearchPage';
+import SearchTags from './components/SearchTags';
 import Pinned from './components/Pinned';
 import Login from './components/Login';
 import FilePage from './components/FilePage';
@@ -29,6 +30,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Home />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/search-tags" element={<SearchTags />} />
         <Route path="/add-file" element={<AddFile />} />
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/add-tag" element={<AddTag />} />

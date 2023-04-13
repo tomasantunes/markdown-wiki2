@@ -1266,6 +1266,49 @@ app.get("/api/files/search", (req, res) => {
 
 });
 
+// This route searches for files based on the tags they have.
+app.get("/api/files/search-tags", async (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var tags = req.query.tags;
+  var tag_ids = tags.split(",");
+  console.log(tag_ids);
+
+  var sql = "SELECT file_id FROM files_tags WHERE tag_id IN (?)";
+  var result = await con2.query(sql, [tag_ids]);
+  var matches = [];
+
+  for (var i in result[0]) {
+    var file_id = result[0][i]['file_id'];
+    var is_match = true;
+    for (var i in tag_ids) {
+      var sql2 = "SELECT file_id FROM files_tags WHERE tag_id = ? AND file_id = ?;";
+      var result2 = await con2.query(sql2, [tag_ids[i], file_id]);
+      if (result2[0].length < 1) {
+        is_match = false;
+      }
+    }
+    if (is_match) {
+      matches.push(file_id);
+    }
+  }
+
+  matches = [...new Set(matches)];
+  console.log(matches);
+
+  if (matches.length > 0) {
+    var sql3 = "SELECT * FROM files WHERE id IN (?)";
+    var result3 = await con2.query(sql3, [matches]);
+    res.json({status: "OK", data: result3[0]});
+  }
+  else {
+    res.json({status: "OK", data: []});
+  }
+});
+
 // This route deletes a file by ID.
 app.post("/api/files/delete", (req, res) => {
   if (!req.session.isLoggedIn) {
@@ -2049,6 +2092,16 @@ app.get('/dashboard', (req,res) => {
 });
 
 app.get('/search', (req,res) => {
+  console.log(req.session.isLoggedIn);
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/search-tags', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
     res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');

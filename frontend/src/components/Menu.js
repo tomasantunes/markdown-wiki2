@@ -18,6 +18,7 @@ const Menu = () => {
   const menuItemsInitialState = [
     {title: "Home", link: "/"},
     {title: "Search", link: "/search"},
+    {title: "Search Tags", link: "/search-tags"},
     {title: "Add File", link: "/add-file"},
     {title: "Add Category", link: "/add-category"},
     {title: "Add Tag", link: "/add-tag"},
