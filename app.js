@@ -1895,6 +1895,23 @@ app.get("/api/get-bookmarks-from-folder", (req, res) => {
   });
 });
 
+// This route returns all the bookmarks that don't have tags in JSON format.
+app.get("/api/get-bookmarks-json", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var sql = "SELECT id, url, '' AS tags FROM bookmarks WHERE type = 'bookmark' AND tags != ''";
+  con.query(sql, function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+    res.json(result);
+  });
+});
+
 app.get("/api/bookmarks/search", (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
