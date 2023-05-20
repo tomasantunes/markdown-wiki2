@@ -5,18 +5,15 @@ var secretConfig = require("../../secret-config.json");
 var file = fs.readFileSync("bookmarks-out.json");
 var bookmarks = JSON.parse(file);
 
-var con = mysql2.createConnection({
-    host: secretConfig.DB_HOST,
+con = mysql.createPool({
+    connectionLimit : 90,
+    connectTimeout: 1000000,
+    host: db_host,
     user: secretConfig.DB_USER,
     password: secretConfig.DB_PASSWORD,
     database: secretConfig.DB_NAME,
     port: '/var/run/mysqld/mysqld.sock'
-});
-
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-});
+  });
 
 console.log("Starting...");
 for (var i in bookmarks) {
