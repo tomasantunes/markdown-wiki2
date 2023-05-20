@@ -1902,7 +1902,7 @@ app.get("/api/get-bookmarks-json", (req, res) => {
     return;
   }
 
-  var sql = "SELECT id, url, '' AS tags FROM bookmarks WHERE type = 'bookmark' AND tags != ''";
+  var sql = "SELECT id, url, '' AS tags FROM bookmarks WHERE type = 'bookmark' AND tags <> ''";
   con.query(sql, function(err, result) {
     if (err) {
       res.json({status: "NOK", error: JSON.stringify(err)});
