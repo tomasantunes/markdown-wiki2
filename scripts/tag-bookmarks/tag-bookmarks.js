@@ -1,4 +1,4 @@
-var mysql2 = require("mysql2");
+var mysql = require("mysql2");
 var fs = require("fs");
 var secretConfig = require("../../secret-config.json");
 
