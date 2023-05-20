@@ -25,5 +25,6 @@ for (var i in bookmarks) {
 }
 
 con.query(queries, function (err, result) {
+    if (err) throw err;
     console.log("Finished!");
 });
