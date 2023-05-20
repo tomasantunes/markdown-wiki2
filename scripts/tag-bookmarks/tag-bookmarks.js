@@ -8,7 +8,7 @@ var bookmarks = JSON.parse(file);
 con = mysql.createPool({
     connectionLimit : 90,
     connectTimeout: 1000000,
-    host: db_host,
+    host: secretConfig.DB_HOST,
     user: secretConfig.DB_USER,
     password: secretConfig.DB_PASSWORD,
     database: secretConfig.DB_NAME,
