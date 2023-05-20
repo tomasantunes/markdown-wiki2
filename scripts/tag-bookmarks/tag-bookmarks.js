@@ -12,17 +12,18 @@ con = mysql.createPool({
     user: secretConfig.DB_USER,
     password: secretConfig.DB_PASSWORD,
     database: secretConfig.DB_NAME,
-    port: '/var/run/mysqld/mysqld.sock'
+    port: '/var/run/mysqld/mysqld.sock',
+    multipleStatements: true,
   });
 
 console.log("Starting...");
+var queries = '';
 for (var i in bookmarks) {
     if (bookmarks[i].tags != '') {
-        var sql = "UPDATE bookmarks SET tags = ? WHERE id = ?";
-        var values = [bookmarks[i].tags, bookmarks[i].id];
-        con.query(sql, values, function (err, result) {
-            if (err) throw err;
-            console.log("1 record updated");
-        });
+        queries += mysql.format("UPDATE bookmarks SET tags = ? WHERE id = ?; ", [bookmarks[i].tags, bookmarks[i].id]);
     }
 }
+
+con.query(queries, function (err, result) {
+    console.log("Finished!");
+});
