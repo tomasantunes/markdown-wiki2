@@ -1399,6 +1399,44 @@ app.post("/api/files/append", (req, res) => {
   });
 });
 
+app.get("/export-section", (req, res) => {
+  var category_id = 83;
+
+  var sql = "SELECT * FROM files WHERE catgory_id = ?";
+  con.query(sql, [catgory_id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    fs.writeFileSync("exported_category.json", JSON.stringify(result));
+    fs.mkdirSync(path.join(__dirname, "exported_media"));
+    var file_ids = [];
+    for (var i in result) {
+      file_ids.push(result[i].id);
+      if (result[i].path != null) {
+        fs.copyFileSync(result[i].path, path.join(__dirname, "exported_media", path.basename(result[i].path)));
+      }
+    }
+    var sql2 = "SELECT * FROM tags";
+    con.query(sql, [], function(err2, result2) {
+      if (err2) {
+        console.log(err2);
+        res.json({status: "NOK", error: err2});
+      }
+      fs.writeFileSync("exported_tags.json", JSON.stringify(result2));
+      var sql3 = "SELECT * FROM files_tags WHERE file_id IN (?)";
+      con.query(sql3, [file_ids], function(err3, result3) {
+        if (err3) {
+          console.log(err3);
+          res.json({status: "NOK", error: err3});
+        }
+        fs.writeFileSync("exported_files_tags.json", JSON.stringify(result3));
+        console.log("Export has been successful.");
+      });
+    });
+  });
+});
+
 // This route pins a file.
 app.post("/api/files/pin", (req, res) => {
   if (!req.session.isLoggedIn) {
