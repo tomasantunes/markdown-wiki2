@@ -1452,7 +1452,6 @@ app.get("/import-section", async (req, res) => {
   var exported_files_tags = fs.readFileSync("exported_files_tags.json");
   var exported_files_tags = JSON.parse(exported_files_tags);
 
-  /*
   var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?)";
   for (var i in exported_category) {
     var result = await con2.query(sql, [exported_category[i].name, 0]);
@@ -1477,7 +1476,6 @@ app.get("/import-section", async (req, res) => {
     var result = await con2.query(sql, [exported_files_tags[i].file_id, exported_files_tags[i].tag_id]);
     console.log(result[0].insertId);
   }
-  */
 
   // copy all files from exported_media to media
   for (var i in exported_media) {
