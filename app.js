@@ -1464,7 +1464,7 @@ app.get("/import-section", async (req, res) => {
     var result = await con2.query(sql, [exported_tags[i].name]);
     console.log(result[0].insertId);
   }
-  */
+  
 
   var sql = "INSERT INTO files (title, content, extension, category_id, path) VALUES (?, ?, ?, ?, ?)";
   for (var i in exported_files) {
@@ -1477,10 +1477,11 @@ app.get("/import-section", async (req, res) => {
     var result = await con2.query(sql, [exported_files_tags[i].file_id, exported_files_tags[i].tag_id]);
     console.log(result[0].insertId);
   }
+  */
 
   // copy all files from exported_media to media
   for (var i in exported_media) {
-    fs.copyFileSync(path.join(__dirname, "exported_media", exported_media[i]), path.join(__dirname, "media", exported_media[i]));
+    fs.copyFileSync(path.join(__dirname, "exported_media", exported_media[i]), path.join(__dirname, "media-files", exported_media[i]));
   }
 
   res.json({status: "OK", data: "Import has been completed successfully."});
