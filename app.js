@@ -1421,7 +1421,7 @@ app.get("/export-section", (req, res) => {
       }
     }
     var sql2 = "SELECT * FROM tags";
-    con.query(sql, [], function(err2, result2) {
+    con.query(sql2, [], function(err2, result2) {
       if (err2) {
         console.log(err2);
         res.json({status: "NOK", error: err2});
