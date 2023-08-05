@@ -1409,7 +1409,10 @@ app.get("/export-section", (req, res) => {
       res.json({status: "NOK", error: err});
     }
     fs.writeFileSync("exported_category.json", Buffer.from(JSON.stringify(result)));
-    fs.mkdirSync(path.join(__dirname, "exported_media"));
+    fs.rmSync(path.join(__dirname, "exported_media"), { recursive: true, force: true });
+    if (!fs.existsSync(path.join(__dirname, "exported_media"))) {
+      fs.mkdirSync(path.join(__dirname, "exported_media"));
+    }
     var file_ids = [];
     for (var i in result) {
       file_ids.push(result[i].id);
