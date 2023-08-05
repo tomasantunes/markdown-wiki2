@@ -1403,7 +1403,7 @@ app.get("/export-section", (req, res) => {
   var category_id = 83;
 
   var sql = "SELECT * FROM files WHERE catgory_id = ?";
-  con.query(sql, [catgory_id], function(err, result) {
+  con.query(sql, [category_id], function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err});
