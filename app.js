@@ -1431,7 +1431,7 @@ async function exportAllChildren(category_ids) {
 app.get("/clean-filename", (req, res) => {
   // Create a query that updates all files with the following path: "media_files/" + basename(file)
   // This will remove the path from the filename.
-  var sql = "UPDATE files SET path = CONCAT('media_files/', SUBSTRING_INDEX(path, '/', -1)) WHERE path LIKE '%/%';";
+  var sql = "UPDATE files SET path = CONCAT('media-files/', SUBSTRING_INDEX(path, '/', -1)) WHERE path LIKE '%/%';";
   con.query(sql, function(err, result) {
     if (err) {
       console.log(err);
