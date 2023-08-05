@@ -1444,6 +1444,8 @@ app.get("/clean-filename", (req, res) => {
 app.get("/import-section", async (req, res) => {
   var exported_category_file = fs.readFileSync("exported_category.json");
   var exported_category = JSON.parse(exported_category_file);
+  var exported_files_file = fs.readFileSync("exported_files.json");
+  var exported_files = JSON.parse(exported_files_file);s
   var exported_media = fs.readdirSync("exported_media");
   var exported_tags_file = fs.readFileSync("exported_tags.json");
   var exported_tags = JSON.parse(exported_tags_file);
@@ -1463,8 +1465,8 @@ app.get("/import-section", async (req, res) => {
   }
 
   var sql = "INSERT INTO files (title, content, extension, category_id, path) VALUES (?, ?, ?, ?, ?)";
-  for (var i in exported_category) {
-    var result = await con2.query(sql, [exported_category[i].title, exported_category[i].content, exported_category[i].extension, exported_category[i].category_id, exported_category[i].path]);
+  for (var i in exported_file) {
+    var result = await con2.query(sql, [exported_files[i].title, exported_files[i].content, exported_files[i].extension, exported_files[i].category_id, exported_files[i].path]);
     console.log(result[0].insertId);
   }
 
@@ -1490,6 +1492,10 @@ app.get("/export-section", async (req, res) => {
   var allCategoryIds = await exportAllChildren(category_ids);
 
   console.log(allCategoryIds);
+
+  var sql0 = "SELECT * FROM categories WHERE id IN (?)";
+  var result0 = await con2.query(sql0, [allCategoryIds]);
+  fs.writeFileSync("exported_category.json", Buffer.from(JSON.stringify(result0[0])));
   
   var sql = "SELECT * FROM files WHERE category_id IN (?)";
   con.query(sql, [allCategoryIds], function(err, result) {
@@ -1497,7 +1503,7 @@ app.get("/export-section", async (req, res) => {
       console.log(err);
       res.json({status: "NOK", error: err});
     }
-    fs.writeFileSync("exported_category.json", Buffer.from(JSON.stringify(result)));
+    fs.writeFileSync("exported_files.json", Buffer.from(JSON.stringify(result)));
     fs.rmSync(path.join(__dirname, "exported_media"), { recursive: true, force: true });
     if (!fs.existsSync(path.join(__dirname, "exported_media"))) {
       fs.mkdirSync(path.join(__dirname, "exported_media"));
