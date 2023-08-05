@@ -1408,7 +1408,7 @@ app.get("/export-section", (req, res) => {
       console.log(err);
       res.json({status: "NOK", error: err});
     }
-    fs.writeFileSync("exported_category.json", JSON.stringify(result));
+    fs.writeFileSync("exported_category.json", Buffer.from(JSON.stringify(result)));
     fs.mkdirSync(path.join(__dirname, "exported_media"));
     var file_ids = [];
     for (var i in result) {
@@ -1423,14 +1423,14 @@ app.get("/export-section", (req, res) => {
         console.log(err2);
         res.json({status: "NOK", error: err2});
       }
-      fs.writeFileSync("exported_tags.json", JSON.stringify(result2));
+      fs.writeFileSync("exported_tags.json", Buffer.from(JSON.stringify(result2)));
       var sql3 = "SELECT * FROM files_tags WHERE file_id IN (?)";
       con.query(sql3, [file_ids], function(err3, result3) {
         if (err3) {
           console.log(err3);
           res.json({status: "NOK", error: err3});
         }
-        fs.writeFileSync("exported_files_tags.json", JSON.stringify(result3));
+        fs.writeFileSync("exported_files_tags.json", Buffer.from(JSON.stringify(result3)));
         console.log("Export has been successful.");
       });
     });
