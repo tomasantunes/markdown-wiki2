@@ -1452,7 +1452,7 @@ app.get("/import-section", async (req, res) => {
 
   var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?)";
   for (var i in exported_category) {
-    var result = await con2.query(sql, [exported_category[i].name, exported_category[i].parent_id]);
+    var result = await con2.query(sql, [exported_category[i].name, 0]);
     console.log(result[0].insertId);
   }
 
