@@ -1493,7 +1493,7 @@ app.get("/export-section", async (req, res) => {
     for (var i in result) {
       file_ids.push(result[i].id);
       if (result[i].path != null) {
-        fs.copyFileSync(path.join(__dirname, result[i].path), path.join(__dirname, "exported_media", path.basename(result[i].path)));
+        fs.copyFileSync(path.resolve(path.join(__dirname, result[i].path)), path.join(__dirname, "exported_media", path.basename(result[i].path)));
       }
     }
     var sql2 = "SELECT * FROM tags";
