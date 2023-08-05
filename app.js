@@ -1428,6 +1428,19 @@ async function exportAllChildren(category_ids) {
   return allCategoryIds;
 }
 
+app.get("/clean-filename", (req, res) => {
+  // Create a query that updates all files with the following path: "media_files/" + basename(file)
+  // This will remove the path from the filename.
+  var sql = "UPDATE files SET path = CONCAT('media_files/', SUBSTRING_INDEX(path, '/', -1)) WHERE path LIKE '%/%';";
+  con.query(sql, function(err, result) {
+    if (err) {
+      console.log(err);
+      res.json({status: "NOK", error: err});
+    }
+    res.json({status: "OK", data: "File has been edited successfully."});
+  });
+});
+
 app.get("/import-section", async (req, res) => {
   var exported_category_file = fs.readFileSync("exported_category.json");
   var exported_category = JSON.parse(exported_category_file);
