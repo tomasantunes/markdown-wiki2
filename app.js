@@ -1402,7 +1402,7 @@ app.post("/api/files/append", (req, res) => {
 app.get("/export-section", (req, res) => {
   var category_id = 83;
 
-  var sql = "SELECT * FROM files WHERE catgory_id = ?";
+  var sql = "SELECT * FROM files WHERE category_id = ?";
   con.query(sql, [category_id], function(err, result) {
     if (err) {
       console.log(err);
