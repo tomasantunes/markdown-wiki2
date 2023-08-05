@@ -1399,11 +1399,87 @@ app.post("/api/files/append", (req, res) => {
   });
 });
 
-app.get("/export-section", (req, res) => {
-  var category_id = 83;
+async function exportHasChildren(category_id) {
+  var sql = "SELECT * FROM categories WHERE parent_id = ?";
+  var result = await con2.query(sql, [category_id]);
+  if (result[0].length > 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
-  var sql = "SELECT * FROM files WHERE category_id = ?";
-  con.query(sql, [category_id], function(err, result) {
+async function exportGetChildren(category_id) {
+  var sql = "SELECT * FROM categories WHERE parent_id = ?";
+  var result = await con2.query(sql, [category_id]);
+  var category_ids = result[0].map(c => c.id);
+  return category_ids;
+}
+
+async function exportAllChildren(category_ids) {
+  var allCategoryIds = [...category_ids];
+  for (var i = 0; i < category_ids.length; i++) {
+    if (await exportHasChildren(category_ids[i])) {
+      var category_ids2 = await exportGetChildren(category_ids[i]);
+      allCategoryIds = allCategoryIds.concat(category_ids2);
+      allCategoryIds = allCategoryIds.concat(await exportAllChildren(category_ids2));
+    }
+  }
+  return allCategoryIds;
+}
+
+app.get("/import-section", async (req, res) => {
+  var exported_category_file = fs.readFileSync("exported_category.json");
+  var exported_category = JSON.parse(exported_category_file);
+  var exported_media = fs.readdirSync("exported_media");
+  var exported_tags_file = fs.readFileSync("exported_tags.json");
+  var exported_tags = JSON.parse(exported_tags_file);
+  var exported_files_tags = fs.readFileSync("exported_files_tags.json");
+  var exported_files_tags = JSON.parse(exported_files_tags);
+
+  var sql = "INSERT INTO categories (name, parent_id) VALUES (?, ?)";
+  for (var i in exported_category) {
+    var result = await con2.query(sql, [exported_category[i].name, exported_category[i].parent_id]);
+    console.log(result[0].insertId);
+  }
+
+  var sql = "INSERT INTO tags (name) VALUES (?)";
+  for (var i in exported_tags) {
+    var result = await con2.query(sql, [exported_tags[i].name]);
+    console.log(result[0].insertId);
+  }
+
+  var sql = "INSERT INTO files (title, content, extension, category_id, path) VALUES (?, ?, ?, ?, ?)";
+  for (var i in exported_category) {
+    var result = await con2.query(sql, [exported_category[i].title, exported_category[i].content, exported_category[i].extension, exported_category[i].category_id, exported_category[i].path]);
+    console.log(result[0].insertId);
+  }
+
+  var sql = "INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)";
+  for (var i in exported_files_tags) {
+    var result = await con2.query(sql, [exported_files_tags[i].file_id, exported_files_tags[i].tag_id]);
+    console.log(result[0].insertId);
+  }
+
+  // copy all files from exported_media to media
+  for (var i in exported_media) {
+    fs.copyFileSync(path.join(__dirname, "exported_media", exported_media[i]), path.join(__dirname, "media", exported_media[i]));
+  }
+
+  res.json({status: "OK", data: "Import has been completed successfully."});
+
+});
+
+app.get("/export-section", async (req, res) => {
+  var category_id = 83;
+  var category_ids = [category_id];
+
+  var allCategoryIds = await exportAllChildren(category_ids);
+
+  console.log(allCategoryIds);
+  
+  var sql = "SELECT * FROM files WHERE category_id IN (?)";
+  con.query(sql, [allCategoryIds], function(err, result) {
     if (err) {
       console.log(err);
       res.json({status: "NOK", error: err});
@@ -1435,6 +1511,7 @@ app.get("/export-section", (req, res) => {
         }
         fs.writeFileSync("exported_files_tags.json", Buffer.from(JSON.stringify(result3)));
         console.log("Export has been successful.");
+        res.json({status: "OK", data: "Export has been successful."});
       });
     });
   });
