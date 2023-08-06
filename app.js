@@ -1479,7 +1479,7 @@ app.get("/import-section", async (req, res) => {
 
   var sql = "INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)";
   for (var i in exported_files_tags) {
-    var result = await con2.query(sql, [exported_files_tags[i].file_id, exported_files_tags[i].tag_id]);
+    var result = await con2.query(sql, [old_to_new_file_ids[exported_files_tags[i].file_id], exported_files_tags[i].tag_id]);
     console.log(result[0].insertId);
   }
 
