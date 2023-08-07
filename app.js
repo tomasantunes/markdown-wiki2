@@ -1520,7 +1520,7 @@ app.get("/export-section", async (req, res) => {
         fs.copyFileSync(path.resolve(path.join(__dirname, result[i].path.replace(/\\/g, "/"))), path.join(__dirname, "exported_media", path.basename(result[i].path)));
       }
     }
-    var sql2 = "SELECT * FROM files_tags INNER JOIN tags ON files_tags.tag_id = tags.id WHERE files_tags.file_id IN (?)";
+    var sql2 = "SELECT tags.* FROM files_tags INNER JOIN tags ON files_tags.tag_id = tags.id WHERE files_tags.file_id IN (?)";
     con.query(sql2, [file_ids], function(err2, result2) {
       if (err2) {
         console.log(err2);
