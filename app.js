@@ -1462,13 +1462,11 @@ app.get("/import-section", async (req, res) => {
     old_to_new_category_ids[exported_category[i].id] = result[0].insertId;
   }
 
-  /*
   var sql = "INSERT INTO tags (name) VALUES (?)";
   for (var i in exported_tags) {
     var result = await con2.query(sql, [exported_tags[i].name]);
     console.log(result[0].insertId);
   }
-  */
 
   var sql = "INSERT INTO files (title, content, extension, category_id, path) VALUES (?, ?, ?, ?, ?)";
   for (var i in exported_files) {
@@ -1522,8 +1520,8 @@ app.get("/export-section", async (req, res) => {
         fs.copyFileSync(path.resolve(path.join(__dirname, result[i].path.replace(/\\/g, "/"))), path.join(__dirname, "exported_media", path.basename(result[i].path)));
       }
     }
-    var sql2 = "SELECT * FROM tags";
-    con.query(sql2, [], function(err2, result2) {
+    var sql2 = "SELECT * FROM files_tags INNER JOIN tags ON files_tags.tag_id = tags.id WHERE files_tags.file_id IN (?)";
+    con.query(sql2, [file_ids], function(err2, result2) {
       if (err2) {
         console.log(err2);
         res.json({status: "NOK", error: err2});
