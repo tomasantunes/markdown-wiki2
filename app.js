@@ -2158,7 +2158,7 @@ function sendPinEmail(pin) {
       from: secretConfig.SITE_EMAIL,
       to: secretConfig.USER_EMAIL, 
       subject: 'PIN',
-      text: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: ' + pin + '. This PIN will expire in 1 hour.'
+      text: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: \n\n' + pin + '\n\n This PIN will expire in 1 hour.'
   }
   smtpTransport.sendMail(mailOptions, function(error, response){
       if(error){
