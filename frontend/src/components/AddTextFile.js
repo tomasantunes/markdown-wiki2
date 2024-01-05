@@ -36,6 +36,7 @@ export default function AddTextFile() {
   const [tags, setTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
   const [selectedTags, setSelectedTags] = useState();
+  const [selectedFileExtension, setSelectedFileExtension] = useState();
   var categories_to_add = [];
 
   function changeNewFileTitle(e) {
@@ -74,6 +75,7 @@ export default function AddTextFile() {
   }
 
   function changeNewFileExtension(item) {
+    setSelectedFileExtension(item);
     setNewFile({
       ...newFile,
       "extension": item.value
@@ -99,6 +101,7 @@ export default function AddTextFile() {
           });
           setSelectedCategory({});
           setSelectedTags([]);
+          setSelectedFileExtension({});
         })
       }
       else {
@@ -224,7 +227,7 @@ export default function AddTextFile() {
         </div>
         <div className="form-group py-2">
           <label className="control-label">Extension</label>
-          <Select options={extensions} onChange={changeNewFileExtension} />
+          <Select options={extensions} value={selectedFileExtension} onChange={changeNewFileExtension} />
         </div>
         <div className="form-group">
             <div style={{textAlign: "right"}}>
