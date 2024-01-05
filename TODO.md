@@ -8,4 +8,3 @@
 - Create feature to merge two folders and specifying which folder to keep.
 - Create page with list of tags that you can edit and delete.
 - Clear extension selector after submitting text file.
-- Add break line before PIN code on email.
