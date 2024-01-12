@@ -2159,7 +2159,7 @@ function sendPinEmail(pin) {
     from: secretConfig.SMTP_EMAIL,
     to: secretConfig.RECIPIENT_EMAIL,
     subject: 'PIN',
-    html: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: \n\n' + pin + '\n\n This PIN will expire in 1 hour.'
+    text: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: \n\n' + pin + '\n\n This PIN will expire in 1 hour.'
   };
 
   transport.sendMail(mailOptions, function(error, response){
