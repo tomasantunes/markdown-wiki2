@@ -2162,7 +2162,7 @@ function sendPinEmail(pin) {
     html: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: \n\n' + pin + '\n\n This PIN will expire in 1 hour.'
   };
 
-  smtpTransport.sendMail(mailOptions, function(error, response){
+  transport.sendMail(mailOptions, function(error, response){
       if(error){
           console.log(error);
       }else{
