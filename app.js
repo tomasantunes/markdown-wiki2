@@ -2145,21 +2145,23 @@ app.post("/api/check-pin", (req, res) => {
 
 // This function sends an email to the user with the authentication PIN.
 function sendPinEmail(pin) {
-  var smtpTransport = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-          user: secretConfig.SITE_EMAIL,
-          pass: secretConfig.SITE_EMAIL_PASSWORD
-      }
+
+  var transport = nodemailer.createTransport({
+    host: secretConfig.SMTP_HOST,
+    port: secretConfig.SMTP_PORT,
+    auth: {
+      user: secretConfig.SMTP_EMAIL,
+      pass: secretConfig.SMTP_PASSWORD
+    }
   });
+
   var mailOptions = {
-      from: secretConfig.SITE_EMAIL,
-      to: secretConfig.USER_EMAIL, 
-      subject: 'PIN',
-      text: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: \n\n' + pin + '\n\n This PIN will expire in 1 hour.'
-  }
+    from: secretConfig.SMTP_EMAIL,
+    to: secretConfig.RECIPIENT_EMAIL,
+    subject: 'PIN',
+    html: 'We received a request to login to your account at ' + secretConfig.SITENAME + '. Please enter the following PIN to login: \n\n' + pin + '\n\n This PIN will expire in 1 hour.'
+  };
+
   smtpTransport.sendMail(mailOptions, function(error, response){
       if(error){
           console.log(error);
