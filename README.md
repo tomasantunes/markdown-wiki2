@@ -16,19 +16,19 @@ NodeJS web application to create a wiki
 ## How to build
 ```
 npm install
-cd markdown-wiki2-frontend
+cd frontend
 npm install --legacy-peer-deps
-npm run build
 pip install bookmarks_parser
 ```
 
 ## How to run
 ```
 Create a secret-config.json file by copying and renaming the secret-config-base.json
-Create a config.json file by copying and renaming the file markdown-wiki2-frontend/src/config-base.json
+Create a config.json file by copying and renaming the file frontend/src/config-base.json
+npm run build
 Create a sessions.json file by copying and renaming the file sessions-base.json
 npm start
-Go to localhost:4001
+Go to localhost:4002
 ```
 
 ## How to create database
@@ -42,6 +42,6 @@ Run the following python script: install/config.py
 docker build -f docker/Dockerfile.database -t markdownwiki2/database .
 docker run -d -p 3307:3306 markdownwiki2/database
 docker build -f docker/Dockerfile.application -t markdownwiki2/application .
-docker run -d -p 4001:80 markdownwiki2/application
-Go to localhost:4001
+docker run -d -p 4002:80 markdownwiki2/application
+Go to localhost:4002
 ```

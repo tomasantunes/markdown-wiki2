@@ -147,6 +147,7 @@ header {
   border-radius: 25px;
   margin-bottom: 25px;
   border: 2px solid #555;
+  white-space: pre-wrap;
 }
 
 .image-files {
