@@ -166,6 +166,10 @@ header {
   max-width: 100%;
 }
 
+.file-content {
+  white-space: pre-wrap;
+}
+
 .file-content ul {
   list-style-type: disc;
 }
