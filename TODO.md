@@ -1,5 +1,6 @@
 # TODO
 
+- Make sure that the category or tag you create becomes selected on the dropdown.
 - Apply tags to all bookmarks
 - Create button to export folder.
 - Create button to import folder.
