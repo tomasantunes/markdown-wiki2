@@ -144,7 +144,7 @@ checkDocker().then((addr) => {
     increaseTimeout();
   } else {
     console.log('Not in Docker');
-    console.log(secretConfig.DB_HOST);
+    console.log("DB_HOST: " + secretConfig.DB_HOST);
     startDatabaseConnection(secretConfig.DB_HOST);
     increaseTimeout();
   }
