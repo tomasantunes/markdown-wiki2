@@ -2072,6 +2072,30 @@ app.get("/api/bookmarks/search", (req, res) => {
   });
 });
 
+app.post("/api/tags/delete", (req, res) => {
+  if (!req.session.isLoggedIn) {
+    res.json({status: "NOK", error: "Invalid Authorization."});
+    return;
+  }
+
+  var id = req.body.id;
+
+  con.query("DELETE FROM tags WHERE id = ?", [id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: JSON.stringify(err)});
+      return;
+    }
+
+    con.query("DELETE FROM files_tags WHERE tag_id = ?", [id], function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: JSON.stringify(err)});
+        return;
+      }
+      res.json({status: "OK", data: "Tag has been deleted."});
+    });
+  });
+});
+
 // Authentication Routes
 
 /*

@@ -4,7 +4,7 @@ import config from '../config.json';
 import { useParams } from 'react-router-dom';
 import ListFiles from './ListFiles.js';
 
-export default function CategoryPage() {
+export default function Lolololololol() {
   const {id} = useParams();
   const [files, setFiles] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);

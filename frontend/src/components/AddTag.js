@@ -12,10 +12,8 @@ export default function AddTag() {
   const [tags, setTags] = useState([]);
 
   function loadTags() {
-    setTags([]);
     axios.get(config.BACKEND_URL + "/api/tags/list")
     .then(function(response) {
-      console.log(response.data);
       if (response.data.status == "OK") {
         setTags(response.data.data);
       }
@@ -25,7 +23,41 @@ export default function AddTag() {
     })
     .catch(function(err) {
       MySwal.fire(err.message);
-    }); 
+    });
+  }
+
+  function deleteTag(id, index) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // User clicked "Yes"
+        console.log('Confirmed!');
+
+        axios.post(config.BACKEND_URL + "/api/tags/delete", {id: id})
+        .then(function(response) {
+          if (response.data.status == "OK") {
+            setTags((prevTags) => prevTags.filter(tag => tag.id !== id));
+            MySwal.fire("Tag has been deleted.");
+          }
+          else {
+            MySwal.fire(response.data.error);
+          }
+        })
+        .catch(function(err) {
+          MySwal.fire(err.message);
+        });
+      } else {
+        // User cancelled
+        console.log('Cancelled');
+      }
+    });
   }
 
   useEffect(() => {
@@ -40,8 +72,8 @@ export default function AddTag() {
           <div className="col-md-4 full-min-height p-5">
             <div className="bg-grey p-5">
               <ul>
-                {tags.map((tag) => (
-                  <li key={tag.id}>{tag.name}</li>
+                {tags.map((tag, index) => (
+                  <li key={tag.id}>{tag.name} <button className="btn btn-sm btn-danger" onClick={() => deleteTag(tag.id, index) }><i class="fa-solid fa-trash"></i></button></li>
                 ))};
               </ul>
             </div>

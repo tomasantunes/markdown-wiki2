@@ -1,6 +1,9 @@
 # TODO
 
 - Make sure that the category or tag you create becomes selected on the dropdown.
+- Update all the packages you can.
+- In the search tags page, when you make a search that doesn't return any results you should show a pop-up message.
+- Add parameters to comments about the routes.
 - Apply tags to all bookmarks
 - Create button to export folder.
 - Create button to import folder.
