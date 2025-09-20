@@ -309,6 +309,7 @@ function downloadImage(imageUrl, category_id, tags, cb) {
 function nthMostCommon(str, amount) {
 
   const stickyWords =[
+    "",
     "the",
     "there",
     "by",
@@ -2260,16 +2261,16 @@ app.get('/', (req,res) => {
   }
 });
 
-app.use(express.static(path.resolve(__dirname) + '/frontend/build'));
+app.use(express.static(path.resolve(__dirname) + '/frontend/dist'));
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+  res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
 });
 
 app.get('/dashboard', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2279,7 +2280,7 @@ app.get('/dashboard', (req,res) => {
 app.get('/search', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2289,7 +2290,7 @@ app.get('/search', (req,res) => {
 app.get('/search-tags', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2299,7 +2300,7 @@ app.get('/search-tags', (req,res) => {
 app.get('/add-file', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2309,7 +2310,7 @@ app.get('/add-file', (req,res) => {
 app.get('/add-category', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2319,7 +2320,7 @@ app.get('/add-category', (req,res) => {
 app.get('/add-tag', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2329,7 +2330,7 @@ app.get('/add-tag', (req,res) => {
 app.get('/categories/:id', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2339,7 +2340,7 @@ app.get('/categories/:id', (req,res) => {
 app.get('/file/:id', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2349,7 +2350,7 @@ app.get('/file/:id', (req,res) => {
 app.get('/tag/:id', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2359,7 +2360,7 @@ app.get('/tag/:id', (req,res) => {
 app.get('/bookmarks', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
@@ -2369,7 +2370,7 @@ app.get('/bookmarks', (req,res) => {
 app.get('/pinned', (req,res) => {
   console.log(req.session.isLoggedIn);
   if(req.session.isLoggedIn) {
-    res.sendFile(path.resolve(__dirname) + '/frontend/build/index.html');
+    res.sendFile(path.resolve(__dirname) + '/frontend/dist/index.html');
   }
   else {
     res.redirect('/login');
