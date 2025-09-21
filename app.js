@@ -2117,13 +2117,7 @@ app.post("/external/files/upsert", async (req, res) => {
     return;
   }
 
-  var sql1 = `SELECT 
-                *
-              FROM files f
-              INNER JOIN files_categories fc ON f.id = fc.file_id
-              WHERE 
-                f.title = ?
-                AND fc.category_id = ?`;
+  var sql1 = "SELECT * FROM files WHERE title = ? AND category_id = ?";
 
   var result1 = await con2.query(sql1, [title, category_id]);
   if (result1[0].length > 0) {
