@@ -46,6 +46,10 @@ export default function File({id}) {
   var categories_to_add = [];
   const navigate = useNavigate();
 
+  function safeBasename(p) {
+    return path.basename(p.replace(/\\/g, "/"));
+  }
+
   function showEditFile(id) {
 
     loadTags();
@@ -477,7 +481,7 @@ export default function File({id}) {
                   </div>
               </div>
               </div>
-              <img src={config.BACKEND_URL + "/api/images/get/" + path.basename(image['path'])} />
+              <img src={config.BACKEND_URL + "/api/images/get/" + safeBasename(image['path'])} />
           </div>
         </>
       )}

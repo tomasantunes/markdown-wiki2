@@ -52,7 +52,6 @@ const Menu = () => {
     axios
       .get(config.BACKEND_URL + "/api/categories/list")
       .then((response) => {
-        console.log("Categories API raw response:", response.data);
 
         const categories = response?.data?.data ?? [];
         if (!Array.isArray(categories)) {
@@ -70,8 +69,6 @@ const Menu = () => {
             categories_to_add.push(addCategory(category, categories));
           }
         }
-
-        console.log("Final categories_to_add:", categories_to_add);
 
         setMenuItems((menuItems) => [...menuItemsInitialState, ...categories_to_add]);
       })

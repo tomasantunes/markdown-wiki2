@@ -30,8 +30,8 @@ router.post('/api/upload-media-file', async function(req, res) {
   var category_id = req.body.category;
   var tags = req.body.tags;
   var new_filename = crypto.randomBytes(16).toString('hex');
-  const filepath = __dirname + "/media-files/" + new_filename + path.extname(file.name);
-  const filepath2 = "media-files/" + new_filename + path.extname(file.name);
+  const filepath = path.join(__dirname, "../media-files/", new_filename + path.extname(file.name));
+  const filepath2 = path.join("media-files/", new_filename + path.extname(file.name));
 
   file.mv(filepath, (err) => {
     if (err) {
@@ -102,7 +102,7 @@ router.get("/api/images/get/:filename", (req, res) => {
   }
 
   var filename = req.params.filename;
-  res.sendFile(__dirname + "/media-files/" + filename);
+  res.sendFile(path.join(__dirname, "../media-files/", filename));
 });
 
 // This route allows you to edit an image's information on the database.
@@ -164,7 +164,7 @@ router.get("/api/get-file/:filename", (req, res) => {
   }
 
   var filename = req.params.filename;
-  res.sendFile(__dirname + "/media-files/" + filename);
+  res.sendFile(path.join(__dirname, "../media-files/", filename));
 });
 
 module.exports = router;
