@@ -1,5 +1,6 @@
 var express = require('express');
 const { getMySQLConnections } = require('../libs/database');
+const { insertNewCategory } = require('../libs/categories');
 var router = express.Router();
 
 // This route gets the list of categories. The list is ordered by sort index if it exists, otherwise by name and then by date ascending.
@@ -131,8 +132,6 @@ router.post("/api/categories/insert", async (req, res) => {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
-
-  const { con, con2 } = await getMySQLConnections();
 
   var category = req.body.category;
   var parentCategoryId = req.body.parentCategory;
