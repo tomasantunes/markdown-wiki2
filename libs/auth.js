@@ -1,4 +1,5 @@
 var nodemailer = require('nodemailer');
+var secretConfig = require('../secret-config');
 
 // This function sends an email to the user with the authentication PIN.
 function sendPinEmail(pin) {
