@@ -53,11 +53,14 @@ router.post("/external/files/upsert", async (req, res) => {
         await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
       }
       else {
-        insertNewTag(tags_arr[i], async function(inserted) {
-          if (!inserted) {
+        insertNewTag(tags_arr[i], async function(result3) {
+          if (result3.status == "NOK") {
             console.log("Error inserting new tag.");
           }
-          await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
+          else {
+            var tag_id = result3.insertId;
+            await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
+          }
         });
       }
       if (i == tags_arr.length - 1) {
