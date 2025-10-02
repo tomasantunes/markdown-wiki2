@@ -28,7 +28,7 @@ Create a config.json file by copying and renaming the file frontend/src/config-b
 npm run build
 Create a sessions.json file by copying and renaming the file sessions-base.json
 npm start
-Go to localhost:4002
+Go to localhost:4001
 ```
 
 ## How to create database

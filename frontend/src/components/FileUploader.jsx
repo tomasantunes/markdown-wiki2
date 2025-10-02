@@ -5,7 +5,7 @@ export default function FileUploader({onFileSelectError, onFileSelectSuccess}) {
         // handle validations
         const file = e.target.files[0];
         if (file.size > 50 * 1024 * 1024)
-          onFileSelectError({ error: "File size cannot exceed more than 1MB" });
+          onFileSelectError({ error: "File size cannot exceed more than 50MB" });
         else onFileSelectSuccess(file);
       };
 

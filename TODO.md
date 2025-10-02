@@ -10,6 +10,5 @@
 - Modify import folder function to import files at their correct categories.
 - Create feature to merge two folders and specifying which folder to keep.
 - Create page with list of tags that you can edit and delete.
-- Fix error message when uploading files to say 50MB instead of 1MB.
 - Test if it's possible to get the PIN pop-up back after you close it.
 - Add a search box on the sidebar to filter categories.
