@@ -47,7 +47,7 @@ router.post("/external/files/upsert", async (req, res) => {
     await con2.query("DELETE FROM files_tags WHERE file_id = ?", [file_id]);
     for (var i in tags_arr) {
       console.log(tags_arr[i]);
-      var result2 = await con2.query("SELECT id FROM tags WHERE name = ?", [tags_arr[i]]);
+      var result2 = await con2.query("SELECT id FROM tags WHERE LOWER(name) = LOWER(?)", [tags_arr[i]]);
       if (result2[0].length > 0) {
         var tag_id = result2[0][0].id;
         await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
