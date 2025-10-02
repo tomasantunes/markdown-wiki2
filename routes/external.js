@@ -2,7 +2,7 @@ const { getMySQLConnections } = require('../libs/database');
 var express = require('express');
 var router = express.Router();
 var secretConfig = require('../secret-config');
-var {deleteTagsFromFile} = require('../libs/tags');
+var {deleteTagsFromFile, insertNewTag} = require('../libs/tags');
 
 router.post("/external/files/upsert", async (req, res) => {
   if (req.body.api_key != secretConfig.EXTERNAL_API_KEY) {
@@ -35,6 +35,8 @@ router.post("/external/files/upsert", async (req, res) => {
     file_id = result2.insertId;
   }
 
+
+
   if (tags == undefined || tags == "") {
     deleteTagsFromFile(file_id, function(result) {
       console.log("Tags have been deleted.")
@@ -51,8 +53,12 @@ router.post("/external/files/upsert", async (req, res) => {
         await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
       }
       else {
-        res.json({status: "NOK", error: "Tag not found."});
-        return;
+        insertNewTag(tags_arr[i], async function(inserted) {
+          if (!inserted) {
+            console.log("Error inserting new tag.");
+          }
+          await con2.query("INSERT INTO files_tags (file_id, tag_id) VALUES (?, ?)", [file_id, tag_id]);
+        });
       }
       if (i == tags_arr.length - 1) {
         res.json({status: "OK", data: "File has been upserted successfully."});
