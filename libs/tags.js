@@ -30,9 +30,13 @@ async function insertNewTag(tag_name, cb) {
   const { con, con2 } = await getMySQLConnections();
   var sql = "INSERT INTO tags (name) VALUES (?);";
 
-  con.query(sql, [tag_name], function(err, result) {
-    cb({status: "OK", data: result.insertId});
-  });
+  var result = await con2.query(sql, [tag_name]);
+  console.log(result);
+  if (result.affectedRows == 0) {
+    cb({status: "NOK", error: "Failed to insert tag."});
+    return;
+  }
+  cb({status: "OK", data: result.insertId});
 }
 
 // Function that checks if a file has a tag

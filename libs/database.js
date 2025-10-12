@@ -102,16 +102,21 @@ async function getMySQLConnections() {
     };
 
     // Check if the application is running in a Docker container and start the database connection
-    var docker_host = await checkDocker();
-    if (docker_host) {
-      console.log('Docker host is ' + docker_host);
-      startDatabaseConnection(docker_host);
-      increaseTimeout();
-    } else {
-      console.log('Not in Docker');
-      console.log("DB_HOST: " + secretConfig.DB_HOST);
-      startDatabaseConnection(secretConfig.DB_HOST);
-      increaseTimeout();
+    try {
+      var docker_host = await checkDocker();
+      if (docker_host) {
+        console.log('Docker host is ' + docker_host);
+        startDatabaseConnection(docker_host);
+        increaseTimeout();
+      } else {
+        console.log('Not in Docker');
+        console.log("DB_HOST: " + secretConfig.DB_HOST);
+        startDatabaseConnection(secretConfig.DB_HOST);
+        increaseTimeout();
+      }
+    } catch (error) {
+      console.log('Error connecting to database:', error);
+      return null;
     }
   }
   

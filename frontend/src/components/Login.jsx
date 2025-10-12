@@ -22,8 +22,8 @@ export default function Login() {
   function requestLogin() {
     axios.post(config.BACKEND_URL + "/api/check-login", {user, pass})
     .then(res => {
+      console.log(res.data.data);
       if (res.data.status == "OK") {
-        console.log(res.data.data);
         var login_id = res.data.data.login_id;
         if (login_id != -1) {
           Swal.fire({

@@ -1,16 +1,17 @@
 var express = require('express');
 const { getMySQLConnections } = require('../libs/database');
+var {insertNewTag} = require('../libs/tags');
 var router = express.Router();
 
 // This route inserts a new tag.
-router.post("/api/tags/insert", (req, res) => {
+router.post("/api/tags/insert", async (req, res) => {
   if (!req.session.isLoggedIn) {
     res.json({status: "NOK", error: "Invalid Authorization."});
     return;
   }
 
   var tag = req.body.tag;
-  insertNewTag(tag, function(result) {
+  await insertNewTag(tag, function(result) {
     if (result.status == "OK") {
       res.json({status: "OK", data: "A new tag was added successfully."});
     }
