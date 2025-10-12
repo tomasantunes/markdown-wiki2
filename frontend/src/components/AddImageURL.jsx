@@ -21,7 +21,9 @@ export default function AddImageURL() {
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
-  const [selectedTags, setSelectedTags] = useState();
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [createdTagId, setCreatedTagId] = useState(null);
+  const [createdCategoryId, setCreatedCategoryId] = useState(null);
   var categories_to_add = [];
 
   function changeAddImageURLCategory(item) {
@@ -162,6 +164,22 @@ export default function AddImageURL() {
   }
 
   useEffect(() => {
+    let found_category = categories.find(t => t.value == createdCategoryId);
+    if (found_category && createdCategoryId != null) {
+      changeAddImageURLCategory({value: createdCategoryId, label: found_category.label});
+      setCreatedCategoryId(null);
+    }
+  }, [createdCategoryId, categories]);
+
+  useEffect(() => {
+    let found_tag = tags.find(t => t.value == createdTagId);
+    if (found_tag && createdTagId != null) {
+      changeAddImageURLTags([...selectedTags, {value: createdTagId, label: found_tag.label}]);
+      setCreatedTagId(null);
+    }
+  }, [createdTagId, tags]);
+
+  useEffect(() => {
     loadCategories();
     loadTags();
   }, []);
@@ -177,13 +195,13 @@ export default function AddImageURL() {
           <div className="form-group py-2">
               <label className="control-label">Category</label>
               <div>
-                  <Select value={selectedCategory} options={categories} onChange={changeAddImageURLCategory}  components={{ Menu: CategoriesSelectMenu }} />
+                <Select value={selectedCategory} options={categories} onChange={changeAddImageURLCategory}  components={{ Menu: CategoriesSelectMenu }} />
               </div>
           </div>
           <div className="form-group py-2">
               <label className="control-label">Tags</label>
               <div>
-              <Select isMulti value={selectedTags} options={tags} onChange={changeAddImageURLTags} components={{ Menu: TagSelectMenu }} />
+                <Select isMulti value={selectedTags} options={tags} onChange={changeAddImageURLTags} components={{ Menu: TagSelectMenu }} />
               </div>
           </div>
           <div className="form-group">
@@ -193,8 +211,8 @@ export default function AddImageURL() {
           </div>
       </form>
     </div>
-    <AddCategoryModal reload={reload} />
-    <AddTagModal reload={reload} />
+    <AddCategoryModal reload={reload} setCreatedCategoryId={setCreatedCategoryId}/>
+    <AddTagModal reload={reload} setCreatedTagId={setCreatedTagId}/>
     </>
   )
 }

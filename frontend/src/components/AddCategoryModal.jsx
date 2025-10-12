@@ -7,7 +7,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 const MySwal = withReactContent(Swal);
 
-export default function AddCategoryModal({reload}) {
+export default function AddCategoryModal({reload, setCreatedCategoryId}) {
   const [categories, setCategories] = useState([]);
   const [selectedParentCategory, setSelectedParentCategory] = useState();
   const [newCategory, setNewCategory] = useState({
@@ -56,6 +56,7 @@ export default function AddCategoryModal({reload}) {
             "category": ""
         });
         setSelectedParentCategory({});
+        setCreatedCategoryId(response.data.insertId);
         reload();
       });
     })

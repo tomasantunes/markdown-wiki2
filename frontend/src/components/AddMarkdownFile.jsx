@@ -27,7 +27,9 @@ export default function AddTextFile() {
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState();
-  const [selectedTags, setSelectedTags] = useState();
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [createdTagId, setCreatedTagId] = useState(null);
+  const [createdCategoryId, setCreatedCategoryId] = useState(null);
   const mdEditor = React.useRef(null);
   var categories_to_add = [];
 
@@ -176,6 +178,24 @@ export default function AddTextFile() {
   }
 
   useEffect(() => {
+      let found_category = categories.find(t => t.value == createdCategoryId);
+      if (found_category && createdCategoryId != null) {
+        changeNewFileCategory({value: createdCategoryId, label: found_category.label});
+        setCreatedCategoryId(null);
+      }
+    }, [createdCategoryId, categories]);
+
+  useEffect(() => {
+      console.log(createdTagId);
+      let found_tag = tags.find(t => t.value == createdTagId);
+      if (found_tag && createdTagId != null) {
+        console.log({value: createdTagId, label: found_tag.label});
+        changeNewFileTags([...selectedTags, {value: createdTagId, label: found_tag.label}]);
+        setCreatedTagId(null);
+      }
+    }, [createdTagId, tags]);
+
+  useEffect(() => {
     loadCategories();
     loadTags();
   }, []);
@@ -216,8 +236,8 @@ export default function AddTextFile() {
         </div>
       </form>
     </div>
-    <AddCategoryModal reload={reload} />
-    <AddTagModal reload={reload} />
+    <AddCategoryModal reload={reload} setCreatedCategoryId={setCreatedCategoryId}/>
+    <AddTagModal reload={reload} setCreatedTagId={setCreatedTagId}/>
     </>
   )
 }

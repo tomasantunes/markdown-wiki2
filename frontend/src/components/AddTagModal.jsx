@@ -7,7 +7,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 const MySwal = withReactContent(Swal);
 
-export default function AddTagModal({reload}) {
+export default function AddTagModal({reload, setCreatedTagId}) {
   const [newTag, setNewTag] = useState("");
 
   function close() {
@@ -29,13 +29,20 @@ export default function AddTagModal({reload}) {
 
     axios.post(config.BACKEND_URL + '/api/tags/insert', {tag: newTag})
     .then(function (response) {
-      MySwal.fire("New tag has been added.")
-      .then((value) => {
-        var modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('.addTagModal'))
-        modal.hide();
-        setNewTag("");
-        reload();
-      });
+      if (response.data.status == "OK") {
+        MySwal.fire("New tag has been added.")
+        .then((value) => {
+          var modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('.addTagModal'))
+          modal.hide();
+          setNewTag("");
+          console.log(response.data.insertId);
+          setCreatedTagId(response.data.insertId);
+          reload();
+        });
+      }
+      else {
+        MySwal.fire("There was an error adding the new tag.");
+      }
     })
     .catch(function (error) {
       console.log(error);

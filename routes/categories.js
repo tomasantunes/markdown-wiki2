@@ -135,8 +135,13 @@ router.post("/api/categories/insert", async (req, res) => {
 
   var category = req.body.category;
   var parentCategoryId = req.body.parentCategory;
-  insertNewCategory(category, parentCategoryId, function() {
-    res.json({status: "OK", data: "A new category has been inserted."})
+  insertNewCategory(category, parentCategoryId, function(result) {
+    console.log(result);
+    if (result.status == "NOK") {
+      res.json(result);
+      return;
+    }
+    res.json({status: "OK", data: "A new category has been inserted.", insertId: result.data})
   });
 });
 

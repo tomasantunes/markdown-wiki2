@@ -13,7 +13,7 @@ router.post("/api/tags/insert", async (req, res) => {
   var tag = req.body.tag;
   await insertNewTag(tag, function(result) {
     if (result.status == "OK") {
-      res.json({status: "OK", data: "A new tag was added successfully."});
+      res.json({status: "OK", data: "A new tag was added successfully.", insertId: result.data});
     }
     else {
       res.json({status: "NOK", error: "There was an error inserting the tag."});

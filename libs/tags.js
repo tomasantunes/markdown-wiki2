@@ -32,11 +32,11 @@ async function insertNewTag(tag_name, cb) {
 
   var result = await con2.query(sql, [tag_name]);
   console.log(result);
-  if (result.affectedRows == 0) {
+  if (result[0].affectedRows == 0) {
     cb({status: "NOK", error: "Failed to insert tag."});
     return;
   }
-  cb({status: "OK", data: result.insertId});
+  cb({status: "OK", data: result[0].insertId});
 }
 
 // Function that checks if a file has a tag
